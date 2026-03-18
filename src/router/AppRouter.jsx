@@ -42,7 +42,7 @@ const Router = isGitHubPages ? HashRouter : BrowserRouter;
     <ThemeProvider theme={theme}>
       <GlobalStyle />
 
-      <Router>
+      <Router basename={import.meta.env.BASE_URL}>
         <AuthProvider>
           <ToastContainer
             position="top-right"

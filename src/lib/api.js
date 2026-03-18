@@ -4,7 +4,18 @@
 // ============================================================
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1';
+// ── BASE_URL ──────────────────────────────────────────────────────────────────
+// VITE_API_URL deve estar no .env (desenvolvimento) e nas variáveis do
+// ambiente de build (GitHub Pages / Vercel / etc).
+// Nunca usar localhost como fallback em produção — se a variável não existir,
+// lança um aviso claro no console para facilitar o debug.
+const BASE_URL = import.meta.env.VITE_API_URL ?? (() => {
+  console.warn(
+    '[api.js] VITE_API_URL não definida. ' +
+    'Certifique-se de que o arquivo .env existe e foi carregado corretamente.'
+  );
+  return 'http://localhost:3000/api/v1';
+})();
 
 // ── Chaves de storage ─────────────────────────────────────────────────────────
 const KEYS = {
@@ -13,7 +24,6 @@ const KEYS = {
 };
 
 // ── Helpers de token ──────────────────────────────────────────────────────────
-// Ambos no localStorage: sobrevivem à navegação e ao StrictMode do React
 export const getAccessToken  = () => localStorage.getItem(KEYS.ACCESS_TOKEN);
 export const getRefreshToken = () => localStorage.getItem(KEYS.REFRESH_TOKEN);
 
@@ -28,6 +38,10 @@ export const clearTokens = () => {
 };
 
 // ── Instância Axios ───────────────────────────────────────────────────────────
+// IMPORTANTE: withCredentials está ausente intencionalmente (padrão: false).
+// O token JWT vai no header Authorization — não em cookies.
+// Usar withCredentials: true com CORS causaria o erro:
+//   "Cannot use wildcard in Access-Control-Allow-Origin when credentials flag is true"
 const api = axios.create({
   baseURL: BASE_URL,
   timeout: 15_000,
@@ -35,9 +49,10 @@ const api = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
+  // withCredentials: false  ← padrão, não precisa declarar
 });
 
-// ── Fila para requisições paralelas que expiram ao mesmo tempo ───────────────
+// ── Fila para requisições paralelas durante refresh ───────────────────────────
 let isRefreshing = false;
 let failedQueue  = [];
 
@@ -48,7 +63,7 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
-// ── Interceptor REQUEST — injeta Bearer token em toda requisição ──────────────
+// ── Interceptor REQUEST — injeta Bearer token ─────────────────────────────────
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
@@ -67,14 +82,13 @@ api.interceptors.response.use(
   async (error) => {
     const original = error.config;
 
-    const is401            = error.response?.status === 401;
-    const notRetried       = !original._retry;
-    const notRefreshRoute  = !original.url?.includes('/auth/refresh');
+    const is401           = error.response?.status === 401;
+    const notRetried      = !original._retry;
+    const notRefreshRoute = !original.url?.includes('/auth/refresh');
 
     if (is401 && notRetried && notRefreshRoute) {
       original._retry = true;
 
-      // Já está refrescando: enfileira e aguarda
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -87,7 +101,6 @@ api.interceptors.response.use(
       isRefreshing = true;
       const refreshToken = getRefreshToken();
 
-      // Sem refreshToken salvo: sessão perdida
       if (!refreshToken) {
         isRefreshing = false;
         clearTokens();
@@ -96,18 +109,15 @@ api.interceptors.response.use(
       }
 
       try {
-        // Chama o endpoint de refresh diretamente (sem o interceptor)
         const { data } = await axios.post(
           `${BASE_URL}/auth/refresh`,
           { refreshToken },
           { headers: { 'Content-Type': 'application/json' } },
         );
 
-        // O backend retorna { status, data: { token, refreshToken } }
-        // "token" é o accessToken nesta API
-        const payload       = data.data ?? data;
-        const newAccess     = payload.token ?? payload.accessToken;
-        const newRefresh    = payload.refreshToken;
+        const payload    = data.data ?? data;
+        const newAccess  = payload.token ?? payload.accessToken;
+        const newRefresh = payload.refreshToken;
 
         if (!newAccess) throw new Error('Refresh não retornou accessToken');
 

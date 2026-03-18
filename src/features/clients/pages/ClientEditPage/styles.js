@@ -1,7 +1,5 @@
 // ============================================================
 // src/features/clients/pages/ClientEditPage/styles.js
-// Styled Components — Edição de Cliente
-// Reutiliza a linguagem visual da ClientDetailPage
 // ============================================================
 import styled, { keyframes } from 'styled-components';
 
@@ -12,7 +10,7 @@ const fadeInUp = keyframes`
   to   { opacity: 1; transform: translateY(0); }
 `;
 
-const shimmer = keyframes`
+export const shimmer = keyframes`
   0%   { background-position: -600px 0; }
   100% { background-position:  600px 0; }
 `;
@@ -23,12 +21,11 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[6]};
-  /* Padding extra embaixo para o footer fixo não sobrepor o conteúdo */
-  padding-bottom: 88px;
+  padding-bottom: 88px; /* espaço para o footer fixo */
   animation: ${fadeInUp} 0.3s ease both;
 `;
 
-// ── Header da página ──────────────────────────────────────────────────────────
+// ── Header ────────────────────────────────────────────────────────────────────
 
 export const PageHeader = styled.div`
   display: flex;
@@ -136,12 +133,11 @@ export const FormGrid = styled.div`
   }
 `;
 
-// Campo que ocupa toda a largura do grid
 export const FullSpan = styled.div`
   grid-column: 1 / -1;
 `;
 
-// ── Campos do formulário ──────────────────────────────────────────────────────
+// ── Campos editáveis ──────────────────────────────────────────────────────────
 
 export const Field = styled.div`
   display: flex;
@@ -156,9 +152,20 @@ export const Label = styled.label`
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: ${({ theme }) => theme.text.secondary};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
 `;
 
-// Estilo base compartilhado entre Input, Select e Textarea
+// Cadeado exibido ao lado do label dos campos imutáveis
+export const LockIcon = styled.span`
+  display: inline-flex;
+  align-items: center;
+  color: ${({ theme }) => theme.colors.neutral[400]};
+  flex-shrink: 0;
+`;
+
+// Estilo base reutilizado por Input, Select e Textarea
 const fieldBase = ({ theme, $hasError }) => `
   width: 100%;
   background-color: ${theme.surface.card};
@@ -201,13 +208,12 @@ export const Input = styled.input`
 export const Select = styled.select`
   ${({ theme, $hasError }) => fieldBase({ theme, $hasError })}
   height: 44px;
-  padding: 0 ${({ theme }) => theme.spacing[4]};
+  padding: 0 ${({ theme }) => theme.spacing[10]} 0 ${({ theme }) => theme.spacing[4]};
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right ${({ theme }) => theme.spacing[3]} center;
-  padding-right: ${({ theme }) => theme.spacing[10]};
 `;
 
 export const Textarea = styled.textarea`
@@ -218,7 +224,32 @@ export const Textarea = styled.textarea`
   line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
 `;
 
-// Mensagem de erro abaixo do campo
+// Campo somente-leitura (campos únicos imutáveis)
+export const ReadonlyField = styled.div`
+  height: 44px;
+  padding: 0 ${({ theme }) => theme.spacing[4]};
+  display: flex;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.neutral[50]};
+  border: 1.5px solid ${({ theme }) => theme.colors.neutral[200]};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.text.muted};
+  user-select: none;
+  cursor: not-allowed;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+export const ReadonlyHint = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.neutral[400]};
+  font-style: italic;
+`;
+
 export const FieldError = styled.span`
   display: flex;
   align-items: center;
@@ -226,17 +257,15 @@ export const FieldError = styled.span`
   font-family: ${({ theme }) => theme.typography.fontFamily.sans};
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
   color: ${({ theme }) => theme.colors.error.base};
-  line-height: ${({ theme }) => theme.typography.lineHeight.snug};
 `;
 
-// Texto auxiliar abaixo do campo (dica/hint)
 export const FieldHint = styled.span`
   font-family: ${({ theme }) => theme.typography.fontFamily.sans};
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
   color: ${({ theme }) => theme.text.muted};
 `;
 
-// ── Seção de conta bancária ───────────────────────────────────────────────────
+// ── Seção bancária ────────────────────────────────────────────────────────────
 
 export const BankSection = styled.div`
   padding: ${({ theme }) => theme.spacing[5]};
@@ -251,18 +280,145 @@ export const BankSectionTitle = styled.h3`
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
   color: ${({ theme }) => theme.text.secondary};
   margin: 0 0 ${({ theme }) => theme.spacing[4]};
+`;
+
+// ── Seção de documentos ───────────────────────────────────────────────────────
+
+export const DocumentsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: ${({ theme }) => theme.spacing[4]};
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const DocumentUploadCard = styled.div`
+  border: 1.5px dashed ${({ theme, $hasFile }) =>
+    $hasFile ? theme.colors.primary[400] : theme.border.strong};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  background-color: ${({ theme, $hasFile }) =>
+    $hasFile ? theme.colors.primary[50] : theme.colors.neutral[50]};
+  padding: ${({ theme }) => theme.spacing[4]};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[3]};
+  transition:
+    border-color ${({ theme }) => theme.transitions.fast},
+    background-color ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.primary[400]};
+    background-color: ${({ theme }) => theme.colors.primary[50]};
+  }
+`;
+
+export const DocumentUploadLabel = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.text.secondary};
+`;
+
+// Área clicável que aciona o input hidden
+export const DropZone = styled.label`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => theme.spacing[5]} ${({ theme }) => theme.spacing[4]};
+  border-radius: ${({ theme }) => theme.borderRadius.base};
+  cursor: pointer;
+  text-align: center;
+  min-height: 96px;
+`;
+
+export const DropZoneIcon = styled.div`
+  color: ${({ theme, $hasFile }) =>
+    $hasFile ? theme.colors.primary[500] : theme.colors.neutral[300]};
+  transition: color ${({ theme }) => theme.transitions.fast};
+`;
+
+export const DropZoneText = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.text.secondary};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+`;
+
+export const DropZoneSubtext = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.text.muted};
+`;
+
+// Exibe info do arquivo selecionado ou documento existente
+export const FileInfo = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[2]};
+  padding: ${({ theme }) => theme.spacing[2]} ${({ theme }) => theme.spacing[3]};
+  background-color: ${({ theme }) => theme.surface.card};
+  border: 1px solid ${({ theme }) => theme.colors.primary[200]};
+  border-radius: ${({ theme }) => theme.borderRadius.base};
 `;
 
-// ── Footer fixo com botões de ação ────────────────────────────────────────────
+export const FileInfoText = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+`;
+
+export const FileName = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.text.primary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const FileMeta = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.text.muted};
+`;
+
+export const RemoveFileButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  border: none;
+  background-color: ${({ theme }) => theme.colors.neutral[100]};
+  color: ${({ theme }) => theme.text.muted};
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background-color ${({ theme }) => theme.transitions.fast},
+    color ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.error.light};
+    color: ${({ theme }) => theme.colors.error.base};
+  }
+`;
+
+// ── Footer fixo ───────────────────────────────────────────────────────────────
 
 export const FormFooter = styled.div`
   position: fixed;
   bottom: 0;
-  /* Alinha com a área de conteúdo (descontando a sidebar de 240px) */
-  left: 240px;
+  left: 240px; /* largura da sidebar */
   right: 0;
   z-index: ${({ theme }) => theme.zIndex.sticky};
   background-color: ${({ theme }) => theme.surface.card};
@@ -275,9 +431,8 @@ export const FormFooter = styled.div`
   box-shadow: 0 -4px 16px rgba(35, 27, 21, 0.06);
 
   @media (max-width: 900px) {
-    /* No mobile a sidebar some, então o footer ocupa tudo */
     left: 0;
-    padding: ${({ theme }) => theme.spacing[4]} ${({ theme }) => theme.spacing[4]};
+    padding: ${({ theme }) => theme.spacing[4]};
   }
 `;
 
@@ -298,15 +453,12 @@ export const CancelButton = styled.button`
     background-color ${({ theme }) => theme.transitions.fast},
     color ${({ theme }) => theme.transitions.fast};
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: ${({ theme }) => theme.colors.neutral[100]};
     color: ${({ theme }) => theme.text.primary};
   }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
 `;
 
 export const SaveButton = styled.button`
@@ -341,14 +493,8 @@ export const SaveButton = styled.button`
     transform: translateY(-1px);
   }
 
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
+  &:active:not(:disabled) { transform: translateY(0); }
+  &:disabled { opacity: 0.65; cursor: not-allowed; }
 `;
 
 export const Spinner = styled.span`
@@ -357,13 +503,12 @@ export const Spinner = styled.span`
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
   border-radius: 50%;
-  animation: _spin 0.7s linear infinite;
   flex-shrink: 0;
-
+  animation: _spin 0.7s linear infinite;
   @keyframes _spin { to { transform: rotate(360deg); } }
 `;
 
-// ── Loading skeleton ──────────────────────────────────────────────────────────
+// ── Skeleton ──────────────────────────────────────────────────────────────────
 
 export const SkeletonBar = styled.div`
   height: ${({ $h }) => $h ?? '14px'};

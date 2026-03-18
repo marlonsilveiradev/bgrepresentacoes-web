@@ -1,15 +1,25 @@
 // ============================================================
 // src/features/clients/pages/ClientEditPage/index.jsx
-// Edição completa de cliente — Dados, Endereço e Conta Bancária
-// Endpoint: PATCH /clients/:id  (application/json)
+//
+// Protocolo de envio:
+//   • Sem arquivos  → PATCH /clients/:id  (application/json)
+//   • Com arquivos  → PATCH /clients/:id  (multipart/form-data)
+//       campo "data"       = JSON.stringify(dadosTextuais)
+//       campo "contrato"   = File (substitui company_document)
+//       campo "documentos" = File[] até 3 (proof_of_address,
+//                            bank_account_proof, card_machine_proof)
+//
+// Campos imutáveis (unique no banco):
+//   cnpj, corporate_name, email, state_registration
 // ============================================================
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import {
   ArrowLeft, Building2, MapPin, Landmark,
-  Save, X, AlertCircle, StickyNote,
+  FileText, Save, X, AlertCircle, Lock,
+  Upload, File as FileIcon, Trash2,
 } from 'lucide-react';
 
 import api, { getApiErrorMessage } from '../../../../lib/api';
@@ -18,14 +28,61 @@ import {
   PageTitle, PageSubtitle,
   Card, CardHeader, CardIconWrapper, CardTitle,
   FormGrid, FullSpan,
-  Field, Label, Input, Select, Textarea, FieldError, FieldHint,
+  Field, Label, LockIcon, Input, Select, Textarea,
+  ReadonlyField, ReadonlyHint,
+  FieldError, FieldHint,
   BankSection, BankSectionTitle,
+  DocumentsGrid, DocumentUploadCard, DocumentUploadLabel,
+  DropZone, DropZoneIcon, DropZoneText, DropZoneSubtext,
+  FileInfo, FileInfoText, FileName, FileMeta, RemoveFileButton,
   FormFooter, CancelButton, SaveButton, Spinner,
-  SkeletonBar, SkeletonCard,
-  Divider,
+  SkeletonBar, SkeletonCard, Divider,
 } from './styles';
 
-// ── Opções de Select ──────────────────────────────────────────────────────────
+// ── Constantes de documentos ──────────────────────────────────────────────────
+
+// O backend processa nesta ordem exata:
+//   campo "contrato"   → document_type: 'company_document'
+//   campo "documentos" → ['proof_of_address', 'bank_account_proof', 'card_machine_proof']
+const DOCUMENT_SLOTS = [
+  {
+    key: 'contrato',
+    fieldName: 'contrato',     // nome do campo no FormData
+    type: 'company_document',
+    label: 'Contrato / Doc. da Empresa',
+    hint: 'Substitui o documento existente',
+    multiple: false,
+  },
+  {
+    key: 'proof_of_address',
+    fieldName: 'documentos',   // campo "documentos" — índice 0
+    type: 'proof_of_address',
+    label: 'Comprovante de Endereço',
+    hint: 'Substitui o documento existente',
+    multiple: false,
+    docIndex: 0,
+  },
+  {
+    key: 'bank_account_proof',
+    fieldName: 'documentos',   // campo "documentos" — índice 1
+    type: 'bank_account_proof',
+    label: 'Comprovante Bancário',
+    hint: 'Substitui o documento existente',
+    multiple: false,
+    docIndex: 1,
+  },
+  {
+    key: 'card_machine_proof',
+    fieldName: 'documentos',   // campo "documentos" — índice 2
+    type: 'card_machine_proof',
+    label: 'Comprovante de Maquininha',
+    hint: 'Substitui o documento existente',
+    multiple: false,
+    docIndex: 2,
+  },
+];
+
+// ── Opções ────────────────────────────────────────────────────────────────────
 
 const BENEFIT_OPTIONS = [
   { value: 'food', label: 'Vale Alimentação' },
@@ -35,45 +92,41 @@ const BENEFIT_OPTIONS = [
 
 const ACCOUNT_TYPE_OPTIONS = [
   { value: 'checking', label: 'Conta Corrente' },
-  { value: 'savings',  label: 'Conta Poupança' },
+  { value: 'savings', label: 'Conta Poupança' },
 ];
 
 const UF_OPTIONS = [
-  'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA',
-  'MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN',
-  'RO','RR','RS','SC','SE','SP','TO',
+  'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+  'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN',
+  'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO',
 ];
 
-// ── Formatadores de exibição (apenas visual, não altera o valor enviado) ──────
-
-const maskCNPJ = (v = '') => {
-  const d = v.replace(/\D/g, '').slice(0, 14);
-  if (d.length <= 2)  return d;
-  if (d.length <= 5)  return `${d.slice(0,2)}.${d.slice(2)}`;
-  if (d.length <= 8)  return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5)}`;
-  if (d.length <= 12) return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8)}`;
-  return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8,12)}-${d.slice(12)}`;
-};
+// ── Formatadores / masks ──────────────────────────────────────────────────────
 
 const maskPhone = (v = '') => {
   const d = v.replace(/\D/g, '').slice(0, 11);
-  if (d.length <= 2)  return `(${d}`;
-  if (d.length <= 6)  return `(${d.slice(0,2)}) ${d.slice(2)}`;
-  if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
-  return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if (d.length <= 2) return `(${d}`;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 };
 
 const maskCEP = (v = '') => {
   const d = v.replace(/\D/g, '').slice(0, 8);
   if (d.length <= 5) return d;
-  return `${d.slice(0,5)}-${d.slice(5)}`;
+  return `${d.slice(0, 5)}-${d.slice(5)}`;
 };
-
-// ── Helpers de normalização (remove máscaras antes de enviar) ─────────────────
 
 const onlyDigits = (v = '') => v.replace(/\D/g, '');
 
-// ── Skeleton de carregamento ──────────────────────────────────────────────────
+const formatFileSize = (bytes) => {
+  if (!bytes) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+// ── Skeleton ──────────────────────────────────────────────────────────────────
 
 function EditSkeleton() {
   const fakeFields = (n) =>
@@ -93,13 +146,11 @@ function EditSkeleton() {
           <SkeletonBar $w="140px" $h="14px" style={{ marginTop: '4px' }} />
         </TitleGroup>
       </PageHeader>
-
       <SkeletonCard>
         <SkeletonBar $w="35%" $h="20px" />
         <Divider />
         <FormGrid>{fakeFields(6)}</FormGrid>
       </SkeletonCard>
-
       <SkeletonCard>
         <SkeletonBar $w="30%" $h="20px" />
         <Divider />
@@ -109,15 +160,107 @@ function EditSkeleton() {
   );
 }
 
+// ── Sub-componente: slot de upload de documento ───────────────────────────────
+
+function DocumentSlot({ slot, existingDoc, selectedFile, onFileSelect, onClearFile, disabled }) {
+  const inputRef = useRef(null);
+  const hasFile = !!selectedFile;
+  const hasExisting = !!existingDoc;
+
+  return (
+    <DocumentUploadCard $hasFile={hasFile}>
+      <DocumentUploadLabel>{slot.label}</DocumentUploadLabel>
+
+      {/* Arquivo já selecionado pelo usuário (novo upload) */}
+      {hasFile ? (
+        <FileInfo>
+          <FileIcon size={16} style={{ color: '#B45A14', flexShrink: 0 }} />
+          <FileInfoText>
+            <FileName>{selectedFile.name}</FileName>
+            <FileMeta>{formatFileSize(selectedFile.size)} · Novo arquivo</FileMeta>
+          </FileInfoText>
+          <RemoveFileButton
+            type="button"
+            onClick={() => onClearFile(slot.key)}
+            disabled={disabled}
+            title="Remover seleção"
+          >
+            <Trash2 size={13} />
+          </RemoveFileButton>
+        </FileInfo>
+      ) : hasExisting ? (
+        /* Documento existente no Cloudinary */
+        <FileInfo>
+          <FileIcon size={16} style={{ color: '#7a6455', flexShrink: 0 }} />
+          <FileInfoText>
+            <FileName>{existingDoc.original_name ?? 'Documento existente'}</FileName>
+            <FileMeta>
+              {existingDoc.file_size ? formatFileSize(existingDoc.file_size) + ' · ' : ''}
+              Substituir clicando abaixo
+            </FileMeta>
+          </FileInfoText>
+        </FileInfo>
+      ) : null}
+
+      {/* Área de drop / click para selecionar arquivo */}
+      <DropZone htmlFor={`doc-input-${slot.key}`}>
+        <DropZoneIcon $hasFile={hasFile}>
+          <Upload size={22} />
+        </DropZoneIcon>
+        <DropZoneText>
+          {hasFile ? 'Trocar arquivo' : hasExisting ? 'Substituir documento' : 'Selecionar arquivo'}
+        </DropZoneText>
+        <DropZoneSubtext>PDF, JPG ou PNG · máx. 3 MB</DropZoneSubtext>
+      </DropZone>
+
+      {/* Input file oculto */}
+      <input
+        ref={inputRef}
+        id={`doc-input-${slot.key}`}
+        type="file"
+        accept="application/pdf,image/jpeg,image/png"
+        style={{ display: 'none' }}
+        disabled={disabled}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) onFileSelect(slot.key, file);
+          // Reset para permitir re-selecionar o mesmo arquivo
+          e.target.value = '';
+        }}
+      />
+
+      <FieldHint>{slot.hint}</FieldHint>
+    </DocumentUploadCard>
+  );
+}
+
 // ── Componente principal ──────────────────────────────────────────────────────
 
 export default function ClientEditPage() {
-  const { id }   = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const [isLoading,    setIsLoading]    = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [clientName,   setClientName]   = useState('');
+  const [clientName, setClientName] = useState('');
+  const [partners, setPartners] = useState([]);
+  const [loadingPartners, setLoadingPartners] = useState(false);
+  
+
+  // Campos únicos imutáveis — só exibição, nunca vão no payload
+  const [readonlyFields, setReadonlyFields] = useState({
+    corporate_name: '',
+    cnpj: '',
+    email: '',
+    state_registration: '',
+  });
+
+  // Documentos existentes vindos da API (para exibir no slot)
+  const [existingDocs, setExistingDocs] = useState({});
+
+  // Arquivos selecionados pelo usuário (não enviados ainda)
+  // { [slot.key]: File }
+  const [selectedFiles, setSelectedFiles] = useState({});
 
   // ── react-hook-form ───────────────────────────────────────────────────────
   const {
@@ -128,70 +271,74 @@ export default function ClientEditPage() {
     formState: { errors, isDirty },
   } = useForm({
     defaultValues: {
-      // Dados da empresa
-      corporate_name:      '',
-      trade_name:          '',
-      cnpj:                '',
-      state_registration:  '',
-      phone:               '',
-      email:               '',
-      benefit_type:        'food',
-      notes:               '',
-      // Endereço
-      address_street:      '',
-      address_number:      '',
-      address_complement:  '',
-      address_neighborhood:'',
-      address_city:        '',
-      address_state:       '',
-      address_zip:         '',
-      // Conta bancária (primeiro registro, se existir)
-      bank_bank_name:      '',
-      bank_bank_code:      '',
-      bank_agency:         '',
-      bank_agency_digit:   '',
-      bank_account:        '',
-      bank_account_digit:  '',
-      bank_account_type:   'checking',
+      trade_name: '',
+      phone: '',
+      benefit_type: 'food',
+      notes: '',
+      address_street: '',
+      address_number: '',
+      address_complement: '',
+      address_neighborhood: '',
+      address_city: '',
+      address_state: '',
+      address_zip: '',
+      bank_bank_name: '',
+      bank_bank_code: '',
+      bank_agency: '',
+      bank_agency_digit: '',
+      bank_account: '',
+      bank_account_digit: '',
+      bank_account_type: 'checking',
+      partner_id: '',
     },
   });
 
-  // ── Carrega dados do cliente e popula o formulário ────────────────────────
+  // ── Carrega dados e popula o form ─────────────────────────────────────────
   const fetchClient = useCallback(async () => {
     setIsLoading(true);
     try {
       const { data } = await api.get(`/clients/${id}`);
       const c = data.data;
-
+      
       setClientName(c.trade_name || c.corporate_name || '');
 
-      // Conta bancária (usa o primeiro registro se existir)
+      // Armazena campos únicos imutáveis para exibição
+      setReadonlyFields({
+        corporate_name: c.corporate_name ?? '',
+        cnpj: c.cnpj ?? '',
+        email: c.email ?? '',
+        state_registration: c.state_registration ?? '',
+      });
+
+      // Mapeia documentos existentes por tipo para os slots
+      const docsMap = {};
+      (c.documents ?? []).forEach((doc) => {
+        docsMap[doc.document_type] = doc;
+      });
+      setExistingDocs(docsMap);
+
       const bank = c.bankAccounts?.[0];
 
-      // reset() popula todos os campos registrados de uma vez
       reset({
-        corporate_name:      c.corporate_name       ?? '',
-        trade_name:          c.trade_name            ?? '',
-        cnpj:                maskCNPJ(c.cnpj         ?? ''),
-        state_registration:  c.state_registration    ?? '',
-        phone:               maskPhone(c.phone        ?? ''),
-        email:               c.email                 ?? '',
-        benefit_type:        c.benefit_type          ?? 'food',
-        notes:               c.notes                 ?? '',
-        address_street:      c.address_street        ?? '',
-        address_number:      c.address_number        ?? '',
-        address_complement:  c.address_complement    ?? '',
-        address_neighborhood:c.address_neighborhood  ?? '',
-        address_city:        c.address_city          ?? '',
-        address_state:       c.address_state         ?? '',
-        address_zip:         maskCEP(c.address_zip   ?? ''),
-        bank_bank_name:      bank?.bank_name         ?? '',
-        bank_bank_code:      bank?.bank_code         ?? '',
-        bank_agency:         bank?.agency            ?? '',
-        bank_agency_digit:   bank?.agency_digit      ?? '',
-        bank_account:        bank?.account           ?? '',
-        bank_account_digit:  bank?.account_digit     ?? '',
-        bank_account_type:   bank?.account_type      ?? 'checking',
+        trade_name: c.trade_name ?? '',
+        phone: maskPhone(c.phone ?? ''),
+        benefit_type: c.benefit_type ?? 'food',
+        notes: c.notes ?? '',
+        address_street: c.address_street ?? '',
+        address_number: c.address_number ?? '',
+        address_complement: c.address_complement ?? '',
+        address_neighborhood: c.address_neighborhood ?? '',
+        address_city: c.address_city ?? '',
+        address_state: c.address_state ?? '',
+        address_zip: maskCEP(c.address_zip ?? ''),
+        bank_bank_name: bank?.bank_name ?? '',
+        bank_bank_code: bank?.bank_code ?? '',
+        bank_agency: bank?.agency ?? '',
+        bank_agency_digit: bank?.agency_digit ?? '',
+        bank_account: bank?.account ?? '',
+        bank_account_digit: bank?.account_digit ?? '',
+        bank_account_type: bank?.account_type ?? 'checking',
+        partner_id: c.partner?.id ?? c.partner_id ?? '',
       });
     } catch (error) {
       toast.error(getApiErrorMessage(error, 'Erro ao carregar dados do cliente.'));
@@ -203,54 +350,147 @@ export default function ClientEditPage() {
 
   useEffect(() => { fetchClient(); }, [fetchClient]);
 
+  // Busca parceiros para o select — apenas admin tem acesso a GET /users
+  useEffect(() => {
+  const fetchPartners = async () => {      
+    setLoadingPartners(true);
+    try {
+      // 1. Chamada à API
+      const response = await api.get('/users?role=partner&limit=100');
+      
+      // 2. Debug para termos certeza absoluta do que o servidor enviou
+      console.log("Resposta bruta da API /users:", response);
+
+      // 3. Extração segura: tenta encontrar o array de usuários
+      const fetchedData = response.data?.data || response.data || [];
+      
+      // Garante que o que estamos salvando é realmente um array
+      if (Array.isArray(fetchedData)) {
+        setPartners(fetchedData);
+      } else {
+        console.warn("A API não retornou um array de parceiros:", fetchedData);
+        setPartners([]);
+      }
+
+    } catch (error) {
+      console.error("Erro na busca de parceiros:", error);
+      // Opcional: toast.warn("Não foi possível carregar a lista de parceiros.");
+    } finally {
+      setLoadingPartners(false);
+    }
+  };
+  fetchPartners();
+}, []);
+  // useEffect(() => {
+  //   const fetchPartners = async () => {      
+  //     setLoadingPartners(true);
+  //     try {
+  //       const { data } = await api.get('/users?role=partner&limit=100&is_active=true');
+  //       console.log(data)
+  //       setPartners(data.data ?? []);
+  //     } catch {
+  //       // Silencioso — parceiros são opcionais, não bloqueia o formulário
+  //     } finally {
+  //       setLoadingPartners(false);
+  //     }
+  //   };
+  //   fetchPartners();
+  // }, []);
+
+  // ── Handlers de arquivo ───────────────────────────────────────────────────
+
+  const handleFileSelect = (slotKey, file) => {
+    setSelectedFiles((prev) => ({ ...prev, [slotKey]: file }));
+  };
+
+  const handleClearFile = (slotKey) => {
+    setSelectedFiles((prev) => {
+      const next = { ...prev };
+      delete next[slotKey];
+      return next;
+    });
+  };
+
   // ── Submit ────────────────────────────────────────────────────────────────
   const onSubmit = async (formData) => {
     setIsSubmitting(true);
     try {
-      // Remove máscaras dos campos numéricos antes de enviar
-      const payload = {
-        corporate_name:       formData.corporate_name       || undefined,
-        trade_name:           formData.trade_name           || undefined,
-        cnpj:                 onlyDigits(formData.cnpj)     || undefined,
-        state_registration:   formData.state_registration   || undefined,
-        phone:                onlyDigits(formData.phone)    || undefined,
-        email:                formData.email                || undefined,
-        benefit_type:         formData.benefit_type,
-        notes:                formData.notes                || undefined,
-        address_street:       formData.address_street       || undefined,
-        address_number:       formData.address_number       || undefined,
-        address_complement:   formData.address_complement   || undefined,
+      const hasFiles = Object.keys(selectedFiles).length > 0;
+
+      // ── Monta o payload de dados textuais ─────────────────────────────────
+      const textPayload = {
+        trade_name: formData.trade_name || undefined,
+        phone: onlyDigits(formData.phone) || undefined,
+        benefit_type: formData.benefit_type,
+        notes: formData.notes || undefined,
+        address_street: formData.address_street || undefined,
+        address_number: formData.address_number || undefined,
+        address_complement: formData.address_complement || undefined,
         address_neighborhood: formData.address_neighborhood || undefined,
-        address_city:         formData.address_city         || undefined,
-        address_state:        formData.address_state        || undefined,
-        address_zip:          onlyDigits(formData.address_zip) || undefined,
-        // Conta bancária: só envia se os campos obrigatórios estiverem preenchidos
+        address_city: formData.address_city || undefined,
+        address_state: formData.address_state || undefined,
+        address_zip: formData.address_zip || undefined,
+        partner_id: formData.partner_id || null,
         ...(formData.bank_bank_name && formData.bank_agency && formData.bank_account
           ? {
-              bankAccount: {
-                bank_name:     formData.bank_bank_name,
-                bank_code:     formData.bank_bank_code     || undefined,
-                agency:        formData.bank_agency,
-                agency_digit:  formData.bank_agency_digit  || undefined,
-                account:       formData.bank_account,
-                account_digit: formData.bank_account_digit,
-                account_type:  formData.bank_account_type,
-              },
-            }
+            bankAccount: {
+              bank_name: formData.bank_bank_name,
+              bank_code: formData.bank_bank_code || undefined,
+              agency: formData.bank_agency,
+              agency_digit: formData.bank_agency_digit || undefined,
+              account: formData.bank_account,
+              account_digit: formData.bank_account_digit,
+              account_type: formData.bank_account_type,
+            },
+          }
           : {}),
       };
 
-      // Remove chaves undefined para não poluir o payload
-      Object.keys(payload).forEach(
-        (k) => payload[k] === undefined && delete payload[k]
+      // Remove undefined para não poluir o payload
+      Object.keys(textPayload).forEach(
+        (k) => textPayload[k] === undefined && delete textPayload[k]
       );
 
-      await api.patch(`/clients/${id}`, payload);
+      if (hasFiles) {
+        // ── Envio com arquivos: multipart/form-data ───────────────────────
+        // O backend espera:
+        //   campo "data"      = JSON string dos dados textuais
+        //   campo "contrato"  = File (1 arquivo)
+        //   campo "documentos"= File[] (até 3, na ordem: endereço, banco, maquininha)
+        const formDataObj = new FormData();
+        formDataObj.append('data', JSON.stringify(textPayload));
+
+        // Contrato
+        if (selectedFiles['contrato']) {
+          formDataObj.append('contrato', selectedFiles['contrato']);
+        }
+
+        // Documentos complementares: monta array na ordem correta dos índices
+        const docOrder = ['proof_of_address', 'bank_account_proof', 'card_machine_proof'];
+        docOrder.forEach((docKey) => {
+          if (selectedFiles[docKey]) {
+            formDataObj.append('documentos', selectedFiles[docKey]);
+          }
+        });
+
+        // O Axios detecta automaticamente o Content-Type multipart/form-data
+        // quando o body é um FormData — não definir manualmente
+        await api.patch(`/clients/${id}`, formDataObj, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+      } else {
+        // ── Envio sem arquivos: application/json ──────────────────────────
+        await api.patch(`/clients/${id}`, textPayload);
+      }
 
       toast.success('Cliente atualizado com sucesso!', { toastId: 'client-updated' });
       navigate(`/clientes/${id}`, { replace: true });
 
     } catch (error) {
+      if (error.response?.data?.errors) {
+    console.table(error.response.data.errors); // Mostra uma tabela com os erros de validação
+  }
       toast.error(getApiErrorMessage(error, 'Erro ao salvar alterações.'));
     } finally {
       setIsSubmitting(false);
@@ -260,6 +500,9 @@ export default function ClientEditPage() {
   // ── Renderização ──────────────────────────────────────────────────────────
 
   if (isLoading) return <EditSkeleton />;
+
+  // Checa se houve mudança: formulário dirty OU algum arquivo selecionado
+  const hasChanges = isDirty || Object.keys(selectedFiles).length > 0;
 
   return (
     <>
@@ -271,7 +514,6 @@ export default function ClientEditPage() {
             <ArrowLeft size={15} />
             Voltar
           </BackButton>
-
           <TitleGroup>
             <PageTitle>Editar Cliente</PageTitle>
             <PageSubtitle>{clientName}</PageSubtitle>
@@ -289,25 +531,31 @@ export default function ClientEditPage() {
 
             <FormGrid>
 
+              {/* ── Campos imutáveis (unique no banco) ─────────────────────
+                  Exibidos como readonly — não registrados no react-hook-form
+                  pois não devem ser enviados no payload.
+              ─────────────────────────────────────────────────────────── */}
+
               <Field>
-                <Label htmlFor="corporate_name">Razão Social *</Label>
-                <Input
-                  id="corporate_name"
-                  type="text"
-                  placeholder="Razão social completa"
-                  $hasError={!!errors.corporate_name}
-                  disabled={isSubmitting}
-                  {...register('corporate_name', {
-                    required: 'A razão social é obrigatória.',
-                    minLength: { value: 3, message: 'Mínimo 3 caracteres.' },
-                  })}
-                />
-                {errors.corporate_name && (
-                  <FieldError>
-                    <AlertCircle size={11} />
-                    {errors.corporate_name.message}
-                  </FieldError>
-                )}
+                <Label>
+                  <LockIcon><Lock size={11} /></LockIcon>
+                  Razão Social
+                </Label>
+                <ReadonlyField title="Campo único — não pode ser alterado">
+                  {readonlyFields.corporate_name || '—'}
+                </ReadonlyField>
+                <ReadonlyHint>Campo único, não pode ser editado.</ReadonlyHint>
+              </Field>
+
+              <Field>
+                <Label>
+                  <LockIcon><Lock size={11} /></LockIcon>
+                  CNPJ
+                </Label>
+                <ReadonlyField title="Campo único — não pode ser alterado">
+                  {readonlyFields.cnpj || '—'}
+                </ReadonlyField>
+                <ReadonlyHint>Campo único, não pode ser editado.</ReadonlyHint>
               </Field>
 
               <Field>
@@ -322,34 +570,14 @@ export default function ClientEditPage() {
               </Field>
 
               <Field>
-                <Label htmlFor="cnpj">CNPJ *</Label>
-                <Input
-                  id="cnpj"
-                  type="text"
-                  placeholder="00.000.000/0001-00"
-                  $hasError={!!errors.cnpj}
-                  disabled={isSubmitting}
-                  {...register('cnpj', {
-                    required: 'O CNPJ é obrigatório.',
-                    validate: (v) =>
-                      onlyDigits(v).length === 14 || 'CNPJ deve ter 14 dígitos.',
-                    onChange: (e) => setValue('cnpj', maskCNPJ(e.target.value)),
-                  })}
-                />
-                {errors.cnpj && (
-                  <FieldError><AlertCircle size={11} />{errors.cnpj.message}</FieldError>
-                )}
-              </Field>
-
-              <Field>
-                <Label htmlFor="state_registration">Inscrição Estadual</Label>
-                <Input
-                  id="state_registration"
-                  type="text"
-                  placeholder="Inscrição estadual (opcional)"
-                  disabled={isSubmitting}
-                  {...register('state_registration')}
-                />
+                <Label>
+                  <LockIcon><Lock size={11} /></LockIcon>
+                  Inscrição Estadual
+                </Label>
+                <ReadonlyField title="Campo único — não pode ser alterado">
+                  {readonlyFields.state_registration || '—'}
+                </ReadonlyField>
+                <ReadonlyHint>Campo único, não pode ser editado.</ReadonlyHint>
               </Field>
 
               <Field>
@@ -366,23 +594,14 @@ export default function ClientEditPage() {
               </Field>
 
               <Field>
-                <Label htmlFor="email">E-mail</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="contato@empresa.com.br"
-                  $hasError={!!errors.email}
-                  disabled={isSubmitting}
-                  {...register('email', {
-                    pattern: {
-                      value:   /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: 'Informe um e-mail válido.',
-                    },
-                  })}
-                />
-                {errors.email && (
-                  <FieldError><AlertCircle size={11} />{errors.email.message}</FieldError>
-                )}
+                <Label>
+                  <LockIcon><Lock size={11} /></LockIcon>
+                  E-mail
+                </Label>
+                <ReadonlyField title="Campo único — não pode ser alterado">
+                  {readonlyFields.email || '—'}
+                </ReadonlyField>
+                <ReadonlyHint>Campo único, não pode ser editado.</ReadonlyHint>
               </Field>
 
               <Field>
@@ -402,12 +621,36 @@ export default function ClientEditPage() {
                 )}
               </Field>
 
+              <Field>
+                <Label htmlFor="partner_id">Parceiro Vinculado</Label>
+                <Select
+                  id="partner_id"
+                  disabled={isSubmitting || loadingPartners}
+                  {...register('partner_id')}
+                >
+                  <option value="">
+                    {loadingPartners ? 'Carregando parceiros…' : 'Sem parceiro vinculado'}
+                  </option>
+                  {partners.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </Select>
+                <FieldHint>
+                  {loadingPartners
+                    ? 'Buscando parceiros cadastrados…'
+                    : `${partners.length} parceiro${partners.length !== 1 ? 's' : ''} disponível${partners.length !== 1 ? 'is' : ''}`}
+                </FieldHint>
+              </Field>
+
+
               <FullSpan>
                 <Field>
                   <Label htmlFor="notes">Observações</Label>
                   <Textarea
                     id="notes"
-                    placeholder="Observações internas sobre o cliente…"
+                    placeholder="Observações internas…"
                     disabled={isSubmitting}
                     {...register('notes')}
                   />
@@ -522,25 +765,22 @@ export default function ClientEditPage() {
             </CardHeader>
 
             <BankSection>
-              <BankSectionTitle>
-                Dados Bancários Principais
-              </BankSectionTitle>
+              <BankSectionTitle>Dados Bancários Principais</BankSectionTitle>
 
               <FormGrid>
-
                 <Field>
                   <Label htmlFor="bank_bank_name">Nome do Banco</Label>
                   <Input
                     id="bank_bank_name"
                     type="text"
-                    placeholder="Ex: Bradesco, Itaú, Nubank…"
+                    placeholder="Ex: Bradesco, Nubank…"
                     disabled={isSubmitting}
                     {...register('bank_bank_name')}
                   />
                 </Field>
 
                 <Field>
-                  <Label htmlFor="bank_bank_code">Código do Banco</Label>
+                  <Label htmlFor="bank_bank_code">Código COMPE</Label>
                   <Input
                     id="bank_bank_code"
                     type="text"
@@ -548,11 +788,11 @@ export default function ClientEditPage() {
                     disabled={isSubmitting}
                     {...register('bank_bank_code')}
                   />
-                  <FieldHint>Código COMPE de 3 dígitos (opcional).</FieldHint>
+                  <FieldHint>Código de 3 dígitos (opcional).</FieldHint>
                 </Field>
 
                 <Field>
-                  <Label htmlFor="bank_agency">Agência *</Label>
+                  <Label htmlFor="bank_agency">Agência</Label>
                   <Input
                     id="bank_agency"
                     type="text"
@@ -563,7 +803,7 @@ export default function ClientEditPage() {
                 </Field>
 
                 <Field>
-                  <Label htmlFor="bank_agency_digit">Dígito da Agência</Label>
+                  <Label htmlFor="bank_agency_digit">Dígito Agência</Label>
                   <Input
                     id="bank_agency_digit"
                     type="text"
@@ -575,7 +815,7 @@ export default function ClientEditPage() {
                 </Field>
 
                 <Field>
-                  <Label htmlFor="bank_account">Conta *</Label>
+                  <Label htmlFor="bank_account">Conta</Label>
                   <Input
                     id="bank_account"
                     type="text"
@@ -586,7 +826,7 @@ export default function ClientEditPage() {
                 </Field>
 
                 <Field>
-                  <Label htmlFor="bank_account_digit">Dígito da Conta *</Label>
+                  <Label htmlFor="bank_account_digit">Dígito Conta</Label>
                   <Input
                     id="bank_account_digit"
                     type="text"
@@ -609,15 +849,41 @@ export default function ClientEditPage() {
                     ))}
                   </Select>
                 </Field>
-
               </FormGrid>
             </BankSection>
+          </Card>
+
+          {/* ── Card: Documentos ────────────────────────────── */}
+          <Card style={{ marginBottom: '24px' }}>
+            <CardHeader>
+              <CardIconWrapper><FileText size={18} /></CardIconWrapper>
+              <CardTitle>Documentos</CardTitle>
+            </CardHeader>
+
+            <FieldHint style={{ marginBottom: '16px' }}>
+              Selecione um novo arquivo para <strong>substituir</strong> o documento
+              existente no servidor. O arquivo antigo é removido automaticamente do Cloudinary.
+            </FieldHint>
+
+            <DocumentsGrid>
+              {DOCUMENT_SLOTS.map((slot) => (
+                <DocumentSlot
+                  key={slot.key}
+                  slot={slot}
+                  existingDoc={existingDocs[slot.type]}
+                  selectedFile={selectedFiles[slot.key]}
+                  onFileSelect={handleFileSelect}
+                  onClearFile={handleClearFile}
+                  disabled={isSubmitting}
+                />
+              ))}
+            </DocumentsGrid>
           </Card>
 
         </form>
       </Container>
 
-      {/* ── Footer fixo com botões ───────────────────────────── */}
+      {/* ── Footer fixo ─────────────────────────────────────── */}
       <FormFooter>
         <CancelButton
           type="button"
@@ -631,20 +897,14 @@ export default function ClientEditPage() {
         <SaveButton
           type="submit"
           form="edit-client-form"
-          disabled={isSubmitting || !isDirty}
+          disabled={isSubmitting || !hasChanges}
           $isSubmitting={isSubmitting}
-          title={!isDirty ? 'Nenhuma alteração detectada' : undefined}
+          title={!hasChanges ? 'Nenhuma alteração detectada' : undefined}
         >
           {isSubmitting ? (
-            <>
-              <Spinner />
-              Salvando…
-            </>
+            <><Spinner />Salvando…</>
           ) : (
-            <>
-              <Save size={15} />
-              Salvar Alterações
-            </>
+            <><Save size={15} />Salvar Alterações</>
           )}
         </SaveButton>
       </FormFooter>

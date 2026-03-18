@@ -193,9 +193,11 @@ export default function ClientDetailPage() {
 
     // ── Busca o cliente ───────────────────────────────────────────────────────
     const fetchClient = useCallback(async () => {
+        
         setIsLoading(true);
         try {
             const { data } = await api.get(`/clients/${id}`);
+            console.log(client)
             setClient(data.data);
         } catch (error) {
             toast.error(getApiErrorMessage(error, 'Erro ao carregar dados do cliente.'));
@@ -342,6 +344,11 @@ export default function ClientDetailPage() {
                             <InfoGroup>
                                 <InfoLabel>Cadastrado em</InfoLabel>
                                 <InfoValue>{formatDate(createdAt)}</InfoValue>
+                            </InfoGroup>
+
+                            <InfoGroup>
+                                <InfoLabel>Parceiro</InfoLabel>
+                                <InfoValue>{client.partner ? client.partner.name : '—'}</InfoValue>
                             </InfoGroup>
 
                             {notes && (

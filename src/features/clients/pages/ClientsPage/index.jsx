@@ -2,7 +2,7 @@
 // src/features/clients/pages/ClientsPage/index.jsx
 // Lista de clientes com busca, filtro e paginação
 // ============================================================
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Search, UserPlus, Users, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -13,7 +13,7 @@ import {
   PageHeader, PageTitleGroup, PageTitle, PageSubtitle, PrimaryButton,
   FilterBar, SearchWrapper, SearchIcon, SearchInput, FilterSelect,
   TableWrapper, Table, Thead, Th, Tbody, Tr, Td, TdMuted,
-  EmptyState, EmptyIcon, EmptyTitle, EmptySubtitle, StatusBadge,STATUS_LABELS,
+  EmptyState, EmptyIcon, EmptyTitle, EmptySubtitle, StatusBadge, STATUS_LABELS,
   SkeletonRow, SkeletonCell, SkeletonBar,
   Pagination, PaginationInfo, PaginationButtons, PageButton,
 } from './styles';
@@ -21,14 +21,14 @@ import {
 // ── Configurações ─────────────────────────────────────────────────────────────
 const PER_PAGE = 15;
 
-// Componente auxiliar para o badge
+// ── Badge de status ───────────────────────────────────────────────────────────
 const StatusBadgeComponent = ({ status }) => (
   <StatusBadge $status={status}>
     {STATUS_LABELS[status] ?? status}
   </StatusBadge>
 );
 
-// ── Skeleton de carregamento (5 linhas) ───────────────────────────────────────
+// ── Skeleton de carregamento ──────────────────────────────────────────────────
 function TableSkeleton() {
   return Array.from({ length: 5 }).map((_, i) => (
     <SkeletonRow key={i}>
@@ -41,27 +41,60 @@ function TableSkeleton() {
   ));
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+// Aplica máscara de CNPJ: 00.000.000/0001-00
+const maskCNPJ = (digits = '') => {
+  const d = digits.slice(0, 14);
+  if (d.length <=  2) return d;
+  if (d.length <=  5) return `${d.slice(0,2)}.${d.slice(2)}`;
+  if (d.length <=  8) return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5)}`;
+  if (d.length <= 12) return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8)}`;
+  return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8,12)}-${d.slice(12)}`;
+};
+
+// Retorna true se a string contiver apenas dígitos (e separadores de CNPJ)
+const looksLikeCNPJ = (v = '') => /^[\d.\-/]+$/.test(v) && /\d/.test(v);
+
+const formatDate = (iso) => {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+  });
+};
+
+const formatBenefitType = (type) => {
+  const labels = { food: 'Alimentação', meal: 'Refeição', both: 'Ambos' };
+  return labels[type] ?? type ?? '—';
+};
+
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function ClientsPage() {
-  const navigate = useNavigate();
+  const navigate    = useNavigate();
   const { hasRole } = useAuth();
 
-  // ── Estado ──────────────────────────────────────────────────────────────────
+  // ── Estado ───────────────────────────────────────────────────────────────────
   const [clients,    setClients]    = useState([]);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1, currentPage: 1 });
   const [isLoading,  setIsLoading]  = useState(true);
-  const [search,     setSearch]     = useState('');
   const [status,     setStatus]     = useState('');
   const [page,       setPage]       = useState(1);
 
-  // ── Busca clientes na API ────────────────────────────────────────────────────
+  // Dois valores de busca separados:
+  //   displaySearch → o que o usuário VÊ no input (com máscara se for CNPJ)
+  //   apiSearch     → o que é ENVIADO para a API (sempre sem máscara)
+  const [displaySearch, setDisplaySearch] = useState('');
+  const [apiSearch,     setApiSearch]     = useState('');
+  const debounceRef = useRef(null);
+
+  // ── Busca clientes na API ─────────────────────────────────────────────────────
   const fetchClients = useCallback(async () => {
     setIsLoading(true);
     try {
-      // O interceptor do api.js injeta o Bearer token automaticamente
       const params = new URLSearchParams({ page, limit: PER_PAGE });
-      if (search) params.set('search', search);
-      if (status) params.set('overall_status', status);
+      // apiSearch já está limpo — sem máscara, pronto para a API
+      if (apiSearch) params.set('search', apiSearch);
+      if (status)    params.set('overall_status', status);
 
       const { data } = await api.get(`/clients?${params.toString()}`);
 
@@ -77,39 +110,52 @@ export default function ClientsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [page, search, status]);
+  }, [page, apiSearch, status]);
 
-  // Re-busca quando page, search ou status mudar
   useEffect(() => { fetchClients(); }, [fetchClients]);
 
-  // Reseta para página 1 ao mudar filtros
+  // ── Handler do campo de busca ─────────────────────────────────────────────────
+  //
+  // Estratégia:
+  //   1. Extrai apenas os dígitos do que o usuário digitou
+  //   2. Se o input for só numérico (CNPJ): exibe COM máscara, envia SÓ dígitos
+  //   3. Se o input tiver letras (nome/razão social): exibe SEM máscara, envia como está
+  //
   const handleSearch = (e) => {
-    setSearch(e.target.value);
+  const raw    = e.target.value;
+  const digits = raw.replace(/\D/g, '');
+
+  if (looksLikeCNPJ(raw)) {
+    const masked = maskCNPJ(digits);
+    setDisplaySearch(masked);
+    scheduleSearch(masked);
+  } else if (raw === '') {
+    setDisplaySearch('');
+    scheduleSearch('');
+  } else {
+    setDisplaySearch(raw);
+    scheduleSearch(raw);
+  }
+};
+
+// Aguarda 400ms após o usuário parar de digitar antes de chamar a API
+const scheduleSearch = (value) => {
+  if (debounceRef.current) clearTimeout(debounceRef.current);
+  debounceRef.current = setTimeout(() => {
+    setApiSearch(value);
     setPage(1);
-  };
+  }, 400);
+};
 
   const handleStatus = (e) => {
     setStatus(e.target.value);
     setPage(1);
   };
 
-  // ── Formatadores ─────────────────────────────────────────────────────────────
-  const formatDate = (iso) => {
-    if (!iso) return '—';
-    return new Date(iso).toLocaleDateString('pt-BR', {
-      day: '2-digit', month: '2-digit', year: 'numeric',
-    });
-  };
-
-  const formatBenefitType = (type) => {
-    const labels = { food: 'Alimentação', meal: 'Refeição', both: 'Ambos' };
-    return labels[type] ?? type ?? '—';
-  };
-
-  // ── Renderização ─────────────────────────────────────────────────────────────
+  // ── Renderização ──────────────────────────────────────────────────────────────
   return (
     <>
-      {/* Cabeçalho da página */}
+      {/* Cabeçalho */}
       <PageHeader>
         <PageTitleGroup>
           <PageTitle>Clientes</PageTitle>
@@ -120,26 +166,23 @@ export default function ClientsPage() {
           </PageSubtitle>
         </PageTitleGroup>
 
-        {/* Botão novo cliente — apenas admin e user */}
         {hasRole('admin', 'user') && (
-          <PrimaryButton
-            type="button"
-            onClick={() => navigate('/onboarding')}
-          >
+          <PrimaryButton type="button" onClick={() => navigate('/onboarding')}>
             <UserPlus size={16} />
             Novo Cliente
           </PrimaryButton>
         )}
       </PageHeader>
 
-      {/* Barra de filtros */}
+      {/* Filtros */}
       <FilterBar>
         <SearchWrapper>
-          <SearchIcon><Search size={15} /></SearchIcon>
+          <SearchIcon> <Search size={15} /></SearchIcon>
           <SearchInput
             type="text"
-            placeholder="Buscar por nome, CPF ou e-mail…"
-            value={search}
+            placeholder="Buscar por Razão Social ou CNPJ…"
+            style={{paddingLeft: '30px'}}
+            value={displaySearch}
             onChange={handleSearch}
           />
         </SearchWrapper>
@@ -158,7 +201,7 @@ export default function ClientsPage() {
           <Thead>
             <tr>
               <Th>Razão Social</Th>
-              <Th>CPF / CNPJ</Th>
+              <Th>CNPJ</Th>
               <Th>Benefício</Th>
               <Th>Status</Th>
               <Th>Cadastro</Th>
@@ -166,10 +209,8 @@ export default function ClientsPage() {
           </Thead>
 
           <Tbody>
-            {/* Estado de carregamento */}
             {isLoading && <TableSkeleton />}
 
-            {/* Dados carregados */}
             {!isLoading && clients.map((client) => (
               <Tr
                 key={client.id}
@@ -179,14 +220,11 @@ export default function ClientsPage() {
                 <Td>{client.corporate_name}</Td>
                 <TdMuted>{client.cnpj ?? '—'}</TdMuted>
                 <TdMuted>{formatBenefitType(client.benefit_type)}</TdMuted>
-                <Td>
-                  <StatusBadgeComponent status={client.overall_status} />
-                </Td>
+                <Td><StatusBadgeComponent status={client.overall_status} /></Td>
                 <TdMuted>{formatDate(client.createdAt)}</TdMuted>
               </Tr>
             ))}
 
-            {/* Empty state */}
             {!isLoading && clients.length === 0 && (
               <tr>
                 <td colSpan={5}>
@@ -194,7 +232,7 @@ export default function ClientsPage() {
                     <EmptyIcon><Users size={40} /></EmptyIcon>
                     <EmptyTitle>Nenhum cliente encontrado</EmptyTitle>
                     <EmptySubtitle>
-                      {search || status
+                      {displaySearch || status
                         ? 'Tente ajustar os filtros para ver mais resultados.'
                         : 'Clique em "Novo Cliente" para iniciar o cadastro.'}
                     </EmptySubtitle>
@@ -223,7 +261,6 @@ export default function ClientsPage() {
                 <ChevronLeft size={15} />
               </PageButton>
 
-              {/* Botões numerados — mostra no máximo 5 ao redor da página atual */}
               {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
                 .filter((p) =>
                   p === 1 ||
@@ -231,9 +268,7 @@ export default function ClientsPage() {
                   Math.abs(p - page) <= 2
                 )
                 .reduce((acc, p, idx, arr) => {
-                  if (idx > 0 && p - arr[idx - 1] > 1) {
-                    acc.push('…');
-                  }
+                  if (idx > 0 && p - arr[idx - 1] > 1) acc.push('…');
                   acc.push(p);
                   return acc;
                 }, [])
