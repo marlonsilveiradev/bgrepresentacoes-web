@@ -12,6 +12,16 @@ Este projeto consome a API desenvolvida em Node.js, seguindo boas práticas de o
 
 ---
 
+## 📸 Interface da aplicação
+
+### 🖥️ Versão Desktop
+<img width="1437" height="544" alt="Desktop" src="https://github.com/user-attachments/assets/9ba4e056-10e9-4da5-8a77-a55696ac96c5" />
+
+### 📱 Versão Mobile
+<img width="298" height="609" alt="Mobile" src="https://github.com/user-attachments/assets/c0a39ea8-8660-475e-8401-cb299919107f" />
+
+---
+
 ## 📡 API integrada
 
 A aplicação consome a seguinte API:
