@@ -1,7 +1,7 @@
 // ============================================================
 // src/router/AppRouter.jsx
 // ============================================================
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -36,11 +36,13 @@ const Placeholder = ({ title }) => (
 );
 
 export default function AppRouter() {
+  const isGitHubPages = window.location.hostname.includes('github.io');
+const Router = isGitHubPages ? HashRouter : BrowserRouter;
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
 
-      <BrowserRouter>
+      <Router>
         <AuthProvider>
           <ToastContainer
             position="top-right"
@@ -103,7 +105,7 @@ export default function AppRouter() {
           </Routes>
 
         </AuthProvider>
-      </BrowserRouter>
+      </Router>
     </ThemeProvider>
   );
 }
