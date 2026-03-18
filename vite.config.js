@@ -4,7 +4,7 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  base: 'https://marlonsilveiradev.github.io/bgrepresentacoes-web/',
+  base: '/bgrepresentacoes-web/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
