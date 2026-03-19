@@ -38,11 +38,12 @@ const Placeholder = ({ title }) => (
 export default function AppRouter() {
   const isGitHubPages = window.location.hostname.includes('github.io');
 const Router = isGitHubPages ? HashRouter : BrowserRouter;
+const routerProps = isGitHubPages ? {} : { basename: import.meta.env.BASE_URL };
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
 
-      <Router basename={import.meta.env.BASE_URL}>
+      <Router {...routerProps}>
         <AuthProvider>
           <ToastContainer
             position="top-right"
