@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 
 import api, { getApiErrorMessage } from '../../../../lib/api';
+import { useAuth } from '../../../../contexts/AuthContext'; // Importar useAuth
 import {
   Container, PageHeader, BackButton, TitleGroup,
   PageTitle, PageSubtitle,
@@ -38,6 +39,9 @@ import {
   FormFooter, CancelButton, SaveButton, Spinner,
   SkeletonBar, SkeletonCard, Divider,
 } from './styles';
+
+// Cache fora do componente para persistir entre navegações
+let partnersCache = null;
 
 // ── Constantes de documentos ──────────────────────────────────────────────────
 
@@ -235,16 +239,24 @@ function DocumentSlot({ slot, existingDoc, selectedFile, onFileSelect, onClearFi
 }
 
 // ── Componente principal ──────────────────────────────────────────────────────
-
 export default function ClientEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isPartner } = useAuth();
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clientName, setClientName] = useState('');
   const [partners, setPartners] = useState([]);
   const [loadingPartners, setLoadingPartners] = useState(false);
+
+  // ── TRAVA DE SEGURANÇA: Impede parceiro de acessar a rota ──
+  useEffect(() => {
+    if (isPartner) {
+      toast.error('Acesso negado. Parceiros não podem editar clientes.');
+      navigate(`/clientes/${id}`, { replace: true });
+    }
+  }, [isPartner, navigate, id]);
   
 
   // Campos únicos imutáveis — só exibição, nunca vão no payload
@@ -295,6 +307,7 @@ export default function ClientEditPage() {
 
   // ── Carrega dados e popula o form ─────────────────────────────────────────
   const fetchClient = useCallback(async () => {
+    if (isPartner) return;
     setIsLoading(true);
     try {
       const { data } = await api.get(`/clients/${id}`);
@@ -346,56 +359,32 @@ export default function ClientEditPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [id, navigate, reset]);
+  }, [id, navigate, reset, isPartner]);
 
   useEffect(() => { fetchClient(); }, [fetchClient]);
 
-  // Busca parceiros para o select — apenas admin tem acesso a GET /users
+  // Busca parceiros para o select — apenas admin tem acesso a GET /users  
   useEffect(() => {
-  const fetchPartners = async () => {      
-    setLoadingPartners(true);
-    try {
-      // 1. Chamada à API
-      const response = await api.get('/users?role=partner&limit=100');
-      
-      // 2. Debug para termos certeza absoluta do que o servidor enviou
-      console.log("Resposta bruta da API /users:", response);
-
-      // 3. Extração segura: tenta encontrar o array de usuários
-      const fetchedData = response.data?.data || response.data || [];
-      
-      // Garante que o que estamos salvando é realmente um array
-      if (Array.isArray(fetchedData)) {
-        setPartners(fetchedData);
-      } else {
-        console.warn("A API não retornou um array de parceiros:", fetchedData);
-        setPartners([]);
-      }
-
-    } catch (error) {
-      console.error("Erro na busca de parceiros:", error);
-      // Opcional: toast.warn("Não foi possível carregar a lista de parceiros.");
-    } finally {
-      setLoadingPartners(false);
-    }
-  };
+    if (isPartner) return;
+  const fetchPartners = async () => {
+  if (partnersCache) {        // já buscou antes → reutiliza
+    setPartners(partnersCache);
+    return;
+  }
+  setLoadingPartners(true);
+  try {
+    const response = await api.get('/users?role=partner&limit=100');
+    const fetchedData = response.data?.data ?? [];
+    partnersCache = fetchedData;   // salva no cache
+    setPartners(fetchedData);
+  } catch (error) {
+    console.error('Erro na busca de parceiros:', error);
+  } finally {
+    setLoadingPartners(false);
+  }
+};
   fetchPartners();
-}, []);
-  // useEffect(() => {
-  //   const fetchPartners = async () => {      
-  //     setLoadingPartners(true);
-  //     try {
-  //       const { data } = await api.get('/users?role=partner&limit=100&is_active=true');
-  //       console.log(data)
-  //       setPartners(data.data ?? []);
-  //     } catch {
-  //       // Silencioso — parceiros são opcionais, não bloqueia o formulário
-  //     } finally {
-  //       setLoadingPartners(false);
-  //     }
-  //   };
-  //   fetchPartners();
-  // }, []);
+}, []); 
 
   // ── Handlers de arquivo ───────────────────────────────────────────────────
 
@@ -498,7 +487,7 @@ export default function ClientEditPage() {
   };
 
   // ── Renderização ──────────────────────────────────────────────────────────
-
+  if (isPartner) return null; // Evita flash de conteúdo antes do redirect
   if (isLoading) return <EditSkeleton />;
 
   // Checa se houve mudança: formulário dirty OU algum arquivo selecionado

@@ -1,35 +1,34 @@
 // ============================================================
 // src/features/clients/pages/ClientDetailPage/styles.js
-// Styled Components — Detalhes do Cliente
 // ============================================================
 import styled, { keyframes } from 'styled-components';
 
 // ── Animações ─────────────────────────────────────────────────────────────────
 
 const fadeInUp = keyframes`
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 `;
 
-const shimmer = keyframes`
+export const shimmer = keyframes`
   0%   { background-position: -600px 0; }
   100% { background-position:  600px 0; }
 `;
 
-// ── Container raiz da página ──────────────────────────────────────────────────
+// ── Container raiz ────────────────────────────────────────────────────────────
 
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[6]};
-  animation: ${fadeInUp} 0.3s ease both;
+  animation: ${fadeInUp} 0.35s ease both;
 `;
 
-// ── Header da página (breadcrumb + ações) ────────────────────────────────────
+// ── Header da página ──────────────────────────────────────────────────────────
 
 export const PageHeader = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: ${({ theme }) => theme.spacing[4]};
   flex-wrap: wrap;
@@ -99,7 +98,7 @@ export const HeaderActions = styled.div`
   }
 `;
 
-// ── Cards genéricos ───────────────────────────────────────────────────────────
+// ── Cards ─────────────────────────────────────────────────────────────────────
 
 export const Card = styled.div`
   background-color: ${({ theme }) => theme.surface.card};
@@ -138,9 +137,8 @@ export const CardTitle = styled.h2`
   margin: 0;
 `;
 
-// ── Grid de layout de dois painéis ────────────────────────────────────────────
+// ── Layout de duas colunas ────────────────────────────────────────────────────
 
-// Coluna principal (maior) + coluna lateral (menor)
 export const TwoColumnGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -152,7 +150,8 @@ export const TwoColumnGrid = styled.div`
   }
 `;
 
-// Grid de informações dentro dos cards (2 colunas)
+// ── InfoGrid e grupos de informação ───────────────────────────────────────────
+
 export const InfoGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(${({ $cols }) => $cols ?? 2}, 1fr);
@@ -163,14 +162,11 @@ export const InfoGrid = styled.div`
   }
 `;
 
-// Grupo de Label + Valor empilhados
 export const InfoGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[1]};
-
-  /* Span full width dentro do grid (ex: campo "notes") */
-  ${({ $span }) => $span && `grid-column: 1 / -1;`}
+  ${({ $span }) => $span && 'grid-column: 1 / -1;'}
 `;
 
 export const InfoLabel = styled.span`
@@ -187,13 +183,6 @@ export const InfoValue = styled.span`
   font-size: ${({ theme }) => theme.typography.fontSize.base};
   color: ${({ theme }) => theme.text.primary};
   line-height: ${({ theme }) => theme.typography.lineHeight.snug};
-
-  /* Valor vazio */
-  &:empty::after,
-  &[data-empty]::after {
-    content: '—';
-    color: ${({ theme }) => theme.text.muted};
-  }
 `;
 
 export const InfoValueMuted = styled(InfoValue)`
@@ -203,14 +192,12 @@ export const InfoValueMuted = styled(InfoValue)`
 
 // ── Status Badge ──────────────────────────────────────────────────────────────
 
-// Mapa de estilos por status — exportado para uso no index.jsx
 export const STATUS_STYLES = {
   pending:  { bg: '#fef3c7', color: '#92400e' },
   analysis: { bg: '#dbeafe', color: '#1e40af' },
   approved: { bg: '#d1fae5', color: '#065f46' },
 };
 
-// Mapa de labels — exportado para uso no index.jsx
 export const STATUS_LABELS = {
   pending:  'Pendente',
   analysis: 'Em análise',
@@ -240,7 +227,7 @@ export const StatusBadge = styled.span`
   }
 `;
 
-// ── Seção de Bandeiras (ClientFlags) ─────────────────────────────────────────
+// ── Bandeiras ─────────────────────────────────────────────────────────────────
 
 export const FlagList = styled.div`
   display: flex;
@@ -292,7 +279,7 @@ export const FlagPrice = styled.span`
   white-space: nowrap;
 `;
 
-// ── Seção de Documentos ───────────────────────────────────────────────────────
+// ── Documentos ────────────────────────────────────────────────────────────────
 
 export const DocumentList = styled.div`
   display: flex;
@@ -389,7 +376,7 @@ export const BankCard = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.md};
 `;
 
-// ── Empty state dentro de cards ───────────────────────────────────────────────
+// ── Empty state ───────────────────────────────────────────────────────────────
 
 export const EmptyState = styled.div`
   display: flex;
@@ -409,7 +396,7 @@ export const EmptyText = styled.p`
   margin: 0;
 `;
 
-// ── Loading Skeleton ──────────────────────────────────────────────────────────
+// ── Skeleton ──────────────────────────────────────────────────────────────────
 
 export const SkeletonBar = styled.div`
   height: ${({ $h }) => $h ?? '14px'};
@@ -430,8 +417,6 @@ export const SkeletonCard = styled(Card)`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[4]};
 `;
-
-// ── Divider interno ───────────────────────────────────────────────────────────
 
 export const Divider = styled.hr`
   border: none;

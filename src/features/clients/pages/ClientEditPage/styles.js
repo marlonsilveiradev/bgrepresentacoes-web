@@ -535,3 +535,256 @@ export const Divider = styled.hr`
   border-top: 1px solid ${({ theme }) => theme.border.default};
   margin: ${({ theme }) => theme.spacing[2]} 0;
 `;
+
+export const FlagName = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.text.primary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const DocumentMeta = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.text.muted};
+`;
+
+export const HeaderLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
+
+export const DocumentIconWrapper = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: ${({ theme }) => theme.borderRadius.base};
+  background-color: ${({ theme }) => theme.colors.primary[50]};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.brand.primary};
+  flex-shrink: 0;
+`;
+
+export const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+
+  @media (max-width: 600px) {
+    width: 100%;
+    justify-content: flex-end;
+  }
+`;
+
+export const FlagList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
+
+export const FlagItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[4]};
+  background-color: ${({ theme }) => theme.colors.neutral[50]};
+  border: 1px solid ${({ theme }) => theme.border.default};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
+
+export const FlagInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+`;
+
+export const FlagOrigin = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.text.muted};
+  text-transform: capitalize;
+`;
+
+export const FlagPrice = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.brand.primary};
+  white-space: nowrap;
+`;
+
+// ── Conta bancária ────────────────────────────────────────────────────────────
+
+export const BankCard = styled.div`
+  padding: ${({ theme }) => theme.spacing[4]};
+  background-color: ${({ theme }) => theme.colors.neutral[50]};
+  border: 1px solid ${({ theme }) => theme.border.default};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+`;
+
+// Coluna principal (maior) + coluna lateral (menor)
+export const TwoColumnGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: ${({ theme }) => theme.spacing[6]};
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+// Grid de informações dentro dos cards (2 colunas)
+export const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(${({ $cols }) => $cols ?? 2}, 1fr);
+  gap: ${({ theme }) => theme.spacing[5]} ${({ theme }) => theme.spacing[8]};
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const DocumentName = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.text.primary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const DocumentDownloadButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  border: 1.5px solid ${({ theme }) => theme.border.default};
+  background: transparent;
+  color: ${({ theme }) => theme.text.muted};
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background-color ${({ theme }) => theme.transitions.fast},
+    color ${({ theme }) => theme.transitions.fast},
+    border-color ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary[50]};
+    color: ${({ theme }) => theme.brand.primary};
+    border-color: ${({ theme }) => theme.colors.primary[200]};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+// ── Empty state dentro de cards ───────────────────────────────────────────────
+
+export const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spacing[8]} ${({ theme }) => theme.spacing[4]};
+  gap: ${({ theme }) => theme.spacing[2]};
+  text-align: center;
+  color: ${({ theme }) => theme.text.muted};
+`;
+
+export const EmptyText = styled.p`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.text.muted};
+  margin: 0;
+`;
+
+// Grupo de Label + Valor empilhados
+export const InfoGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[1]};
+
+  /* Span full width dentro do grid (ex: campo "notes") */
+  ${({ $span }) => $span && `grid-column: 1 / -1;`}
+`;
+
+export const InfoLabel = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.text.muted};
+`;
+
+export const InfoValue = styled.span`
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  color: ${({ theme }) => theme.text.primary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.snug};
+
+  /* Valor vazio */
+  &:empty::after,
+  &[data-empty]::after {
+    content: '—';
+    color: ${({ theme }) => theme.text.muted};
+  }
+`;
+
+export const InfoValueMuted = styled(InfoValue)`
+  color: ${({ theme }) => theme.text.secondary};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+`;
+
+// ── Status Badge ──────────────────────────────────────────────────────────────
+
+// Mapa de estilos por status — exportado para uso no index.jsx
+export const STATUS_STYLES = {
+  pending:  { bg: '#fef3c7', color: '#92400e' },
+  analysis: { bg: '#dbeafe', color: '#1e40af' },
+  approved: { bg: '#d1fae5', color: '#065f46' },
+};
+
+// Mapa de labels — exportado para uso no index.jsx
+export const STATUS_LABELS = {
+  pending:  'Pendente',
+  analysis: 'Em análise',
+  approved: 'Aprovado',
+};
+
+export const StatusBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  background-color: ${({ $status }) => STATUS_STYLES[$status]?.bg ?? '#f3f4f6'};
+  color: ${({ $status }) => STATUS_STYLES[$status]?.color ?? '#374151'};
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: currentColor;
+    flex-shrink: 0;
+  }
+`;
