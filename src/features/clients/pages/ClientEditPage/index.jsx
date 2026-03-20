@@ -9,7 +9,7 @@
 //   • Com arquivos  → PATCH /clients/:id  (multipart/form-data)
 //       campo "data"       = JSON.stringify(dadosTextuais)
 //       campo "contrato"   = File (company_document)
-//       campo "documentos" = File[] até 3
+//       campo "documentos" = File[] até 3 (endereço → banco → maquininha)
 //
 // Campos imutáveis (unique no banco):
 //   cnpj, corporate_name, email, state_registration
@@ -43,35 +43,37 @@ import {
   SkeletonBar, SkeletonCard, Divider,
 } from './styles';
 
-// ── Schema de validação Yup ───────────────────────────────────────────────────
-// Espelha as constraints das models do backend:
-//   Client.js          → campos de empresa e endereço
-//   ClientBankAccount  → dados bancários (condicional: obrigatório se bank_bank_name preenchido)
-//
-// Campos imutáveis (cnpj, corporate_name, email, state_registration)
-// NÃO entram no schema — não são registrados no react-hook-form.
+// ── Schema Yup ────────────────────────────────────────────────────────────────
+// ATENÇÃO: .transform() sempre ANTES de .test() — o Yup transforma e depois valida.
+// Campos imutáveis (cnpj, corporate_name, email, state_registration) não entram
+// no schema pois não são registrados no react-hook-form.
 
 const clientSchema = yup.object({
 
-  // ── Dados da empresa (editáveis) ──────────────────────────────────────────
+  // ── Empresa ───────────────────────────────────────────────────────────────
   trade_name: yup
     .string()
-    .max(200, 'Nome fantasia deve ter no máximo 200 caracteres.')
     .nullable()
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .max(200, 'Nome fantasia deve ter no máximo 200 caracteres.'),
 
   phone: yup
     .string()
-    .max(20, 'Telefone deve ter no máximo 20 caracteres.')
     .nullable()
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .max(20, 'Telefone deve ter no máximo 20 caracteres.'),
 
   benefit_type: yup
     .string()
-    .oneOf(['food', 'meal', 'both'], 'Selecione um tipo de benefício válido.')
-    .required('O tipo de benefício é obrigatório.'),
+    .required('O tipo de benefício é obrigatório.')
+    .oneOf(['food', 'meal', 'both'], 'Selecione um tipo de benefício válido.'),
 
   notes: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null),
+
+  partner_id: yup
     .string()
     .nullable()
     .transform((v) => v || null),
@@ -79,115 +81,104 @@ const clientSchema = yup.object({
   // ── Endereço ──────────────────────────────────────────────────────────────
   address_street: yup
     .string()
-    .max(255, 'Logradouro deve ter no máximo 255 caracteres.')
     .nullable()
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .max(255, 'Logradouro deve ter no máximo 255 caracteres.'),
 
   address_number: yup
     .string()
-    .max(10, 'Número deve ter no máximo 10 caracteres.')
     .nullable()
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .max(10, 'Número deve ter no máximo 10 caracteres.'),
 
   address_complement: yup
     .string()
-    .max(100, 'Complemento deve ter no máximo 100 caracteres.')
     .nullable()
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .max(100, 'Complemento deve ter no máximo 100 caracteres.'),
 
   address_neighborhood: yup
     .string()
-    .max(100, 'Bairro deve ter no máximo 100 caracteres.')
     .nullable()
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .max(100, 'Bairro deve ter no máximo 100 caracteres.'),
 
   address_city: yup
     .string()
-    .max(100, 'Cidade deve ter no máximo 100 caracteres.')
     .nullable()
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .max(100, 'Cidade deve ter no máximo 100 caracteres.'),
 
   address_state: yup
     .string()
-    .max(2, 'UF deve ter 2 caracteres.')
     .nullable()
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .max(2, 'UF deve ter 2 caracteres.'),
 
+  // FIX: .transform() ANTES de .test() para evitar falso positivo em campo vazio
   address_zip: yup
     .string()
-    // CEP digitado com máscara tem 9 chars (00000-000), sem máscara 8 dígitos
+    .nullable()
+    .transform((v) => v || null)
     .test('cep-valido', 'CEP inválido. Use o formato 00000-000.', (v) => {
-      if (!v) return true; // opcional
+      if (!v) return true; // campo opcional — vazio é válido
       const digits = v.replace(/\D/g, '');
-      return digits.length === 0 || digits.length === 8;
-    })
-    .nullable()
-    .transform((v) => v || null),
+      return digits.length === 8;
+    }),
 
-  // ── Parceiro ──────────────────────────────────────────────────────────────
-  partner_id: yup
-    .string()
-    .nullable()
-    .transform((v) => v || null),
-
-  // ── Dados bancários (condicional) ─────────────────────────────────────────
-  // Se bank_bank_name for preenchido, agência e conta tornam-se obrigatórios.
-  // Espelha a lógica do ClientBankAccount.js (allowNull: false nos campos principais).
+  // ── Banco (condicional) ───────────────────────────────────────────────────
+  // Agência e Conta tornam-se obrigatórios quando o nome do banco é informado.
+  // bank_account_digit é opcional mesmo quando o banco está preenchido.
 
   bank_bank_name: yup
     .string()
-    .max(100, 'Nome do banco deve ter no máximo 100 caracteres.')
     .nullable()
-    .transform((v) => v || null),
-
-  bank_bank_code: yup
-    .string()
-    .max(10, 'Código do banco deve ter no máximo 10 caracteres.')
-    .nullable()
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .max(100, 'Nome do banco deve ter no máximo 100 caracteres.'),
 
   bank_agency: yup
     .string()
     .max(10, 'Agência deve ter no máximo 10 caracteres.')
     .when('bank_bank_name', {
-      is: (v) => !!v,
-      then: (s) => s.required('Agência é obrigatória quando o banco é informado.'),
+      is:        (v) => !!v,
+      then:      (s) => s.required('Agência é obrigatória quando o banco é informado.'),
       otherwise: (s) => s.nullable().transform((v) => v || null),
     }),
 
   bank_agency_digit: yup
     .string()
-    .max(2, 'Dígito da agência deve ter no máximo 2 caracteres.')
     .nullable()
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .max(2, 'Dígito da agência deve ter no máximo 2 caracteres.'),
 
   bank_account: yup
     .string()
     .max(20, 'Conta deve ter no máximo 20 caracteres.')
     .when('bank_bank_name', {
-      is: (v) => !!v,
-      then: (s) => s.required('Conta é obrigatória quando o banco é informado.'),
+      is:        (v) => !!v,
+      then:      (s) => s.required('Conta é obrigatória quando o banco é informado.'),
       otherwise: (s) => s.nullable().transform((v) => v || null),
     }),
 
+  // Intencional: opcional mesmo quando banco preenchido (decisão de negócio)
   bank_account_digit: yup
     .string()
-    .max(2, 'Dígito da conta deve ter no máximo 2 caracteres.')
     .nullable()
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .max(2, 'Dígito da conta deve ter no máximo 2 caracteres.'),
 
   bank_account_type: yup
     .string()
-    .oneOf(['checking', 'savings'], 'Tipo de conta inválido.')
     .when('bank_bank_name', {
-      is: (v) => !!v,
-      then: (s) => s.required('Tipo de conta é obrigatório.'),
+      is:        (v) => !!v,
+      then:      (s) => s
+        .required('Tipo de conta é obrigatório.')
+        .oneOf(['checking', 'savings'], 'Tipo de conta inválido.'),
       otherwise: (s) => s.nullable().transform((v) => v || null),
     }),
-
 });
 
-// ── Constantes de documentos ──────────────────────────────────────────────────
+// ── Constantes ────────────────────────────────────────────────────────────────
 
 const DOCUMENT_SLOTS = [
   {
@@ -196,7 +187,6 @@ const DOCUMENT_SLOTS = [
     type:     'company_document',
     label:    'Contrato / Doc. da Empresa',
     hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
-    multiple: false,
   },
   {
     key:      'proof_of_address',
@@ -204,7 +194,6 @@ const DOCUMENT_SLOTS = [
     type:     'proof_of_address',
     label:    'Comprovante de Endereço',
     hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
-    multiple: false,
     docIndex: 0,
   },
   {
@@ -213,7 +202,6 @@ const DOCUMENT_SLOTS = [
     type:     'bank_account_proof',
     label:    'Comprovante Bancário',
     hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
-    multiple: false,
     docIndex: 1,
   },
   {
@@ -222,17 +210,14 @@ const DOCUMENT_SLOTS = [
     type:     'card_machine_proof',
     label:    'Comprovante de Maquininha',
     hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
-    multiple: false,
     docIndex: 2,
   },
 ];
 
-// ── Opções de select ──────────────────────────────────────────────────────────
-
 const BENEFIT_OPTIONS = [
-  { value: 'food', label: 'Vale Alimentação' },
-  { value: 'meal', label: 'Vale Refeição'    },
-  { value: 'both', label: 'Alimentação + Refeição' },
+  { value: 'food', label: 'Vale Alimentação'        },
+  { value: 'meal', label: 'Vale Refeição'            },
+  { value: 'both', label: 'Alimentação + Refeição'  },
 ];
 
 const ACCOUNT_TYPE_OPTIONS = [
@@ -246,10 +231,10 @@ const UF_OPTIONS = [
   'RO','RR','RS','SC','SE','SP','TO',
 ];
 
-// Cache de parceiros em memória — evita requisição repetida a cada abertura da página
+// Cache em memória — evita re-fetch a cada abertura da página de edição
 let partnersCache = null;
 
-// ── Formatadores / masks ──────────────────────────────────────────────────────
+// ── Masks ─────────────────────────────────────────────────────────────────────
 
 const maskPhone = (v = '') => {
   const d = v.replace(/\D/g, '').slice(0, 11);
@@ -269,8 +254,8 @@ const onlyDigits = (v = '') => v.replace(/\D/g, '');
 
 const formatFileSize = (bytes) => {
   if (!bytes) return '';
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024)          return `${bytes} B`;
+  if (bytes < 1024 * 1024)   return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
@@ -294,20 +279,18 @@ function EditSkeleton() {
         </TitleGroup>
       </PageHeader>
       <SkeletonCard>
-        <SkeletonBar $w="35%" $h="20px" />
-        <Divider />
+        <SkeletonBar $w="35%" $h="20px" /><Divider />
         <FormGrid>{fakeFields(6)}</FormGrid>
       </SkeletonCard>
       <SkeletonCard>
-        <SkeletonBar $w="30%" $h="20px" />
-        <Divider />
+        <SkeletonBar $w="30%" $h="20px" /><Divider />
         <FormGrid>{fakeFields(4)}</FormGrid>
       </SkeletonCard>
     </Container>
   );
 }
 
-// ── Slot de upload de documento ───────────────────────────────────────────────
+// ── Slot de documento ─────────────────────────────────────────────────────────
 
 function DocumentSlot({ slot, existingDoc, selectedFile, onFileSelect, onClearFile, disabled }) {
   const inputRef    = useRef(null);
@@ -348,9 +331,7 @@ function DocumentSlot({ slot, existingDoc, selectedFile, onFileSelect, onClearFi
       ) : null}
 
       <DropZone htmlFor={`doc-input-${slot.key}`}>
-        <DropZoneIcon $hasFile={hasFile}>
-          <Upload size={22} />
-        </DropZoneIcon>
+        <DropZoneIcon $hasFile={hasFile}><Upload size={22} /></DropZoneIcon>
         <DropZoneText>
           {hasFile ? 'Trocar arquivo' : hasExisting ? 'Substituir documento' : 'Selecionar arquivo'}
         </DropZoneText>
@@ -367,16 +348,14 @@ function DocumentSlot({ slot, existingDoc, selectedFile, onFileSelect, onClearFi
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (!file) return;
-          // Valida tamanho (3 MB) no cliente antes de enviar
           if (file.size > 3 * 1024 * 1024) {
-            toast.error(`Arquivo muito grande. O limite é 3 MB.`);
+            toast.error('Arquivo muito grande. O limite é 3 MB.');
             return;
           }
           onFileSelect(slot.key, file);
           e.target.value = '';
         }}
       />
-
       <FieldHint>{slot.hint}</FieldHint>
     </DocumentUploadCard>
   );
@@ -388,15 +367,15 @@ export default function ClientEditPage() {
   const { id }   = useParams();
   const navigate = useNavigate();
 
-  const [isLoading,       setIsLoading]       = useState(true);
-  const [isSubmitting,    setIsSubmitting]     = useState(false);
-  const [clientName,      setClientName]       = useState('');
-  const [partners,        setPartners]         = useState([]);
-  const [loadingPartners, setLoadingPartners]  = useState(false);
-  const [existingDocs,    setExistingDocs]     = useState({});
-  const [selectedFiles,   setSelectedFiles]    = useState({});
+  const [isLoading,       setIsLoading]      = useState(true);
+  const [isSubmitting,    setIsSubmitting]    = useState(false);
+  const [clientName,      setClientName]      = useState('');
+  const [partners,        setPartners]        = useState([]);
+  const [loadingPartners, setLoadingPartners] = useState(false);
+  const [existingDocs,    setExistingDocs]    = useState({});
+  const [selectedFiles,   setSelectedFiles]   = useState({});
 
-  // Campos únicos imutáveis — só exibição, nunca vão no payload nem no schema
+  // Campos únicos imutáveis — só exibição, nunca no payload nem no schema
   const [readonlyFields, setReadonlyFields] = useState({
     corporate_name:     '',
     cnpj:               '',
@@ -428,7 +407,6 @@ export default function ClientEditPage() {
       address_zip:          '',
       partner_id:           '',
       bank_bank_name:       '',
-      bank_bank_code:       '',
       bank_agency:          '',
       bank_agency_digit:    '',
       bank_account:         '',
@@ -437,8 +415,8 @@ export default function ClientEditPage() {
     },
   });
 
-  // Observa bank_bank_name para mostrar campos obrigatórios dinamicamente
-  const bankName = watch('bank_bank_name');
+  // Indica se os campos bancários condicionais devem ser obrigatórios
+  const bankName   = watch('bank_bank_name');
   const bankFilled = !!bankName;
 
   // ── Carrega dados do cliente ──────────────────────────────────────────────
@@ -451,10 +429,10 @@ export default function ClientEditPage() {
       setClientName(c.trade_name || c.corporate_name || '');
 
       setReadonlyFields({
-        corporate_name:     c.corporate_name      ?? '',
-        cnpj:               c.cnpj                ?? '',
-        email:              c.email               ?? '',
-        state_registration: c.state_registration  ?? '',
+        corporate_name:     c.corporate_name     ?? '',
+        cnpj:               c.cnpj               ?? '',
+        email:              c.email              ?? '',
+        state_registration: c.state_registration ?? '',
       });
 
       const docsMap = {};
@@ -477,7 +455,6 @@ export default function ClientEditPage() {
         address_zip:          maskCEP(c.address_zip   ?? ''),
         partner_id:           c.partner?.id           ?? c.partner_id ?? '',
         bank_bank_name:       bank?.bank_name         ?? '',
-        bank_bank_code:       bank?.bank_code         ?? '',
         bank_agency:          bank?.agency            ?? '',
         bank_agency_digit:    bank?.agency_digit      ?? '',
         bank_account:         bank?.account           ?? '',
@@ -495,6 +472,7 @@ export default function ClientEditPage() {
   useEffect(() => { fetchClient(); }, [fetchClient]);
 
   // ── Carrega parceiros com cache ───────────────────────────────────────────
+  // FIX: removido &is_active=true — o backend compara string vs boolean e retorna 0 resultados
   useEffect(() => {
     const fetchPartners = async () => {
       if (partnersCache) {
@@ -503,12 +481,12 @@ export default function ClientEditPage() {
       }
       setLoadingPartners(true);
       try {
-        const response = await api.get('/users?role=partner&limit=100&is_active=true');
-        const list = response.data?.data ?? [];
+        const { data } = await api.get('/users?role=partner&limit=100');
+        const list = data.data ?? [];
         partnersCache = list;
         setPartners(list);
       } catch {
-        // Silencioso — parceiros são opcionais
+        // Silencioso — parceiros são opcionais, não bloqueia o formulário
       } finally {
         setLoadingPartners(false);
       }
@@ -530,7 +508,6 @@ export default function ClientEditPage() {
   };
 
   // ── Submit ────────────────────────────────────────────────────────────────
-  // O Yup já validou os dados antes de chegar aqui.
   const onSubmit = async (formData) => {
     setIsSubmitting(true);
     try {
@@ -547,24 +524,23 @@ export default function ClientEditPage() {
         address_neighborhood: formData.address_neighborhood || undefined,
         address_city:         formData.address_city         || undefined,
         address_state:        formData.address_state        || undefined,
-        address_zip:          onlyDigits(formData.address_zip) || undefined,
+        address_zip: formData.address_zip || undefined,
         partner_id:           formData.partner_id           || null,
         ...(bankFilled
           ? {
               bankAccount: {
                 bank_name:     formData.bank_bank_name,
-                bank_code:     formData.bank_bank_code    || undefined,
                 agency:        formData.bank_agency,
                 agency_digit:  formData.bank_agency_digit || undefined,
                 account:       formData.bank_account,
-                account_digit: formData.bank_account_digit || null,
+                account_digit: formData.bank_account_digit || undefined,
                 account_type:  formData.bank_account_type,
               },
             }
           : {}),
       };
 
-      // Remove chaves undefined
+      // Remove chaves undefined para não poluir o payload
       Object.keys(textPayload).forEach(
         (k) => textPayload[k] === undefined && delete textPayload[k]
       );
@@ -577,11 +553,10 @@ export default function ClientEditPage() {
           formDataObj.append('contrato', selectedFiles['contrato']);
         }
 
-        const docOrder = ['proof_of_address', 'bank_account_proof', 'card_machine_proof'];
-        docOrder.forEach((docKey) => {
-          if (selectedFiles[docKey]) {
-            formDataObj.append('documentos', selectedFiles[docKey]);
-          }
+        // Ordem obrigatória: endereço → banco → maquininha
+        // O backend atribui o tipo pelo índice posicional do array
+        ['proof_of_address', 'bank_account_proof', 'card_machine_proof'].forEach((key) => {
+          if (selectedFiles[key]) formDataObj.append('documentos', selectedFiles[key]);
         });
 
         await api.patch(`/clients/${id}`, formDataObj, {
@@ -601,12 +576,10 @@ export default function ClientEditPage() {
     }
   };
 
-  // ── Renderização ──────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────
   if (isLoading) return <EditSkeleton />;
 
   const hasChanges = isDirty || Object.keys(selectedFiles).length > 0;
-
-  // Helper para exibir erro de campo
   const err = (field) => errors[field]?.message;
 
   return (
@@ -632,27 +605,21 @@ export default function ClientEditPage() {
               <CardIconWrapper><Building2 size={18} /></CardIconWrapper>
               <CardTitle>Dados da Empresa</CardTitle>
             </CardHeader>
-
             <FormGrid>
 
-              {/* Campos imutáveis — readonly, fora do schema */}
+              {/* Imutáveis — readonly */}
               <Field>
                 <Label><LockIcon><Lock size={11} /></LockIcon>Razão Social</Label>
-                <ReadonlyField title="Campo único — não pode ser alterado">
-                  {readonlyFields.corporate_name || '—'}
-                </ReadonlyField>
+                <ReadonlyField>{readonlyFields.corporate_name || '—'}</ReadonlyField>
                 <ReadonlyHint>Campo único, não pode ser editado.</ReadonlyHint>
               </Field>
 
               <Field>
                 <Label><LockIcon><Lock size={11} /></LockIcon>CNPJ</Label>
-                <ReadonlyField title="Campo único — não pode ser alterado">
-                  {readonlyFields.cnpj || '—'}
-                </ReadonlyField>
+                <ReadonlyField>{readonlyFields.cnpj || '—'}</ReadonlyField>
                 <ReadonlyHint>Campo único, não pode ser editado.</ReadonlyHint>
               </Field>
 
-              {/* Nome Fantasia — max 200 chars */}
               <Field>
                 <Label htmlFor="trade_name">Nome Fantasia</Label>
                 <Input
@@ -663,20 +630,15 @@ export default function ClientEditPage() {
                   disabled={isSubmitting}
                   {...register('trade_name')}
                 />
-                {err('trade_name') && (
-                  <FieldError><AlertCircle size={11} />{err('trade_name')}</FieldError>
-                )}
+                {err('trade_name') && <FieldError><AlertCircle size={11} />{err('trade_name')}</FieldError>}
               </Field>
 
               <Field>
                 <Label><LockIcon><Lock size={11} /></LockIcon>Inscrição Estadual</Label>
-                <ReadonlyField title="Campo único — não pode ser alterado">
-                  {readonlyFields.state_registration || '—'}
-                </ReadonlyField>
+                <ReadonlyField>{readonlyFields.state_registration || '—'}</ReadonlyField>
                 <ReadonlyHint>Campo único, não pode ser editado.</ReadonlyHint>
               </Field>
 
-              {/* Telefone — max 20 chars (armazenado sem máscara) */}
               <Field>
                 <Label htmlFor="phone">Telefone</Label>
                 <Input
@@ -689,20 +651,15 @@ export default function ClientEditPage() {
                     onChange: (e) => setValue('phone', maskPhone(e.target.value)),
                   })}
                 />
-                {err('phone') && (
-                  <FieldError><AlertCircle size={11} />{err('phone')}</FieldError>
-                )}
+                {err('phone') && <FieldError><AlertCircle size={11} />{err('phone')}</FieldError>}
               </Field>
 
               <Field>
                 <Label><LockIcon><Lock size={11} /></LockIcon>E-mail</Label>
-                <ReadonlyField title="Campo único — não pode ser alterado">
-                  {readonlyFields.email || '—'}
-                </ReadonlyField>
+                <ReadonlyField>{readonlyFields.email || '—'}</ReadonlyField>
                 <ReadonlyHint>Campo único, não pode ser editado.</ReadonlyHint>
               </Field>
 
-              {/* Tipo de Benefício — enum obrigatório */}
               <Field>
                 <Label htmlFor="benefit_type">Tipo de Benefício *</Label>
                 <Select
@@ -715,12 +672,9 @@ export default function ClientEditPage() {
                     <option key={o.value} value={o.value}>{o.label}</option>
                   ))}
                 </Select>
-                {err('benefit_type') && (
-                  <FieldError><AlertCircle size={11} />{err('benefit_type')}</FieldError>
-                )}
+                {err('benefit_type') && <FieldError><AlertCircle size={11} />{err('benefit_type')}</FieldError>}
               </Field>
 
-              {/* Parceiro vinculado */}
               <Field>
                 <Label htmlFor="partner_id">Parceiro Vinculado</Label>
                 <Select
@@ -737,12 +691,11 @@ export default function ClientEditPage() {
                 </Select>
                 <FieldHint>
                   {loadingPartners
-                    ? 'Buscando parceiros cadastrados…'
+                    ? 'Buscando parceiros…'
                     : `${partners.length} parceiro${partners.length !== 1 ? 's' : ''} disponível${partners.length !== 1 ? 'is' : ''}`}
                 </FieldHint>
               </Field>
 
-              {/* Observações — campo livre */}
               <FullSpan>
                 <Field>
                   <Label htmlFor="notes">Observações</Label>
@@ -765,8 +718,8 @@ export default function ClientEditPage() {
               <CardIconWrapper><MapPin size={18} /></CardIconWrapper>
               <CardTitle>Endereço</CardTitle>
             </CardHeader>
-
             <FormGrid>
+
               <FullSpan>
                 <Field>
                   <Label htmlFor="address_street">Logradouro</Label>
@@ -778,9 +731,7 @@ export default function ClientEditPage() {
                     disabled={isSubmitting}
                     {...register('address_street')}
                   />
-                  {err('address_street') && (
-                    <FieldError><AlertCircle size={11} />{err('address_street')}</FieldError>
-                  )}
+                  {err('address_street') && <FieldError><AlertCircle size={11} />{err('address_street')}</FieldError>}
                 </Field>
               </FullSpan>
 
@@ -794,9 +745,7 @@ export default function ClientEditPage() {
                   disabled={isSubmitting}
                   {...register('address_number')}
                 />
-                {err('address_number') && (
-                  <FieldError><AlertCircle size={11} />{err('address_number')}</FieldError>
-                )}
+                {err('address_number') && <FieldError><AlertCircle size={11} />{err('address_number')}</FieldError>}
               </Field>
 
               <Field>
@@ -809,9 +758,7 @@ export default function ClientEditPage() {
                   disabled={isSubmitting}
                   {...register('address_complement')}
                 />
-                {err('address_complement') && (
-                  <FieldError><AlertCircle size={11} />{err('address_complement')}</FieldError>
-                )}
+                {err('address_complement') && <FieldError><AlertCircle size={11} />{err('address_complement')}</FieldError>}
               </Field>
 
               <Field>
@@ -824,9 +771,7 @@ export default function ClientEditPage() {
                   disabled={isSubmitting}
                   {...register('address_neighborhood')}
                 />
-                {err('address_neighborhood') && (
-                  <FieldError><AlertCircle size={11} />{err('address_neighborhood')}</FieldError>
-                )}
+                {err('address_neighborhood') && <FieldError><AlertCircle size={11} />{err('address_neighborhood')}</FieldError>}
               </Field>
 
               <Field>
@@ -839,9 +784,7 @@ export default function ClientEditPage() {
                   disabled={isSubmitting}
                   {...register('address_city')}
                 />
-                {err('address_city') && (
-                  <FieldError><AlertCircle size={11} />{err('address_city')}</FieldError>
-                )}
+                {err('address_city') && <FieldError><AlertCircle size={11} />{err('address_city')}</FieldError>}
               </Field>
 
               <Field>
@@ -857,9 +800,7 @@ export default function ClientEditPage() {
                     <option key={uf} value={uf}>{uf}</option>
                   ))}
                 </Select>
-                {err('address_state') && (
-                  <FieldError><AlertCircle size={11} />{err('address_state')}</FieldError>
-                )}
+                {err('address_state') && <FieldError><AlertCircle size={11} />{err('address_state')}</FieldError>}
               </Field>
 
               <Field>
@@ -874,10 +815,9 @@ export default function ClientEditPage() {
                     onChange: (e) => setValue('address_zip', maskCEP(e.target.value)),
                   })}
                 />
-                {err('address_zip') && (
-                  <FieldError><AlertCircle size={11} />{err('address_zip')}</FieldError>
-                )}
+                {err('address_zip') && <FieldError><AlertCircle size={11} />{err('address_zip')}</FieldError>}
               </Field>
+
             </FormGrid>
           </Card>
 
@@ -887,16 +827,15 @@ export default function ClientEditPage() {
               <CardIconWrapper><Landmark size={18} /></CardIconWrapper>
               <CardTitle>Conta Bancária</CardTitle>
             </CardHeader>
-
             <BankSection>
               <BankSectionTitle>Dados Bancários Principais</BankSectionTitle>
               {bankFilled && (
                 <FieldHint style={{ marginBottom: '12px', display: 'block' }}>
-                  Agência, conta e dígito são obrigatórios quando o banco é informado.
+                  Agência e conta são obrigatórios quando o banco é informado.
                 </FieldHint>
               )}
-
               <FormGrid>
+
                 <Field>
                   <Label htmlFor="bank_bank_name">Nome do Banco</Label>
                   <Input
@@ -907,29 +846,10 @@ export default function ClientEditPage() {
                     disabled={isSubmitting}
                     {...register('bank_bank_name')}
                   />
-                  {err('bank_bank_name') && (
-                    <FieldError><AlertCircle size={11} />{err('bank_bank_name')}</FieldError>
-                  )}
+                  {err('bank_bank_name') && <FieldError><AlertCircle size={11} />{err('bank_bank_name')}</FieldError>}
                 </Field>
 
                 <Field>
-                  <Label htmlFor="bank_bank_code">Código COMPE</Label>
-                  <Input
-                    id="bank_bank_code"
-                    type="text"
-                    placeholder="Ex: 237"
-                    $hasError={!!err('bank_bank_code')}
-                    disabled={isSubmitting}
-                    {...register('bank_bank_code')}
-                  />
-                  {err('bank_bank_code') && (
-                    <FieldError><AlertCircle size={11} />{err('bank_bank_code')}</FieldError>
-                  )}
-                  <FieldHint>Código de 3 dígitos (opcional).</FieldHint>
-                </Field>
-
-                <Field>
-                  {/* Label muda de cor/marcação quando banco está preenchido */}
                   <Label htmlFor="bank_agency">
                     Agência {bankFilled && <span style={{ color: '#dc2626' }}>*</span>}
                   </Label>
@@ -941,9 +861,7 @@ export default function ClientEditPage() {
                     disabled={isSubmitting}
                     {...register('bank_agency')}
                   />
-                  {err('bank_agency') && (
-                    <FieldError><AlertCircle size={11} />{err('bank_agency')}</FieldError>
-                  )}
+                  {err('bank_agency') && <FieldError><AlertCircle size={11} />{err('bank_agency')}</FieldError>}
                 </Field>
 
                 <Field>
@@ -957,9 +875,7 @@ export default function ClientEditPage() {
                     disabled={isSubmitting}
                     {...register('bank_agency_digit')}
                   />
-                  {err('bank_agency_digit') && (
-                    <FieldError><AlertCircle size={11} />{err('bank_agency_digit')}</FieldError>
-                  )}
+                  {err('bank_agency_digit') && <FieldError><AlertCircle size={11} />{err('bank_agency_digit')}</FieldError>}
                 </Field>
 
                 <Field>
@@ -974,15 +890,11 @@ export default function ClientEditPage() {
                     disabled={isSubmitting}
                     {...register('bank_account')}
                   />
-                  {err('bank_account') && (
-                    <FieldError><AlertCircle size={11} />{err('bank_account')}</FieldError>
-                  )}
+                  {err('bank_account') && <FieldError><AlertCircle size={11} />{err('bank_account')}</FieldError>}
                 </Field>
 
                 <Field>
-                  <Label htmlFor="bank_account_digit">
-                    Dígito Conta {bankFilled && <span style={{ color: '#dc2626' }}>*</span>}
-                  </Label>
+                  <Label htmlFor="bank_account_digit">Dígito Conta</Label>
                   <Input
                     id="bank_account_digit"
                     type="text"
@@ -992,9 +904,7 @@ export default function ClientEditPage() {
                     disabled={isSubmitting}
                     {...register('bank_account_digit')}
                   />
-                  {err('bank_account_digit') && (
-                    <FieldError><AlertCircle size={11} />{err('bank_account_digit')}</FieldError>
-                  )}
+                  {err('bank_account_digit') && <FieldError><AlertCircle size={11} />{err('bank_account_digit')}</FieldError>}
                 </Field>
 
                 <Field>
@@ -1011,10 +921,9 @@ export default function ClientEditPage() {
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
                   </Select>
-                  {err('bank_account_type') && (
-                    <FieldError><AlertCircle size={11} />{err('bank_account_type')}</FieldError>
-                  )}
+                  {err('bank_account_type') && <FieldError><AlertCircle size={11} />{err('bank_account_type')}</FieldError>}
                 </Field>
+
               </FormGrid>
             </BankSection>
           </Card>
@@ -1025,12 +934,10 @@ export default function ClientEditPage() {
               <CardIconWrapper><FileText size={18} /></CardIconWrapper>
               <CardTitle>Documentos</CardTitle>
             </CardHeader>
-
             <FieldHint style={{ marginBottom: '16px', display: 'block' }}>
               Selecione um novo arquivo para <strong>substituir</strong> o documento
               existente. O arquivo antigo é removido automaticamente do Cloudinary.
             </FieldHint>
-
             <DocumentsGrid>
               {DOCUMENT_SLOTS.map((slot) => (
                 <DocumentSlot

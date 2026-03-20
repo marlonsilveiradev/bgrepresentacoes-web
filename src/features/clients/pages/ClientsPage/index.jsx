@@ -218,7 +218,7 @@ const scheduleSearch = (value) => {
                 title="Ver detalhes"
               >
                 <Td>{client.corporate_name}</Td>
-                <TdMuted>{client.cnpj ?? '—'}</TdMuted>
+                <TdMuted>{maskCNPJ(client.cnpj) ?? '—'}</TdMuted>
                 <TdMuted>{formatBenefitType(client.benefit_type)}</TdMuted>
                 <Td><StatusBadgeComponent status={client.overall_status} /></Td>
                 <TdMuted>{formatDate(client.createdAt)}</TdMuted>

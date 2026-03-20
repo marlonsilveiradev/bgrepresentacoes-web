@@ -20,6 +20,7 @@ import ChangePasswordPage from '../features/auth/pages/ChangePasswordPage';
 import ClientsPage from '../features/clients/pages/ClientsPage';
 import ClientDetailPage from '../features/clients/pages/ClientDetailPage';
 import ClientEditPage from '../features/clients/pages/ClientEditPage';
+import ClientCreatePage from '../features/clients/pages/ClientCreatePage';
 
 // Placeholder para módulos ainda não criados
 const Placeholder = ({ title }) => (
@@ -82,7 +83,7 @@ const routerProps = isGitHubPages ? {} : { basename: import.meta.env.BASE_URL };
                 <Route path="/clientes"     element={<ClientsPage />} />
                 <Route path="/clientes/:id" element={<ClientDetailPage />} />
                 <Route path="/clientes/:id/editar" element={<ClientEditPage />} />
-                <Route path="/onboarding"   element={<Placeholder title="Novo Cliente" />} />
+                <Route path="/onboarding" element={<ClientCreatePage />} />
                 <Route path="/vendas"       element={<Placeholder title="Vendas" />} />
                 <Route path="/vendas/:id"   element={<Placeholder title="Detalhe da Venda" />} />
                 <Route path="/perfil"       element={<Placeholder title="Meu Perfil" />} />
