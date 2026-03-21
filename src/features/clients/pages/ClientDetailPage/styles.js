@@ -296,9 +296,30 @@ export const DocumentItem = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.md};
   background-color: ${({ theme }) => theme.surface.card};
   transition: background-color ${({ theme }) => theme.transitions.fast};
+  min-width: 0;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.neutral[50]};
+  }
+`;
+
+export const FileNameText = styled.span`
+  display: block;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
+  color: ${({ theme }) => theme.text.primary};
+  
+  /* Truncamento mágico: */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  /* No desktop pode ser maior, no mobile limitamos para não empurrar a tela */
+  max-width: 250px;
+
+  @media (max-width: 480px) {
+    max-width: 150px; /* Ajuste esse valor conforme achar melhor para o seu celular */
   }
 `;
 
@@ -320,16 +341,6 @@ export const DocumentInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
-`;
-
-export const DocumentName = styled.span`
-  font-family: ${({ theme }) => theme.typography.fontFamily.sans};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-  color: ${({ theme }) => theme.text.primary};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 export const DocumentMeta = styled.span`

@@ -1,3 +1,5 @@
 .env
 .env.local
 node_modules/
+frontend_audit.txt
+audith_frontend.sh

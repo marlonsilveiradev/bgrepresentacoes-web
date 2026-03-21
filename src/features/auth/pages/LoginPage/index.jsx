@@ -65,8 +65,12 @@ function FormContent({ onSubmitSuccess }) {
   const onSubmit = async ({ email, password }) => {
     setIsLoading(true);
     try {
+      // ── FIX: desestrutura mustChangePassword diretamente do resultado ──────
+      // Antes estava: const result = await login(...)
+      //               if (result) { onSubmitSuccess(mustChangePassword) }
+      // "mustChangePassword" nunca foi declarado naquele escopo,
+      // causando ReferenceError → catch exibia erro → ficava na tela de login.
       const { mustChangePassword } = await login(email, password);
-      // Delega o redirecionamento ao componente pai (que controla o overlay)
       onSubmitSuccess(mustChangePassword);
     } catch (error) {
       toast.error(error.message, { toastId: 'login-error' });
@@ -206,15 +210,25 @@ export default function LoginPage() {
 
   // Callback chamado pelo FormContent após login bem-sucedido
   const handleLoginSuccess = (mustChangePassword) => {
-    if (mustChangePassword) {
-      // Fecha o overlay antes de navegar (evita flash da tela de fundo)
-      setOverlayOpen(false);
-      // Pequeno delay para a transição do overlay completar antes do navigate
-      setTimeout(() => navigate('/alterar-senha', { replace: true }), 180);
-    } else {
-      navigate('/dashboard', { replace: true });
-    }
-  };
+  console.log('[LOGIN SUCCESS - NAVEGAÇÃO]', {
+    mustChangePassword,
+  });
+
+  document.body.style.overflow = '';
+  if (mustChangePassword) {
+    navigate('/alterar-senha', { replace: true });
+  } else {
+    navigate('/dashboard', { replace: true });
+  }
+};
+  // const handleLoginSuccess = (mustChangePassword) => {
+  //   document.body.style.overflow = '';
+  //   if (mustChangePassword) {
+  //     navigate('/alterar-senha', { replace: true });
+  //   } else {
+  //     navigate('/dashboard', { replace: true });
+  //   }
+  // };
 
   return (
     <PageWrapper>

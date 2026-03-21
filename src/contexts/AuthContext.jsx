@@ -1,10 +1,8 @@
-// ============================================================
-// src/contexts/AuthContext.jsx — BG Representações
-// ============================================================
 import {
   createContext, useCallback, useContext,
   useEffect, useMemo, useReducer, useRef,
 } from 'react';
+import { flushSync } from 'react-dom';
 import { toast } from 'react-toastify';
 import api, {
   clearTokens,
@@ -14,7 +12,7 @@ import api, {
   setTokens,
 } from '../lib/api';
 
-// ── Actions ───────────────────────────────────────────────────────────────────
+// ── Actions ─────────────────────────────────────────────────
 const A = {
   INIT: 'INIT',
   LOGIN_SUCCESS: 'LOGIN_SUCCESS',
@@ -24,16 +22,18 @@ const A = {
   SET_LOADING: 'SET_LOADING',
 };
 
-// ── Estado inicial ────────────────────────────────────────────────────────────
+// ── Estado inicial ──────────────────────────────────────────
 const INITIAL = {
   user: null,
   isAuthenticated: false,
-  isLoading: true,   // true enquanto verifica o token salvo
+  isLoading: true,
   mustChangePassword: false,
 };
 
-// ── Reducer ───────────────────────────────────────────────────────────────────
+// ── Reducer ─────────────────────────────────────────────────
 function reducer(state, { type, payload }) {
+  console.log('[REDUCER]', type, payload);
+
   switch (type) {
     case A.INIT:
       return {
@@ -41,8 +41,14 @@ function reducer(state, { type, payload }) {
         user: payload.user ?? null,
         isAuthenticated: !!payload.user,
         isLoading: false,
-        mustChangePassword: payload.mustChangePassword ?? false,
+
+        // 🔥 NÃO sobrescreve se vier undefined
+        mustChangePassword:
+          payload.mustChangePassword !== undefined
+            ? payload.mustChangePassword
+            : state.mustChangePassword,
       };
+
     case A.LOGIN_SUCCESS:
       return {
         ...state,
@@ -51,30 +57,33 @@ function reducer(state, { type, payload }) {
         isLoading: false,
         mustChangePassword: payload.mustChangePassword ?? false,
       };
+
     case A.LOGOUT:
       return { ...INITIAL, isLoading: false };
+
     case A.PASSWORD_CHANGED:
       return { ...state, mustChangePassword: false };
+
     case A.UPDATE_USER:
       return { ...state, user: { ...state.user, ...payload } };
+
     case A.SET_LOADING:
       return { ...state, isLoading: payload };
+
     default:
       return state;
   }
 }
 
-// ── Context ───────────────────────────────────────────────────────────────────
+// ── Context ─────────────────────────────────────────────────
 export const AuthContext = createContext(null);
 
-// ── Provider ──────────────────────────────────────────────────────────────────
+// ── Provider ────────────────────────────────────────────────
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, INITIAL);
-
-  // Ref para evitar dupla execução do StrictMode no init
   const initialized = useRef(false);
 
-  // ── Inicialização: tenta restaurar sessão ao carregar o app ──────────────
+  // ── INIT (RESTAURA SESSÃO) ───────────────────────────────
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
@@ -83,82 +92,93 @@ export function AuthProvider({ children }) {
       const accessToken = getAccessToken();
       const refreshToken = getRefreshToken();
 
-      // Nenhum token salvo → usuário não autenticado
+      console.log('[INIT TOKENS]', { accessToken, refreshToken });
+
+      // 🔥 SEM TOKEN → NÃO SOBRESCREVE ESTADO
       if (!accessToken && !refreshToken) {
-        dispatch({ type: A.INIT, payload: { user: null } });
+        dispatch({ type: A.SET_LOADING, payload: false });
         return;
       }
 
       try {
-        // O interceptor do api.js tenta refresh automaticamente
-        // se o accessToken estiver expirado
         const { data } = await api.get('/users/profile');
+        console.log('[PROFILE RESPONSE]', data);
+
         dispatch({
           type: A.INIT,
-          payload: { user: data.data },
+          payload: {
+            user: data.data,
+            mustChangePassword: data.data.mustChangePassword ??
+              (data.data?.last_login_at === null),
+          },
         });
-      } catch {
-        // Ambos os tokens inválidos → limpa e força login
+
+      } catch (error) {
+        console.log('[INIT ERROR] limpando sessão');
+
         clearTokens();
-        dispatch({ type: A.INIT, payload: { user: null } });
+
+        // 🔥 IMPORTANTE: usar LOGOUT, não INIT
+        dispatch({ type: A.LOGOUT });
       }
     };
 
     init();
   }, []);
 
-  // ── Escuta evento de sessão expirada (disparado pelo interceptor) ─────────
+  // ── Evento sessão expirada ───────────────────────────────
   useEffect(() => {
-    const handle = () => {
-      dispatch({ type: A.LOGOUT });
-    };
+    const handle = () => dispatch({ type: A.LOGOUT });
     window.addEventListener('bg:session-expired', handle);
     return () => window.removeEventListener('bg:session-expired', handle);
   }, []);
 
-  // ── Login ─────────────────────────────────────────────────────────────────
+  // ── LOGIN ───────────────────────────────────────────────
   const login = useCallback(async (email, password) => {
     dispatch({ type: A.SET_LOADING, payload: true });
+
     try {
       const { data } = await api.post('/auth/login', { email, password });
 
-      // O backend retorna { status, data: { token, refreshToken, user } }
-      // "token" é o accessToken nesta API
+      console.log('[LOGIN RESPONSE RAW]', data);
+
       const payload = data.data ?? data;
       const accessToken = payload.token ?? payload.accessToken;
       const { refreshToken, user } = payload;
 
-      toast.success('Login efetuado com sucesso!', { toastId: 'login-success' });
+      console.log('[LOGIN PROCESSADO]', {
+        user,
+        mustChangePassword: payload.mustChangePassword,
+      });
 
-      // Persiste tokens no localStorage
       setTokens({ accessToken, refreshToken });
 
-      // Detecta primeiro acesso (senha temporária)
-      // O backend pode enviar o campo explicitamente ou indicar via last_login_at nulo
-      const mustChange =
-        payload.mustChangePassword ??
-          data.mustChangePassword ??
-          (user?.last_login_at === null || user?.last_login_at === undefined)
-          ? false   // só marca true se o campo vier explícito
-          : false;
-
-      // Versão mais segura: usa só o campo explícito do backend
       const mustChangePassword = payload.mustChangePassword === true;
 
-      dispatch({
-        type: A.LOGIN_SUCCESS,
-        payload: { user, mustChangePassword },
+      // 🔥 garante estado antes do navigate
+      flushSync(() => {
+        dispatch({
+          type: A.LOGIN_SUCCESS,
+          payload: { user, mustChangePassword },
+        });
+      });
+
+      toast.success('Login efetuado com sucesso!', {
+        toastId: 'login-success',
       });
 
       return { mustChangePassword };
 
     } catch (error) {
       dispatch({ type: A.SET_LOADING, payload: false });
-      throw new Error(getApiErrorMessage(error, 'E-mail ou senha inválidos.'));
+
+      throw new Error(
+        getApiErrorMessage(error, 'E-mail ou senha inválidos.')
+      );
     }
   }, []);
 
-  // ── Troca de senha (primeiro acesso) ─────────────────────────────────────
+  // ── CHANGE PASSWORD ─────────────────────────────────────
   const changePassword = useCallback(async (currentPassword, newPassword, confirmPassword) => {
     try {
       await api.patch('/auth/change-password', {
@@ -166,41 +186,46 @@ export function AuthProvider({ children }) {
         newPassword,
         confirmPassword,
       });
+
       dispatch({ type: A.PASSWORD_CHANGED });
+
       toast.success('Senha alterada com sucesso!');
+
     } catch (error) {
       throw new Error(
-        getApiErrorMessage(error, 'Erro ao alterar a senha. Tente novamente.'),
+        getApiErrorMessage(error, 'Erro ao alterar a senha.')
       );
     }
   }, []);
 
-  // ── Logout ────────────────────────────────────────────────────────────────
+  // ── LOGOUT ──────────────────────────────────────────────
   const logout = useCallback(() => {
-    // 1. Toast imediato — aparece antes do redirect
-    toast.success('Logout efetuado com sucesso!', { toastId: 'logout-success' });
-    // 2. Limpa tokens e estado local de forma síncrona
+    toast.success('Logout efetuado com sucesso!', {
+      toastId: 'logout-success',
+    });
+
     clearTokens();
     dispatch({ type: A.LOGOUT });
-    // 3. Notifica o backend em fire-and-forget (não bloqueia nada)
+
     api.post('/auth/logout').catch(() => { });
   }, []);
 
-  // ── Atualiza dados do usuário (após editar perfil) ────────────────────────
+  // ── UPDATE USER ─────────────────────────────────────────
   const updateUser = useCallback((updates) => {
     dispatch({ type: A.UPDATE_USER, payload: updates });
   }, []);
 
-  // ── Helpers de role ───────────────────────────────────────────────────────
+  // ── Helpers ─────────────────────────────────────────────
   const isAdmin = state.user?.role === 'admin';
   const isUser = state.user?.role === 'user';
   const isPartner = state.user?.role === 'partner';
+
   const hasRole = useCallback(
     (...roles) => roles.includes(state.user?.role),
-    [state.user?.role],
+    [state.user?.role]
   );
 
-  // ── Valor memorizado do contexto ───────────────────────────────────────────
+  // ── Context value ───────────────────────────────────────
   const value = useMemo(() => ({
     user: state.user,
     isAuthenticated: state.isAuthenticated,
@@ -214,10 +239,14 @@ export function AuthProvider({ children }) {
     login, logout, changePassword, updateUser,
   ]);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-// ── Hook ──────────────────────────────────────────────────────────────────────
+// ── Hook ─────────────────────────────────────────────────
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth deve ser usado dentro de <AuthProvider>.');
