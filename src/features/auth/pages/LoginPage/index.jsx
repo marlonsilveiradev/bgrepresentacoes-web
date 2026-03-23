@@ -210,9 +210,7 @@ export default function LoginPage() {
 
   // Callback chamado pelo FormContent após login bem-sucedido
   const handleLoginSuccess = (mustChangePassword) => {
-  console.log('[LOGIN SUCCESS - NAVEGAÇÃO]', {
-    mustChangePassword,
-  });
+  
 
   document.body.style.overflow = '';
   if (mustChangePassword) {

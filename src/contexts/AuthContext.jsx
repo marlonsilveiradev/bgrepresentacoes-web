@@ -32,7 +32,7 @@ const INITIAL = {
 
 // ── Reducer ─────────────────────────────────────────────────
 function reducer(state, { type, payload }) {
-  console.log('[REDUCER]', type, payload);
+ 
 
   switch (type) {
     case A.INIT:
@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
       const accessToken = getAccessToken();
       const refreshToken = getRefreshToken();
 
-      console.log('[INIT TOKENS]', { accessToken, refreshToken });
+     
 
       // 🔥 SEM TOKEN → NÃO SOBRESCREVE ESTADO
       if (!accessToken && !refreshToken) {
@@ -102,7 +102,7 @@ export function AuthProvider({ children }) {
 
       try {
         const { data } = await api.get('/users/profile');
-        console.log('[PROFILE RESPONSE]', data);
+       
 
         dispatch({
           type: A.INIT,
@@ -114,7 +114,7 @@ export function AuthProvider({ children }) {
         });
 
       } catch (error) {
-        console.log('[INIT ERROR] limpando sessão');
+        ('[INIT ERROR] limpando sessão');
 
         clearTokens();
 
@@ -140,13 +140,13 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await api.post('/auth/login', { email, password });
 
-      console.log('[LOGIN RESPONSE RAW]', data);
+      ('[LOGIN RESPONSE RAW]', data);
 
       const payload = data.data ?? data;
       const accessToken = payload.token ?? payload.accessToken;
       const { refreshToken, user } = payload;
 
-      console.log('[LOGIN PROCESSADO]', {
+      ('[LOGIN PROCESSADO]', {
         user,
         mustChangePassword: payload.mustChangePassword,
       });
