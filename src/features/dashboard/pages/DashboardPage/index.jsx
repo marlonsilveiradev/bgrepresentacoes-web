@@ -71,7 +71,7 @@ export default function DashboardPage() {
           api.get('/reports/sales', { params: { date_start: startDate, date_end: endDate } }),
           api.get('/clients', { params: { limit: '5' } }),
           // CORREÇÃO: Enviando como String para evitar o Erro 422 do backend Strict Mode
-          api.get('/sales', { params: { limit: '5', page: '1' } }) 
+          api.get('/sales', { params: { limit: '10' } }), 
         ]);
 
         let allClients = [];
