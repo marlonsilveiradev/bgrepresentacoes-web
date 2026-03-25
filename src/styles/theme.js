@@ -155,6 +155,7 @@ const theme = {
   spacing,
   borderRadius,
   shadows,
+  neutral: colors.neutral,
   transitions,
   zIndex,
 

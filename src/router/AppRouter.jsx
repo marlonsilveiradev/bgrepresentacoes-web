@@ -16,6 +16,9 @@ import MainLayout from '../components/layout/MainLayout';
 import LoginPage from '../features/auth/pages/LoginPage';
 import ChangePasswordPage from '../features/auth/pages/ChangePasswordPage';
 
+//Dashboard
+import DashboardPage from '../features/dashboard/pages/DashboardPage';
+
 // Clients
 import ClientsPage from '../features/clients/pages/ClientsPage';
 import ClientDetailPage from '../features/clients/pages/ClientDetailPage';
@@ -75,7 +78,7 @@ export default function AppRouter() {
               <Route element={<MainLayout />}>
 
                 {/* 🔓 Acesso geral */}
-                <Route path="/dashboard" element={<Placeholder title="Dashboard" />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/clientes" element={<ClientsPage />} />
                 <Route path="/clientes/:id" element={<ClientDetailPage />} />
                 <Route path="/clientes/:id/editar" element={<ClientEditPage />} />
