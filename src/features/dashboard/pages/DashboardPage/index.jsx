@@ -70,11 +70,9 @@ export default function DashboardPage() {
           api.get('/clients', { params: { limit: '100' } }),
           api.get('/reports/sales', { params: { date_start: startDate, date_end: endDate } }),
           api.get('/clients', { params: { limit: '5' } }),
-          // CORREÇÃO: Enviando como String para evitar o Erro 422 do backend Strict Mode
-          api.get('/sales', { params: { limit: '10' } }), 
+          api.get('/sales'), 
         ]);
-
-        console.log('Resultado bruto da Promise (Vendas):', results[3]);
+        
 
         let allClients = [];
         if (results[0].status === 'fulfilled') {
@@ -91,10 +89,11 @@ export default function DashboardPage() {
         }
 
         if (results[3].status === 'fulfilled') {
-          console.log('Dados que chegaram no data.data:', results[3].value.data)
-          const salesData = results[3].value.data?.data || [];
-          console.log('Array final de vendas para o estado:', salesData);
-          setRecentSales(results[3].value.data?.data || []);
+          const salesArray = results[3].value.data?.data || [];
+          setRecentSales(salesArray);
+        } else {
+          console.error('Erro ao carregar vendas recentes:', results[3].reason);
+          setRecentSales([]);
         }
 
         const totalClients = allClients.length;
