@@ -22,6 +22,10 @@ const GlobalStyle = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
   }
 
+  h1, h2, h3 {
+    font-family: ${({ theme }) => theme.typography.fontFamily.serif};
+  }
+
   img, svg {
     display: block;
     max-width: 100%;

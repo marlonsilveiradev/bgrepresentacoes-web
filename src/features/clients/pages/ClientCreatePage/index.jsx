@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 
 import api, { apiUpload, getApiErrorMessage } from '../../../../lib/api';
+import { useAuth } from '../../../../contexts/AuthContext';
 import {
   Container, PageHeader, BackButton, TitleGroup, PageTitle, PageSubtitle,
   Card, CardHeader, CardIconWrapper, CardTitle,
@@ -33,14 +34,44 @@ import {
 } from './styles';
 
 // ── Caches em memória ─────────────────────────────────────────────────────────
-let plansCache    = null;
-let flagsCache    = null;
+let plansCache = null;
+let flagsCache = null;
 let partnersCache = null;
 
+// ── Função de validação de CNPJ ─────────────────────────────────────────────
+const isValidCNPJ = (cnpjDigits) => {
+  if (!cnpjDigits) return false;
+  const cnpj = cnpjDigits.padStart(14, '0'); // Garante 14 dígitos
+  if (/^(\d)\1+$/.test(cnpj)) return false; // Todos dígitos iguais
+
+  let tamanho = cnpj.length - 2;
+  let numeros = cnpj.substring(0, tamanho);
+  const digitos = cnpj.substring(tamanho);
+  let soma = 0;
+  let pos = tamanho - 7;
+  for (let i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+  if (resultado != digitos.charAt(0)) return false;
+
+  tamanho = tamanho + 1;
+  numeros = cnpj.substring(0, tamanho);
+  soma = 0;
+  pos = tamanho - 7;
+  for (let i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+  if (resultado != digitos.charAt(1)) return false;
+
+  return true;
+};
+
 // ── Schema Yup ────────────────────────────────────────────────────────────────
-
 const createSchema = yup.object({
-
   corporate_name: yup
     .string()
     .required('A razão social é obrigatória.')
@@ -50,7 +81,10 @@ const createSchema = yup.object({
     .string()
     .required('O CNPJ é obrigatório.')
     .transform((v) => v?.replace(/\D/g, '') || '')
-    .test('cnpj-valido', 'CNPJ deve ter 14 dígitos.', (v) => !v || v.length === 14),
+    .test('cnpj-valido', 'CNPJ inválido (dígitos verificadores não conferem).', (v) => {
+      if (!v) return false; // Já obrigatório, mas por segurança
+      return v.length === 14 && isValidCNPJ(v);
+    }),
 
   email: yup
     .string()
@@ -133,8 +167,8 @@ const createSchema = yup.object({
     .string()
     .max(10, 'Agência deve ter no máximo 10 caracteres.')
     .when('bank_bank_name', {
-      is:        (v) => !!v,
-      then:      (s) => s.required('Agência é obrigatória quando o banco é informado.'),
+      is: (v) => !!v,
+      then: (s) => s.required('Agência é obrigatória quando o banco é informado.'),
       otherwise: (s) => s.nullable().transform((v) => v || null),
     }),
 
@@ -146,8 +180,8 @@ const createSchema = yup.object({
     .string()
     .max(20, 'Conta deve ter no máximo 20 caracteres.')
     .when('bank_bank_name', {
-      is:        (v) => !!v,
-      then:      (s) => s.required('Conta é obrigatória quando o banco é informado.'),
+      is: (v) => !!v,
+      then: (s) => s.required('Conta é obrigatória quando o banco é informado.'),
       otherwise: (s) => s.nullable().transform((v) => v || null),
     }),
 
@@ -158,8 +192,8 @@ const createSchema = yup.object({
   bank_account_type: yup
     .string()
     .when('bank_bank_name', {
-      is:        (v) => !!v,
-      then:      (s) => s.required('Tipo é obrigatório.').oneOf(['checking', 'savings'], 'Tipo inválido.'),
+      is: (v) => !!v,
+      then: (s) => s.required('Tipo é obrigatório.').oneOf(['checking', 'savings'], 'Tipo inválido.'),
       otherwise: (s) => s.nullable().transform((v) => v || null),
     }),
 });
@@ -167,27 +201,27 @@ const createSchema = yup.object({
 // ── Constantes ────────────────────────────────────────────────────────────────
 
 const DOCUMENT_SLOTS = [
-  { key: 'contrato',           type: 'company_document',   label: 'Contrato / Doc. da Empresa', fieldName: 'contrato'    },
-  { key: 'proof_of_address',   type: 'proof_of_address',   label: 'Comprovante de Endereço',     fieldName: 'documentos', docIndex: 0 },
-  { key: 'bank_account_proof', type: 'bank_account_proof', label: 'Comprovante Bancário',        fieldName: 'documentos', docIndex: 1 },
-  { key: 'card_machine_proof', type: 'card_machine_proof', label: 'Comprovante de Maquininha',   fieldName: 'documentos', docIndex: 2 },
+  { key: 'contrato', type: 'company_document', label: 'Contrato / Doc. da Empresa', fieldName: 'contrato' },
+  { key: 'proof_of_address', type: 'proof_of_address', label: 'Comprovante de Endereço', fieldName: 'documentos', docIndex: 0 },
+  { key: 'bank_account_proof', type: 'bank_account_proof', label: 'Comprovante Bancário', fieldName: 'documentos', docIndex: 1 },
+  { key: 'card_machine_proof', type: 'card_machine_proof', label: 'Comprovante de Maquininha', fieldName: 'documentos', docIndex: 2 },
 ];
 
 const BENEFIT_OPTIONS = [
-  { value: 'food', label: 'Vale Alimentação'      },
-  { value: 'meal', label: 'Vale Refeição'          },
+  { value: 'food', label: 'Vale Alimentação' },
+  { value: 'meal', label: 'Vale Refeição' },
   { value: 'both', label: 'Alimentação + Refeição' },
 ];
 
 const ACCOUNT_TYPE_OPTIONS = [
   { value: 'checking', label: 'Conta Corrente' },
-  { value: 'savings',  label: 'Conta Poupança'  },
+  { value: 'savings', label: 'Conta Poupança' },
 ];
 
 const UF_OPTIONS = [
-  'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA',
-  'MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN',
-  'RO','RR','RS','SC','SE','SP','TO',
+  'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+  'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN',
+  'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO',
 ];
 
 // ── Compressão de imagens ─────────────────────────────────────────────────────
@@ -196,10 +230,10 @@ const compressImage = async (file) => {
   if (!file.type.startsWith('image/')) return file;
   try {
     const compressed = await imageCompression(file, {
-      maxSizeMB:        1,
+      maxSizeMB: 1,
       maxWidthOrHeight: 1920,
-      useWebWorker:     true,
-      fileType:         file.type,
+      useWebWorker: true,
+      fileType: file.type,
     });
     return new File([compressed], file.name, { type: file.type });
   } catch {
@@ -211,32 +245,32 @@ const compressImage = async (file) => {
 
 const maskCNPJ = (v = '') => {
   const d = v.replace(/\D/g, '').slice(0, 14);
-  if (d.length <=  2) return d;
-  if (d.length <=  5) return `${d.slice(0,2)}.${d.slice(2)}`;
-  if (d.length <=  8) return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5)}`;
-  if (d.length <= 12) return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8)}`;
-  return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8,12)}-${d.slice(12)}`;
+  if (d.length <= 2) return d;
+  if (d.length <= 5) return `${d.slice(0, 2)}.${d.slice(2)}`;
+  if (d.length <= 8) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5)}`;
+  if (d.length <= 12) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8)}`;
+  return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
 };
 
 const maskPhone = (v = '') => {
   const d = v.replace(/\D/g, '').slice(0, 11);
-  if (d.length <= 2)  return `(${d}`;
-  if (d.length <= 6)  return `(${d.slice(0,2)}) ${d.slice(2)}`;
-  if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
-  return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if (d.length <= 2) return `(${d}`;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 };
 
 const maskCEP = (v = '') => {
   const d = v.replace(/\D/g, '').slice(0, 8);
   if (d.length <= 5) return d;
-  return `${d.slice(0,5)}-${d.slice(5)}`;
+  return `${d.slice(0, 5)}-${d.slice(5)}`;
 };
 
-const onlyDigits     = (v = '') => v.replace(/\D/g, '');
-const formatBRL      = (n = 0)  => Number(n).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-const formatFileSize = (bytes)  => {
+const onlyDigits = (v = '') => v.replace(/\D/g, '');
+const formatBRL = (n = 0) => Number(n).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const formatFileSize = (bytes) => {
   if (!bytes) return '';
-  if (bytes < 1024)        return `${bytes} B`;
+  if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
@@ -269,7 +303,7 @@ function CreateSkeleton() {
 
 function DocumentSlot({ slot, selectedFile, onFileSelect, onClearFile, disabled }) {
   const inputRef = useRef(null);
-  const hasFile  = !!selectedFile;
+  const hasFile = !!selectedFile;
 
   return (
     <DocumentUploadCard $hasFile={hasFile}>
@@ -321,19 +355,20 @@ function DocumentSlot({ slot, selectedFile, onFileSelect, onClearFile, disabled 
 
 export default function ClientCreatePage() {
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
 
-  const [plans,          setPlans]          = useState([]);
-  const [flags,          setFlags]          = useState([]);
-  const [partners,       setPartners]       = useState([]);
-  const [loadingData,    setLoadingData]    = useState(true);
-  const [isSubmitting,   setIsSubmitting]   = useState(false);
+  const [plans, setPlans] = useState([]);
+  const [flags, setFlags] = useState([]);
+  const [partners, setPartners] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadPhase,    setUploadPhase]    = useState(''); // 'compressing' | 'uploading' | 'processing'
-  const [mode,           setMode]           = useState('plan');
+  const [uploadPhase, setUploadPhase] = useState(''); // 'compressing' | 'uploading' | 'processing'
+  const [mode, setMode] = useState('plan');
   const [selectedPlanId, setSelectedPlanId] = useState('');
-  const [selectedFlags,  setSelectedFlags]  = useState([]);
-  const [selectedFiles,  setSelectedFiles]  = useState({});
-  const [cnpjDisplay,    setCnpjDisplay]    = useState('');
+  const [selectedFlags, setSelectedFlags] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState({});
+  const [cnpjDisplay, setCnpjDisplay] = useState('');
   const cnpjDebounceRef = useRef(null);
 
   const {
@@ -345,32 +380,32 @@ export default function ClientCreatePage() {
   } = useForm({
     resolver: yupResolver(createSchema),
     defaultValues: {
-      corporate_name:       '',
-      cnpj:                 '',
-      email:                '',
-      state_registration:   '',
-      trade_name:           '',
-      phone:                '',
-      benefit_type:         'food',
-      notes:                '',
-      partner_id:           '',
-      address_street:       '',
-      address_number:       '',
-      address_complement:   '',
+      corporate_name: '',
+      cnpj: '',
+      email: '',
+      state_registration: '',
+      trade_name: '',
+      phone: '',
+      benefit_type: 'food',
+      notes: '',
+      partner_id: '',
+      address_street: '',
+      address_number: '',
+      address_complement: '',
       address_neighborhood: '',
-      address_city:         '',
-      address_state:        '',
-      address_zip:          '',
-      bank_bank_name:       '',
-      bank_agency:          '',
-      bank_agency_digit:    '',
-      bank_account:         '',
-      bank_account_digit:   '',
-      bank_account_type:    'checking',
+      address_city: '',
+      address_state: '',
+      address_zip: '',
+      bank_bank_name: '',
+      bank_agency: '',
+      bank_agency_digit: '',
+      bank_account: '',
+      bank_account_digit: '',
+      bank_account_type: 'checking',
     },
   });
 
-  const bankName   = watch('bank_bank_name');
+  const bankName = watch('bank_bank_name');
   const bankFilled = !!bankName;
 
   // ── Busca dados externos com cache ────────────────────────────────────────
@@ -381,25 +416,25 @@ export default function ClientCreatePage() {
         await Promise.all([
           (!plansCache || plansCache.length === 0)
             ? api.get('/plans?limit=100')
-                .then(({ data }) => { plansCache = data.data ?? []; })
-                .catch(() => { toast.error('Erro ao carregar planos.'); plansCache = []; })
+              .then(({ data }) => { plansCache = data.data ?? []; })
+              .catch(() => { toast.error('Erro ao carregar planos.'); plansCache = []; })
             : Promise.resolve(),
 
           (!flagsCache || flagsCache.length === 0)
             ? api.get('/flags?limit=100')
-                .then(({ data }) => { flagsCache = data.data ?? []; })
-                .catch(() => { toast.error('Erro ao carregar bandeiras.'); flagsCache = []; })
+              .then(({ data }) => { flagsCache = data.data ?? []; })
+              .catch(() => { toast.error('Erro ao carregar bandeiras.'); flagsCache = []; })
             : Promise.resolve(),
 
-          (!partnersCache || partnersCache.length === 0)
+          (isAdmin && (!partnersCache || partnersCache.length === 0))
             ? api.get('/users?role=partner&limit=100')
-                .then(({ data }) => { partnersCache = data.data ?? []; })
-                .catch(() => { partnersCache = []; })
+              .then(({ data }) => { partnersCache = data.data ?? []; })
+              .catch(() => { partnersCache = []; })
             : Promise.resolve(),
         ]);
       } finally {
-        setPlans(plansCache     ?? []);
-        setFlags(flagsCache     ?? []);
+        setPlans(plansCache ?? []);
+        setFlags(flagsCache ?? []);
         setPartners(partnersCache ?? []);
         setLoadingData(false);
       }
@@ -431,8 +466,8 @@ export default function ClientCreatePage() {
 
   // ── Totais ────────────────────────────────────────────────────────────────
   const selectedFlagObjects = flags.filter((f) => selectedFlags.includes(f.id));
-  const totalIndividual     = selectedFlagObjects.reduce((acc, f) => acc + parseFloat(f.price || 0), 0);
-  const selectedPlan        = plans.find((p) => p.id === selectedPlanId);
+  const totalIndividual = selectedFlagObjects.reduce((acc, f) => acc + parseFloat(f.price || 0), 0);
+  const selectedPlan = plans.find((p) => p.id === selectedPlanId);
 
   // ── Submit ────────────────────────────────────────────────────────────────
   const onSubmit = async (formData) => {
@@ -451,7 +486,7 @@ export default function ClientCreatePage() {
 
     try {
       // ── Fase 1: Compressão em paralelo ─────────────────────────────────
-      const hasFiles        = Object.keys(selectedFiles).length > 0;
+      const hasFiles = Object.keys(selectedFiles).length > 0;
       const compressedFiles = {};
 
       if (hasFiles) {
@@ -467,33 +502,33 @@ export default function ClientCreatePage() {
 
       // ── Fase 2: Payload ───────────────────────────────────────────────
       const textPayload = {
-        corporate_name:       formData.corporate_name,
-        cnpj:                 onlyDigits(formData.cnpj || cnpjDisplay),
-        benefit_type:         formData.benefit_type,
-        trade_name:           formData.trade_name           || undefined,
-        email:                formData.email                || undefined,
-        state_registration:   formData.state_registration   || undefined,
-        phone:                onlyDigits(formData.phone)    || undefined,
-        notes:                formData.notes                || undefined,
-        partner_id:           formData.partner_id           || undefined,
-        address_street:       formData.address_street       || undefined,
-        address_number:       formData.address_number       || undefined,
-        address_complement:   formData.address_complement   || undefined,
+        corporate_name: formData.corporate_name,
+        cnpj: onlyDigits(formData.cnpj || cnpjDisplay),
+        benefit_type: formData.benefit_type,
+        trade_name: formData.trade_name || undefined,
+        email: formData.email || undefined,
+        state_registration: formData.state_registration || undefined,
+        phone: onlyDigits(formData.phone) || undefined,
+        notes: formData.notes || undefined,
+        partner_id: formData.partner_id || undefined,
+        address_street: formData.address_street || undefined,
+        address_number: formData.address_number || undefined,
+        address_complement: formData.address_complement || undefined,
         address_neighborhood: formData.address_neighborhood || undefined,
-        address_city:         formData.address_city         || undefined,
-        address_state:        formData.address_state        || undefined,
-        address_zip:          formData.address_zip          || undefined,
+        address_city: formData.address_city || undefined,
+        address_state: formData.address_state || undefined,
+        address_zip: formData.address_zip || undefined,
         ...(mode === 'plan'
           ? { plan_id: selectedPlanId }
           : { flag_ids: selectedFlags }
         ),
         ...(bankFilled ? {
-          bank_name:     formData.bank_bank_name,
-          agency:        formData.bank_agency,
-          agency_digit:  formData.bank_agency_digit  || undefined,
-          account:       formData.bank_account,
+          bank_name: formData.bank_bank_name,
+          agency: formData.bank_agency,
+          agency_digit: formData.bank_agency_digit || undefined,
+          account: formData.bank_account,
           account_digit: formData.bank_account_digit || undefined,
-          account_type:  formData.bank_account_type,
+          account_type: formData.bank_account_type,
         } : {}),
       };
 
@@ -542,9 +577,9 @@ export default function ClientCreatePage() {
 
   // ── Label dinâmico do botão ───────────────────────────────────────────────
   const submitLabel = () => {
-    if (!isSubmitting)                     return <><Save size={15} />Cadastrar Cliente</>;
-    if (uploadPhase === 'compressing')     return <><Spinner />Comprimindo imagens…</>;
-    if (uploadPhase === 'processing')      return <><Spinner />Processando…</>;
+    if (!isSubmitting) return <><Save size={15} />Cadastrar Cliente</>;
+    if (uploadPhase === 'compressing') return <><Spinner />Comprimindo imagens…</>;
+    if (uploadPhase === 'processing') return <><Spinner />Processando…</>;
     return <><Spinner />Enviando… {uploadProgress}%</>;
   };
 
@@ -637,18 +672,17 @@ export default function ClientCreatePage() {
                 {err('benefit_type') && <FieldError><AlertCircle size={11} />{err('benefit_type')}</FieldError>}
               </Field>
 
-              <Field>
-                <Label htmlFor="partner_id">Parceiro Vinculado</Label>
-                <Select id="partner_id" disabled={isSubmitting} {...register('partner_id')}>
-                  <option value="">Sem parceiro vinculado</option>
-                  {partners.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </Select>
-                <FieldHint>
-                  {partners.length} parceiro{partners.length !== 1 ? 's' : ''} disponível{partners.length !== 1 ? 'is' : ''}
-                </FieldHint>
-              </Field>
+              {isAdmin && (
+                <Field>
+                  <Label>Parceiro responsável</Label>
+                  <Select {...register('partner_id')} disabled={loadingData}>
+                    <option value="">Nenhum</option>
+                    {partners.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </Select>
+                </Field>
+              )}
 
               <FullSpan>
                 <Field>

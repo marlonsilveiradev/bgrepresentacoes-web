@@ -41,7 +41,6 @@ const ROLE_LABELS = {
 export default function Navbar({ onMenuClick }) {
   const { user, logout } = useAuth();
   const location = useLocation();
-
   // Resolve o título da página atual
   // Para rotas dinâmicas como /clientes/:id, pega o prefixo
   const currentTitle = (() => {

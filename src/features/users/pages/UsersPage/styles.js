@@ -193,14 +193,15 @@ export const Td = styled.td`
   padding:   13px 16px;
   font-size: 0.8125rem;
   color:     #3d2b1f;
-  font-weight: 500;
+  font-weight: 600;
   vertical-align: middle;
 `;
 
 export const TdMuted = styled.td`
   padding:   13px 16px;
   font-size: 0.8125rem;
-  color:     #8a7060;
+  font-weight: 600;
+  color:     #3d2b1f;
   vertical-align: middle;
 `;
 
@@ -208,18 +209,21 @@ export const TdActions = styled.td`
   padding:   10px 16px;
   vertical-align: middle;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 // ── Badge de papel (role) ─────────────────────────────────────────────────────
 export const ROLE_LABELS = {
-  admin:   'Admin',
-  user:    'Usuário',
+  admin: 'Admin',
+  user: 'Usuário',
   partner: 'Parceiro',
 };
 
 const ROLE_COLORS = {
-  admin:   { bg: '#ede9fe', color: '#5b21b6' },  // violeta
-  user:    { bg: '#dbeafe', color: '#1e40af' },  // azul
+  admin: { bg: '#ede9fe', color: '#5b21b6' },  // violeta
+  user: { bg: '#dbeafe', color: '#1e40af' },  // azul
   partner: { bg: '#ffedd5', color: '#9a3412' },  // laranja
 };
 
@@ -258,12 +262,19 @@ export const StatusDot = styled.span`
 
 // ── Botão de ação (Desativar / Reativar) ──────────────────────────────────────
 const ACTION_VARIANTS = {
-  danger:  { border: '#fca5a5', color: '#991b1b', hover: '#fee2e2' },
+  danger: { border: '#fca5a5', color: '#991b1b', hover: '#fee2e2' },
   success: { border: '#6ee7b7', color: '#065f46', hover: '#d1fae5' },
+  edit: { border: '#6366f1', color: '#4338ca', hover: '#eef2ff' },
 };
 
 export const ActionButton = styled.button`
-  padding:       5px 12px;
+display:       inline-flex;
+align-items:   center;
+gap:           6px;
+justify-content: center;
+height: 32px;
+  padding:       0px 12px;
+  line-height: 1;
   border-radius: 6px;
   border:        1.5px solid ${({ $variant }) => ACTION_VARIANTS[$variant]?.border ?? '#e4d9cf'};
   background:    transparent;
@@ -529,7 +540,7 @@ export const Input = styled.input`
     outline:      none;
     border-color: ${({ $hasError }) => $hasError ? '#ef4444' : '#7a6455'};
     box-shadow:   0 0 0 3px ${({ $hasError }) =>
-      $hasError ? 'rgba(239,68,68,0.12)' : 'rgba(122,100,85,0.12)'};
+    $hasError ? 'rgba(239,68,68,0.12)' : 'rgba(122,100,85,0.12)'};
   }
 
   &:disabled { opacity: 0.6; cursor: not-allowed; background: #f7f0ec; }
@@ -555,7 +566,7 @@ export const Select = styled.select`
     outline:      none;
     border-color: ${({ $hasError }) => $hasError ? '#ef4444' : '#7a6455'};
     box-shadow:   0 0 0 3px ${({ $hasError }) =>
-      $hasError ? 'rgba(239,68,68,0.12)' : 'rgba(122,100,85,0.12)'};
+    $hasError ? 'rgba(239,68,68,0.12)' : 'rgba(122,100,85,0.12)'};
   }
 
   &:disabled { opacity: 0.6; cursor: not-allowed; }

@@ -30,19 +30,27 @@ const INITIAL = {
   mustChangePassword: false,
 };
 
+const normalizeUser = (user) => {
+  if (!user) return null;
+
+  // Caso os dados venham dentro de um objeto dataValues (Sequelize)
+  const userData = user.dataValues || user;
+
+  return {
+    ...userData,
+    firstName: userData.name?.split(' ')[0] || 'Usuário',
+  };
+};
+
 // ── Reducer ─────────────────────────────────────────────────
 function reducer(state, { type, payload }) {
- 
-
   switch (type) {
     case A.INIT:
       return {
         ...state,
-        user: payload.user ?? null,
-        isAuthenticated: !!payload.user,
+        user: normalizeUser(payload.user) ?? state.user,
+        isAuthenticated: !!(payload.user ?? state.user),
         isLoading: false,
-
-        // 🔥 NÃO sobrescreve se vier undefined
         mustChangePassword:
           payload.mustChangePassword !== undefined
             ? payload.mustChangePassword
@@ -52,20 +60,20 @@ function reducer(state, { type, payload }) {
     case A.LOGIN_SUCCESS:
       return {
         ...state,
-        user: payload.user,
+        user: normalizeUser(payload.user),
         isAuthenticated: true,
         isLoading: false,
         mustChangePassword: payload.mustChangePassword ?? false,
       };
 
-    case A.LOGOUT:
+    case A.LOGOUT:      
       return { ...INITIAL, isLoading: false };
 
     case A.PASSWORD_CHANGED:
       return { ...state, mustChangePassword: false };
 
     case A.UPDATE_USER:
-      return { ...state, user: { ...state.user, ...payload } };
+      return { ...state, user: normalizeUser({ ...state.user, ...payload }) };
 
     case A.SET_LOADING:
       return { ...state, isLoading: payload };
@@ -92,33 +100,29 @@ export function AuthProvider({ children }) {
       const accessToken = getAccessToken();
       const refreshToken = getRefreshToken();
 
-     
-
-      // 🔥 SEM TOKEN → NÃO SOBRESCREVE ESTADO
+      // Se não tem tokens, encerra o loading inicial
       if (!accessToken && !refreshToken) {
-        dispatch({ type: A.SET_LOADING, payload: false });
+        dispatch({
+          type: A.INIT,
+          payload: { user: null, mustChangePassword: false },
+        });
         return;
       }
 
       try {
         const { data } = await api.get('/users/profile');
-       
+        const user = data.data || data;
 
         dispatch({
           type: A.INIT,
           payload: {
-            user: data.data,
-            mustChangePassword: data.data.mustChangePassword ??
-              (data.data?.last_login_at === null),
+            user,
+            mustChangePassword: user.mustChangePassword ?? (user.last_login_at === null),
           },
         });
-
       } catch (error) {
-        ('[INIT ERROR] limpando sessão');
-
+        console.error('[AUTH INIT ERROR]', error);
         clearTokens();
-
-        // 🔥 IMPORTANTE: usar LOGOUT, não INIT
         dispatch({ type: A.LOGOUT });
       }
     };
@@ -126,9 +130,12 @@ export function AuthProvider({ children }) {
     init();
   }, []);
 
-  // ── Evento sessão expirada ───────────────────────────────
+  // ── Evento sessão expirada (Interceptor 401) ──────────────
   useEffect(() => {
-    const handle = () => dispatch({ type: A.LOGOUT });
+    const handle = () => {
+      clearTokens();
+      dispatch({ type: A.LOGOUT });
+    };
     window.addEventListener('bg:session-expired', handle);
     return () => window.removeEventListener('bg:session-expired', handle);
   }, []);
@@ -139,23 +146,15 @@ export function AuthProvider({ children }) {
 
     try {
       const { data } = await api.post('/auth/login', { email, password });
-
-      ('[LOGIN RESPONSE RAW]', data);
-
+      
       const payload = data.data ?? data;
       const accessToken = payload.token ?? payload.accessToken;
       const { refreshToken, user } = payload;
-
-      ('[LOGIN PROCESSADO]', {
-        user,
-        mustChangePassword: payload.mustChangePassword,
-      });
+      const mustChangePassword = payload.mustChangePassword === true;
 
       setTokens({ accessToken, refreshToken });
 
-      const mustChangePassword = payload.mustChangePassword === true;
-
-      // 🔥 garante estado antes do navigate
+      // flushSync garante que o estado mude antes de qualquer redirecionamento
       flushSync(() => {
         dispatch({
           type: A.LOGIN_SUCCESS,
@@ -163,18 +162,12 @@ export function AuthProvider({ children }) {
         });
       });
 
-      toast.success('Login efetuado com sucesso!', {
-        toastId: 'login-success',
-      });
-
+      toast.success('Login efetuado com sucesso!', { toastId: 'login-ok' });
       return { mustChangePassword };
 
     } catch (error) {
       dispatch({ type: A.SET_LOADING, payload: false });
-
-      throw new Error(
-        getApiErrorMessage(error, 'E-mail ou senha inválidos.')
-      );
+      throw new Error(getApiErrorMessage(error, 'E-mail ou senha inválidos.'));
     }
   }, []);
 
@@ -188,26 +181,25 @@ export function AuthProvider({ children }) {
       });
 
       dispatch({ type: A.PASSWORD_CHANGED });
-
       toast.success('Senha alterada com sucesso!');
-
     } catch (error) {
-      throw new Error(
-        getApiErrorMessage(error, 'Erro ao alterar a senha.')
-      );
+      throw new Error(getApiErrorMessage(error, 'Erro ao alterar a senha.'));
     }
   }, []);
 
   // ── LOGOUT ──────────────────────────────────────────────
-  const logout = useCallback(() => {
-    toast.success('Logout efetuado com sucesso!', {
-      toastId: 'logout-success',
-    });
-
-    clearTokens();
-    dispatch({ type: A.LOGOUT });
-
-    api.post('/auth/logout').catch(() => { });
+  const logout = useCallback(async () => {
+    try {
+      // Tenta avisar o servidor enquanto os tokens ainda estão no localStorage
+      await api.post('/auth/logout');
+    } catch (error) {
+      console.warn('[LOGOUT API ERROR] Sessão encerrada apenas localmente');
+    } finally {
+      // Limpa os dados locais independente do sucesso da API
+      clearTokens();
+      dispatch({ type: A.LOGOUT });
+      toast.success('Sessão encerrada.');
+    }
   }, []);
 
   // ── UPDATE USER ─────────────────────────────────────────
@@ -234,7 +226,7 @@ export function AuthProvider({ children }) {
     isAdmin, isUser, isPartner, hasRole,
     login, logout, changePassword, updateUser,
   }), [
-    state,
+    state.user, state.isAuthenticated, state.isLoading, state.mustChangePassword,
     isAdmin, isUser, isPartner, hasRole,
     login, logout, changePassword, updateUser,
   ]);
@@ -246,7 +238,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-// ── Hook ─────────────────────────────────────────────────
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth deve ser usado dentro de <AuthProvider>.');

@@ -1,24 +1,10 @@
-// ============================================================
-// src/features/users/pages/UsersPage/index.jsx
-//
-// Regras de acesso (espelhando o backend):
-//   • Apenas admin pode acessar esta página
-//   • Apenas admin pode criar, desativar e reativar usuários
-//
-// Padrões mantidos do projeto:
-//   • Debounce 400ms na busca (igual ClientsPage)
-//   • Paginação com ellipsis (igual ClientsPage)
-//   • Skeleton de carregamento
-//   • Feedback com react-toastify
-//   • api.js sem .data duplicado (interceptor já retorna response)
-// ============================================================
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   Search, UserPlus, Users, ChevronLeft, ChevronRight,
   ShieldCheck, User, Handshake, CheckCircle2, XCircle,
-  X, AlertCircle, Eye, EyeOff,
+  X, AlertCircle, Eye, EyeOff, Edit,
 } from 'lucide-react';
 
 import api, { getApiErrorMessage } from '../../../../lib/api';
@@ -72,25 +58,20 @@ const ROLE_ICONS = {
   partner: <Handshake size={12} />,
 };
 
-// ── Modal de criação de usuário ───────────────────────────────────────────────
-// Campos: name, email, role
-// O backend gera a senha temporária e a retorna em `temporaryPassword`
+// ── Modal de criação de usuário (não alterado) ───────────────────────────────
 function CreateUserModal({ onClose, onCreated }) {
   const [form, setForm]           = useState({ name: '', email: '', role: 'user' });
   const [errors, setErrors]       = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  // Senha temporária retornada pelo backend após criação
   const [tempPassword, setTempPassword] = useState(null);
   const [copied, setCopied]       = useState(false);
 
-  // Impede scroll do body enquanto o modal está aberto
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
   }, []);
 
-  // Fecha ao pressionar Escape
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', handler);
@@ -112,7 +93,6 @@ function CreateUserModal({ onClose, onCreated }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    // Limpa erro do campo editado
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
@@ -127,10 +107,9 @@ function CreateUserModal({ onClose, onCreated }) {
         email: form.email.toLowerCase().trim(),
         role:  form.role,
       });
-      // data.data.temporaryPassword — retornado apenas uma vez pelo backend
       setTempPassword(data.data?.temporaryPassword ?? null);
       toast.success('Usuário criado com sucesso!');
-      onCreated(); // dispara refetch na lista
+      onCreated();
     } catch (error) {
       toast.error(getApiErrorMessage(error, 'Erro ao criar usuário.'));
     } finally {
@@ -149,7 +128,6 @@ function CreateUserModal({ onClose, onCreated }) {
   return (
     <Overlay onClick={onClose}>
       <ModalBox onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="modal-title">
-
         <ModalHeader>
           <ModalTitle id="modal-title">Novo Usuário</ModalTitle>
           <ModalCloseButton type="button" onClick={onClose} aria-label="Fechar">
@@ -158,7 +136,6 @@ function CreateUserModal({ onClose, onCreated }) {
         </ModalHeader>
 
         <ModalBody>
-          {/* Senha temporária gerada — exibe APÓS a criação */}
           {tempPassword && (
             <TempPasswordBox>
               <TempPasswordLabel>
@@ -180,7 +157,6 @@ function CreateUserModal({ onClose, onCreated }) {
             </TempPasswordBox>
           )}
 
-          {/* Formulário — oculto depois da criação bem-sucedida */}
           {!tempPassword && (
             <>
               <Field>
@@ -196,9 +172,7 @@ function CreateUserModal({ onClose, onCreated }) {
                   disabled={isSubmitting}
                   autoFocus
                 />
-                {errors.name && (
-                  <FieldError><AlertCircle size={11} />{errors.name}</FieldError>
-                )}
+                {errors.name && <FieldError><AlertCircle size={11} />{errors.name}</FieldError>}
               </Field>
 
               <Field>
@@ -213,9 +187,7 @@ function CreateUserModal({ onClose, onCreated }) {
                   $hasError={!!errors.email}
                   disabled={isSubmitting}
                 />
-                {errors.email && (
-                  <FieldError><AlertCircle size={11} />{errors.email}</FieldError>
-                )}
+                {errors.email && <FieldError><AlertCircle size={11} />{errors.email}</FieldError>}
               </Field>
 
               <Field>
@@ -232,9 +204,7 @@ function CreateUserModal({ onClose, onCreated }) {
                   <option value="admin">Administrador</option>
                   <option value="partner">Parceiro</option>
                 </Select>
-                {errors.role && (
-                  <FieldError><AlertCircle size={11} />{errors.role}</FieldError>
-                )}
+                {errors.role && <FieldError><AlertCircle size={11} />{errors.role}</FieldError>}
               </Field>
             </>
           )}
@@ -251,7 +221,196 @@ function CreateUserModal({ onClose, onCreated }) {
             </SubmitButton>
           )}
         </ModalFooter>
+      </ModalBox>
+    </Overlay>
+  );
+}
 
+// ── Modal de edição de usuário (novo) ─────────────────────────────────────────
+function EditUserModal({ user, onClose, onUpdated }) {
+  const [form, setForm] = useState({
+    name:  user.name,
+    email: user.email,
+    role:  user.role,
+    is_active: user.is_active,
+  });
+  const [newPassword, setNewPassword] = useState('');
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Impede scroll do body
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  // Fecha ao pressionar Escape
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
+
+  const validate = () => {
+    const errs = {};
+    if (!form.name.trim())                    errs.name  = 'Nome é obrigatório.';
+    else if (form.name.trim().length > 150)   errs.name  = 'Nome deve ter no máximo 150 caracteres.';
+    if (!form.email.trim())                   errs.email = 'E-mail é obrigatório.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+                                              errs.email = 'Informe um e-mail válido.';
+    if (!['admin', 'user', 'partner'].includes(form.role))
+                                              errs.role  = 'Selecione um papel válido.';
+    if (newPassword && newPassword.length < 8) {
+      errs.newPassword = 'A senha deve ter pelo menos 8 caracteres.';
+    }
+    return errs;
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const val = type === 'checkbox' ? checked : value;
+    setForm((prev) => ({ ...prev, [name]: val }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const handleSubmit = async () => {
+    const errs = validate();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+
+    setIsSubmitting(true);
+    try {
+      // Monta payload com todos os campos, incluindo a senha se fornecida
+      const payload = {
+        name: form.name.trim(),
+        email: form.email.toLowerCase().trim(),
+        role: form.role,
+        is_active: form.is_active,
+      };
+      if (newPassword) {
+        payload.password = newPassword; // backend fará o hash automaticamente
+      }
+
+      await api.patch(`/users/${user.id}`, payload);
+      toast.success('Usuário atualizado com sucesso!');
+      onUpdated(); // recarrega a lista
+      onClose();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Erro ao atualizar usuário.'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Overlay onClick={onClose}>
+      <ModalBox onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+        <ModalHeader>
+          <ModalTitle id="edit-modal-title">Editar Usuário</ModalTitle>
+          <ModalCloseButton type="button" onClick={onClose} aria-label="Fechar">
+            <X size={18} />
+          </ModalCloseButton>
+        </ModalHeader>
+
+        <ModalBody>
+          <Field>
+            <Label htmlFor="edit-name">Nome *</Label>
+            <Input
+              id="edit-name"
+              name="name"
+              type="text"
+              placeholder="Nome completo"
+              value={form.name}
+              onChange={handleChange}
+              $hasError={!!errors.name}
+              disabled={isSubmitting}
+              autoFocus
+            />
+            {errors.name && <FieldError><AlertCircle size={11} />{errors.name}</FieldError>}
+          </Field>
+
+          <Field>
+            <Label htmlFor="edit-email">E-mail *</Label>
+            <Input
+              id="edit-email"
+              name="email"
+              type="email"
+              placeholder="usuario@empresa.com"
+              value={form.email}
+              onChange={handleChange}
+              $hasError={!!errors.email}
+              disabled={isSubmitting}
+            />
+            {errors.email && <FieldError><AlertCircle size={11} />{errors.email}</FieldError>}
+          </Field>
+
+          <Field>
+            <Label htmlFor="edit-role">Papel *</Label>
+            <Select
+              id="edit-role"
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+              $hasError={!!errors.role}
+              disabled={isSubmitting}
+            >
+              <option value="user">Usuário</option>
+              <option value="admin">Administrador</option>
+              <option value="partner">Parceiro</option>
+            </Select>
+            {errors.role && <FieldError><AlertCircle size={11} />{errors.role}</FieldError>}
+          </Field>
+
+          <Field>
+            <Label htmlFor="edit-is_active">
+              <input
+                type="checkbox"
+                id="edit-is_active"
+                name="is_active"
+                checked={form.is_active}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                style={{ marginRight: '8px' }}
+              />
+              Usuário ativo
+            </Label>
+          </Field>
+
+          <hr style={{ margin: '16px 0', borderColor: '#e4d9cf' }} />
+
+          <Field>
+            <Label htmlFor="edit-password">Nova senha (opcional)</Label>
+            <PasswordWrapper>
+              <Input
+                id="edit-password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Deixe em branco para manter a atual"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                $hasError={!!errors.newPassword}
+                disabled={isSubmitting}
+                style={{ paddingRight: '40px' }}
+              />
+              <TogglePasswordButton
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Ocultar' : 'Mostrar'}
+              >
+                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+              </TogglePasswordButton>
+            </PasswordWrapper>
+            {errors.newPassword && <FieldError><AlertCircle size={11} />{errors.newPassword}</FieldError>}
+          </Field>
+        </ModalBody>
+
+        <ModalFooter>
+          <CancelButton type="button" onClick={onClose} disabled={isSubmitting}>
+            Cancelar
+          </CancelButton>
+          <SubmitButton type="button" onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? <><Spinner />Salvando…</> : <>Salvar alterações</>}
+          </SubmitButton>
+        </ModalFooter>
       </ModalBox>
     </Overlay>
   );
@@ -260,10 +419,9 @@ function CreateUserModal({ onClose, onCreated }) {
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function UsersPage() {
   const navigate     = useNavigate();
-  const { isAdmin }  = useAuth();
+  const { user: currentUser, isAdmin } = useAuth();
 
   // Redireciona imediatamente se não for admin
-  // (proteção dupla — a rota já deve estar protegida no AppRouter)
   useEffect(() => {
     if (!isAdmin) navigate('/clientes', { replace: true });
   }, [isAdmin, navigate]);
@@ -278,6 +436,7 @@ export default function UsersPage() {
   const [search,     setSearch]     = useState('');
   const [apiSearch,  setApiSearch]  = useState('');
   const [showModal,  setShowModal]  = useState(false);
+  const [editingUser, setEditingUser] = useState(null); // armazena o usuário sendo editado
 
   const debounceRef = useRef(null);
 
@@ -288,8 +447,9 @@ export default function UsersPage() {
       const params = new URLSearchParams({ page, limit: PER_PAGE });
       if (apiSearch) params.set('search',    apiSearch);
       if (role)      params.set('role',      role);
-      if (isActive !== '') params.set('is_active', isActive);
+      if (isActive !== '') params.set('is_active', isActive === 'true' ? 1 : 0);
 
+      
       const { data } = await api.get(`/users?${params.toString()}`);
 
       setUsers(data.data ?? []);
@@ -309,8 +469,6 @@ export default function UsersPage() {
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
   // ── Handlers de filtro ────────────────────────────────────
-
-  // Debounce 400ms — mesmo padrão da ClientsPage
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearch(value);
@@ -326,29 +484,33 @@ export default function UsersPage() {
     setPage(1);
   };
 
-  const handleStatusFilter = (e) => {
+  const handleStatusFilter = (e) => {        
     setIsActive(e.target.value);
     setPage(1);
   };
 
   // ── Ações ─────────────────────────────────────────────────
-
-  const handleDeactivate = async (user) => {
-    if (!window.confirm(`Desativar o usuário "${user.name}"?`)) return;
+  const handleDeactivate = async (targetUser) => {
+    // Impede autodesativação
+    if (targetUser.id === currentUser?.id) {
+      toast.warning('Você não pode desativar a própria conta.');
+      return;
+    }
+    if (!window.confirm(`Desativar o usuário "${targetUser.name}"?`)) return;
     try {
-      await api.patch(`/users/${user.id}/deactivate`);
-      toast.success(`Usuário "${user.name}" desativado.`);
+      await api.patch(`/users/${targetUser.id}/deactivate`);
+      toast.success(`Usuário "${targetUser.name}" desativado.`);
       fetchUsers();
     } catch (error) {
       toast.error(getApiErrorMessage(error, 'Erro ao desativar usuário.'));
     }
   };
 
-  const handleReactivate = async (user) => {
-    if (!window.confirm(`Reativar o usuário "${user.name}"?`)) return;
+  const handleReactivate = async (targetUser) => {
+    if (!window.confirm(`Reativar o usuário "${targetUser.name}"?`)) return;
     try {
-      await api.patch(`/users/${user.id}/reactivate`);
-      toast.success(`Usuário "${user.name}" reativado.`);
+      await api.patch(`/users/${targetUser.id}/reactivate`);
+      toast.success(`Usuário "${targetUser.name}" reativado.`);
       fetchUsers();
     } catch (error) {
       toast.error(getApiErrorMessage(error, 'Erro ao reativar usuário.'));
@@ -424,14 +586,12 @@ export default function UsersPage() {
               <Tr key={u.id}>
                 <Td>{u.name}</Td>
                 <TdMuted>{u.email}</TdMuted>
-
                 <Td>
                   <RoleBadge $role={u.role}>
                     {ROLE_ICONS[u.role]}
                     {ROLE_LABELS[u.role] ?? u.role}
                   </RoleBadge>
                 </Td>
-
                 <Td>
                   <StatusDot $active={u.is_active}>
                     {u.is_active
@@ -439,12 +599,22 @@ export default function UsersPage() {
                       : <><XCircle      size={13} />Inativo</>}
                   </StatusDot>
                 </Td>
-
                 <TdMuted>
                   {u.last_login_at ? formatDate(u.last_login_at) : 'Nunca acessou'}
                 </TdMuted>
 
                 <TdActions>
+                  {/* Botão Editar */}
+                  <ActionButton
+                    type="button"
+                    $variant="edit"
+                    onClick={() => setEditingUser(u)}
+                    title="Editar usuário"
+                    style={{ marginRight: '8px' }}
+                  >
+                    <Edit size={14} /> Editar
+                  </ActionButton>
+
                   {u.is_active ? (
                     <ActionButton
                       type="button"
@@ -547,10 +717,16 @@ export default function UsersPage() {
       {showModal && (
         <CreateUserModal
           onClose={() => setShowModal(false)}
-          onCreated={() => {
-            // Não fecha o modal automaticamente — o admin precisa copiar a senha
-            fetchUsers();
-          }}
+          onCreated={() => fetchUsers()}
+        />
+      )}
+
+      {/* Modal de edição */}
+      {editingUser && (
+        <EditUserModal
+          user={editingUser}
+          onClose={() => setEditingUser(null)}
+          onUpdated={() => fetchUsers()}
         />
       )}
     </>

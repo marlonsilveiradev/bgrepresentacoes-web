@@ -6,33 +6,36 @@ export default function ProtectedRoute({ allowedRoles }) {
   const location = useLocation();
 
   const isChangePasswordRoute = location.pathname.includes('/alterar-senha');
+
   // 🟡 1. Aguarda carregamento
   if (isLoading) {
     return null; // ou spinner
   }
 
-  // 🔥 2. REGRA PRIORITÁRIA: troca de senha
+  // 🔥 2. Regra obrigatória: troca de senha
   if (mustChangePassword) {
-  if (!isChangePasswordRoute) {
-   
-    return <Navigate to="/alterar-senha" replace />;
+    if (!isChangePasswordRoute) {
+      return <Navigate to="/alterar-senha" replace />;
+    }
+    return <Outlet />;
   }
 
-  // só libera a própria página
-  return <Outlet />;
-}
+  // 3. Se o usuário NÃO precisa trocar a senha, mas está tentando acessar a rota de alterar senha,
+  // redireciona para o dashboard
+  if (isChangePasswordRoute) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
-  // 🔴 3. Só depois valida autenticação
+  // 🔴 4. Não autenticado
   if (!isAuthenticated) {
-   
     return <Navigate to="/login" replace />;
   }
 
-  // 🔒 4. Validação de role (se houver)
+  // 🔒 5. Validação de role
   if (allowedRoles && !allowedRoles.includes(user?.role)) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // ✅ 5. Acesso permitido
+  // ✅ 6. Permitido
   return <Outlet />;
 }

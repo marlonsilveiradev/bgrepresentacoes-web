@@ -66,9 +66,9 @@ const colors = {
 
 const typography = {
   fontFamily: {
-    sans:  "'Sora', 'Helvetica Neue', Arial, sans-serif",
-    serif: "'Playfair Display', Georgia, serif",
-    mono:  "'JetBrains Mono', 'Fira Code', monospace",
+    sans:  "var(--font-sans)", 
+    serif: "var(--font-serif)",
+    mono:  "'JetBrains Mono', monospace",
   },
   fontSize: {
     xs:   '0.75rem',    // 12px
