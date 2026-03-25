@@ -74,6 +74,8 @@ export default function DashboardPage() {
           api.get('/sales', { params: { limit: '10' } }), 
         ]);
 
+        console.log('Resultado bruto da Promise (Vendas):', results[3]);
+
         let allClients = [];
         if (results[0].status === 'fulfilled') {
           allClients = results[0].value.data?.data || [];
@@ -89,6 +91,9 @@ export default function DashboardPage() {
         }
 
         if (results[3].status === 'fulfilled') {
+          console.log('Dados que chegaram no data.data:', results[3].value.data)
+          const salesData = results[3].value.data?.data || [];
+          console.log('Array final de vendas para o estado:', salesData);
           setRecentSales(results[3].value.data?.data || []);
         }
 
