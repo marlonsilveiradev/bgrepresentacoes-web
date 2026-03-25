@@ -1,13 +1,8 @@
 import axios from 'axios';
 
 // ── BASE_URL ──────────────────────────────────────────────────────────────────
-const BASE_URL = import.meta.env.VITE_API_URL ?? (() => {
-  console.warn(
-    '[api.js] VITE_API_URL não definida. ' +
-    'Certifique-se de que o arquivo .env existe e foi carregado corretamente.'
-  );
-  return 'http://localhost:3000/api/v1';
-})();
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://bgrepresentacoes-api-production.up.railway.app/api/v1';
+console.log(`[API] Conectado em: ${BASE_URL}`);
 
 // ── Chaves de storage ─────────────────────────────────────────────────────────
 const KEYS = {
