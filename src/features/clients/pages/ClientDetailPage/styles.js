@@ -166,6 +166,7 @@ export const InfoGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[1]};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
   ${({ $span }) => $span && 'grid-column: 1 / -1;'}
 `;
 

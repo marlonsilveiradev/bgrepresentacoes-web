@@ -338,8 +338,8 @@ function EditUserModal({ user, onClose, onUpdated }) {
               placeholder="usuario@empresa.com"
               value={form.email}
               onChange={handleChange}
+              disabled={true} // E-mail não pode ser editado
               $hasError={!!errors.email}
-              disabled={isSubmitting}
             />
             {errors.email && <FieldError><AlertCircle size={11} />{errors.email}</FieldError>}
           </Field>

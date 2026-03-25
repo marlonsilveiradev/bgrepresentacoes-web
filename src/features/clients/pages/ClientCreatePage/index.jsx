@@ -599,7 +599,7 @@ export default function ClientCreatePage() {
           </BackButton>
           <TitleGroup>
             <PageTitle>Novo Cliente</PageTitle>
-            <PageSubtitle>Preencha os dados para iniciar o onboarding</PageSubtitle>
+            <PageSubtitle>Preencha os dados para cadastrar o cliente</PageSubtitle>
           </TitleGroup>
         </PageHeader>
 
@@ -687,9 +687,8 @@ export default function ClientCreatePage() {
               <FullSpan>
                 <Field>
                   <Label htmlFor="notes">Observações</Label>
-                  <Textarea id="notes" placeholder="Observações internas…"
+                  <Textarea id="notes" placeholder="Observações…"
                     disabled={isSubmitting} {...register('notes')} />
-                  <FieldHint>Visível apenas para a equipe interna.</FieldHint>
                 </Field>
               </FullSpan>
 
