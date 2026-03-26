@@ -2,11 +2,12 @@
 // src/features/clients/pages/ClientsPage/index.jsx
 // Lista de clientes com busca, filtro e paginação
 // ============================================================
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Search, UserPlus, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 
+import { useQuery } from '@tanstack/react-query';
 import api, { getApiErrorMessage } from '../../../../lib/api';
 import { useAuth } from '../../../../contexts/AuthContext';
 import {
@@ -46,11 +47,11 @@ function TableSkeleton() {
 // Aplica máscara de CNPJ: 00.000.000/0001-00
 const maskCNPJ = (digits = '') => {
   const d = digits.slice(0, 14);
-  if (d.length <=  2) return d;
-  if (d.length <=  5) return `${d.slice(0,2)}.${d.slice(2)}`;
-  if (d.length <=  8) return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5)}`;
-  if (d.length <= 12) return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8)}`;
-  return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8,12)}-${d.slice(12)}`;
+  if (d.length <= 2) return d;
+  if (d.length <= 5) return `${d.slice(0, 2)}.${d.slice(2)}`;
+  if (d.length <= 8) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5)}`;
+  if (d.length <= 12) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8)}`;
+  return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
 };
 
 // Retorna true se a string contiver apenas dígitos (e separadores de CNPJ)
@@ -68,51 +69,53 @@ const formatBenefitType = (type) => {
   return labels[type] ?? type ?? '—';
 };
 
+const fetchClients = async () => {
+  const { data } = await api.get('/clients');
+  return data.data || data;
+};
+
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function ClientsPage() {
-  const navigate    = useNavigate();
+  const navigate = useNavigate();
   const { hasRole } = useAuth();
 
   // ── Estado ───────────────────────────────────────────────────────────────────
-  const [clients,    setClients]    = useState([]);
-  const [pagination, setPagination] = useState({ total: 0, totalPages: 1, currentPage: 1 });
-  const [isLoading,  setIsLoading]  = useState(true);
-  const [status,     setStatus]     = useState('');
-  const [page,       setPage]       = useState(1);
+  const [status, setStatus] = useState('');
+  const [page, setPage] = useState(1);
 
   // Dois valores de busca separados:
   //   displaySearch → o que o usuário VÊ no input (com máscara se for CNPJ)
   //   apiSearch     → o que é ENVIADO para a API (sempre sem máscara)
   const [displaySearch, setDisplaySearch] = useState('');
-  const [apiSearch,     setApiSearch]     = useState('');
+  const [apiSearch, setApiSearch] = useState('');
   const debounceRef = useRef(null);
 
   // ── Busca clientes na API ─────────────────────────────────────────────────────
-  const fetchClients = useCallback(async () => {
-    setIsLoading(true);
-    try {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['clients', page, apiSearch, status],
+    queryFn: async () => {
       const params = new URLSearchParams({ page, limit: PER_PAGE });
-      // apiSearch já está limpo — sem máscara, pronto para a API
+
       if (apiSearch) params.set('search', apiSearch);
-      if (status)    params.set('overall_status', status);
+      if (status) params.set('overall_status', status);
 
       const { data } = await api.get(`/clients?${params.toString()}`);
 
-      setClients(data.data ?? []);
-      setPagination({
-        total:       data.pagination?.total       ?? 0,
-        totalPages:  data.pagination?.totalPages  ?? 1,
-        currentPage: data.pagination?.currentPage ?? 1,
-      });
-    } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Erro ao carregar clientes.'));
-      setClients([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [page, apiSearch, status]);
+      return {
+        clients: data.data ?? [],
+        pagination: {
+          total: data.pagination?.total ?? 0,
+          totalPages: data.pagination?.totalPages ?? 1,
+          currentPage: data.pagination?.currentPage ?? 1,
+        },
+      };
+    },
+    keepPreviousData: true,
+  });
 
-  useEffect(() => { fetchClients(); }, [fetchClients]);
+  if (error) {
+    toast.error(getApiErrorMessage(error, 'Erro ao carregar clientes.'));
+  }
 
   // ── Handler do campo de busca ─────────────────────────────────────────────────
   //
@@ -122,30 +125,30 @@ export default function ClientsPage() {
   //   3. Se o input tiver letras (nome/razão social): exibe SEM máscara, envia como está
   //
   const handleSearch = (e) => {
-  const raw    = e.target.value;
-  const digits = raw.replace(/\D/g, '');
+    const raw = e.target.value;
+    const digits = raw.replace(/\D/g, '');
 
-  if (looksLikeCNPJ(raw)) {
-    const masked = maskCNPJ(digits);
-    setDisplaySearch(masked);
-    scheduleSearch(masked);
-  } else if (raw === '') {
-    setDisplaySearch('');
-    scheduleSearch('');
-  } else {
-    setDisplaySearch(raw);
-    scheduleSearch(raw);
-  }
-};
+    if (looksLikeCNPJ(raw)) {
+      const masked = maskCNPJ(digits);
+      setDisplaySearch(masked);
+      scheduleSearch(masked);
+    } else if (raw === '') {
+      setDisplaySearch('');
+      scheduleSearch('');
+    } else {
+      setDisplaySearch(raw);
+      scheduleSearch(raw);
+    }
+  };
 
-// Aguarda 400ms após o usuário parar de digitar antes de chamar a API
-const scheduleSearch = (value) => {
-  if (debounceRef.current) clearTimeout(debounceRef.current);
-  debounceRef.current = setTimeout(() => {
-    setApiSearch(value);
-    setPage(1);
-  }, 400);
-};
+  // Aguarda 400ms após o usuário parar de digitar antes de chamar a API
+  const scheduleSearch = (value) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setApiSearch(value);
+      setPage(1);
+    }, 400);
+  };
 
   const handleStatus = (e) => {
     setStatus(e.target.value);
@@ -160,8 +163,8 @@ const scheduleSearch = (value) => {
         <PageTitleGroup>
           <PageTitle>Clientes</PageTitle>
           <PageSubtitle>
-            {pagination.total > 0
-              ? `${pagination.total} cliente${pagination.total !== 1 ? 's' : ''} cadastrado${pagination.total !== 1 ? 's' : ''}`
+            {data?.pagination.total > 0
+              ? `${data?.pagination.total} cliente${data?.pagination.total !== 1 ? 's' : ''} cadastrado${data?.pagination.total !== 1 ? 's' : ''}`
               : 'Nenhum cliente cadastrado ainda'}
           </PageSubtitle>
         </PageTitleGroup>
@@ -181,7 +184,7 @@ const scheduleSearch = (value) => {
           <SearchInput
             type="text"
             placeholder="Buscar por Razão Social ou CNPJ…"
-            style={{paddingLeft: '30px'}}
+            style={{ paddingLeft: '30px' }}
             value={displaySearch}
             onChange={handleSearch}
           />
@@ -211,7 +214,7 @@ const scheduleSearch = (value) => {
           <Tbody>
             {isLoading && <TableSkeleton />}
 
-            {!isLoading && clients.map((client) => (
+            {!isLoading && data?.clients.map((client) => (
               <Tr
                 key={client.id}
                 onClick={() => navigate(`/clientes/${client.id}`)}
@@ -225,7 +228,7 @@ const scheduleSearch = (value) => {
               </Tr>
             ))}
 
-            {!isLoading && clients.length === 0 && (
+            {!isLoading && data?.clients.length === 0 && (
               <tr>
                 <td colSpan={5}>
                   <EmptyState>
@@ -244,27 +247,27 @@ const scheduleSearch = (value) => {
         </Table>
 
         {/* Paginação */}
-        {!isLoading && pagination.totalPages > 1 && (
+        {!isLoading && data?.pagination.totalPages > 1 && (
           <Pagination>
             <PaginationInfo>
-              Página {pagination.currentPage} de {pagination.totalPages}
-              {' '}· {pagination.total} registros
+              Página {data?.pagination.currentPage} de {data?.pagination.totalPages}
+              {' '}· {data?.pagination.total} registros
             </PaginationInfo>
 
             <PaginationButtons>
               <PageButton
                 type="button"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.min(data?.pagination.totalPages || 1, p + 1))}
+                disabled={page >= (data?.pagination.totalPages || 1)}
                 aria-label="Página anterior"
               >
                 <ChevronLeft size={15} />
               </PageButton>
 
-              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+              {Array.from({ length: data?.pagination.totalPages }, (_, i) => i + 1)
                 .filter((p) =>
                   p === 1 ||
-                  p === pagination.totalPages ||
+                  p === data?.pagination.totalPages ||
                   Math.abs(p - page) <= 2
                 )
                 .reduce((acc, p, idx, arr) => {
