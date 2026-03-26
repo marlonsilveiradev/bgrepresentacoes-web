@@ -2,6 +2,7 @@
 // src/router/AppRouter.jsx
 // ============================================================
 import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,20 +14,20 @@ import ProtectedRoute from '../components/layout/ProtectedRoute';
 import MainLayout from '../components/layout/MainLayout';
 
 // Auth
-import LoginPage from '../features/auth/pages/LoginPage';
-import ChangePasswordPage from '../features/auth/pages/ChangePasswordPage';
+const LoginPage = lazy(() => import('../features/auth/pages/LoginPage'));
+const ChangePasswordPage = lazy(() => import('../features/auth/pages/ChangePasswordPage'));
 
 //Dashboard
-import DashboardPage from '../features/dashboard/pages/DashboardPage';
+const DashboardPage = lazy(() => import('../features/dashboard/pages/DashboardPage'));
 
 // Clients
-import ClientsPage from '../features/clients/pages/ClientsPage';
-import ClientDetailPage from '../features/clients/pages/ClientDetailPage';
-import ClientEditPage from '../features/clients/pages/ClientEditPage';
-import ClientCreatePage from '../features/clients/pages/ClientCreatePage';
+const ClientCreatePage = lazy(() => import('../features/clients/pages/ClientCreatePage'));
+const ClientEditPage = lazy(() => import('../features/clients/pages/ClientEditPage'));
+const ClientDetailPage = lazy(() => import('../features/clients/pages/ClientDetailPage'));
+const ClientsPage = lazy(() => import('../features/clients/pages/ClientsPage'));
 
 // Users
-import UsersPage from '../features/users/pages/UsersPage';
+const UsersPage = lazy(() => import('../features/users/pages/UsersPage'));
 
 // Placeholder
 const Placeholder = ({ title }) => (
@@ -62,7 +63,7 @@ export default function AppRouter() {
             autoClose={4000}
             theme="light"
           />
-
+            <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div>}> 
           <Routes>
 
             {/* ── Públicas ───────────────────────── */}
@@ -105,7 +106,7 @@ export default function AppRouter() {
             </Route>
 
           </Routes>
-
+          </Suspense>
         </AuthProvider>
       </Router>
     </ThemeProvider>
