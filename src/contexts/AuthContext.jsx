@@ -121,7 +121,7 @@ export function AuthProvider({ children }) {
           },
         });
       } catch (error) {
-        console.error('[AUTH INIT ERROR]', error);
+        console.error('[AUTH INIT ERROR]', error?.message);
         clearTokens();
         dispatch({ type: A.LOGOUT });
       }
