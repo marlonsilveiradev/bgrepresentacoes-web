@@ -11,6 +11,7 @@ import {
   Trash2, PackageCheck, Layers, Check,
 } from 'lucide-react';
 
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api, { apiUpload, getApiErrorMessage } from '../../../../lib/api';
 import { useAuth } from '../../../../contexts/AuthContext';
 import {
@@ -33,10 +34,14 @@ import {
   SkeletonBar, SkeletonCard, Divider, EmptyState, EmptyText,
 } from './styles';
 
-// ── Caches em memória ─────────────────────────────────────────────────────────
-let plansCache = null;
-let flagsCache = null;
-let partnersCache = null;
+
+const normalizeList = (res) => {
+  if (!res) return [];
+  if (Array.isArray(res)) return res;
+  if (Array.isArray(res.data)) return res.data;
+  if (Array.isArray(res.results)) return res.results;
+  return [];
+};
 
 // ── Função de validação de CNPJ ─────────────────────────────────────────────
 const isValidCNPJ = (cnpjDigits) => {
@@ -88,7 +93,6 @@ const createSchema = yup.object({
 
   email: yup
     .string()
-    .required('O e-mail é obrigatório.')
     .nullable()
     .transform((v) => v || null)
     .email('Informe um e-mail válido.'),
@@ -96,7 +100,8 @@ const createSchema = yup.object({
   state_registration: yup
     .string()
     .nullable()
-    .transform((v) => v || null)
+    .transform((v) => v?.replace(/\D/g, '') || null)
+    .matches(/^\d*$/, 'A inscrição estadual deve conter apenas números.')
     .max(15, 'Inscrição estadual deve ter no máximo 15 caracteres.'),
 
   trade_name: yup
@@ -356,11 +361,44 @@ function DocumentSlot({ slot, selectedFile, onFileSelect, onClearFile, disabled 
 export default function ClientCreatePage() {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  const queryClient = useQueryClient();
 
-  const [plans, setPlans] = useState([]);
-  const [flags, setFlags] = useState([]);
-  const [partners, setPartners] = useState([]);
-  const [loadingData, setLoadingData] = useState(true);
+  const { data: plans = [], isLoading: loadingPlans } = useQuery({
+    queryKey: ['plans'],
+    queryFn: async () => {
+      const res = await api.get('/plans?limit=100');
+      return normalizeList(res.data);
+    },
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: flags = [], isLoading: loadingFlags } = useQuery({
+    queryKey: ['flags'],
+    queryFn: async () => {
+      const res = await api.get('/flags?limit=100');
+      return normalizeList(res.data);
+    },
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: partners = [], isLoading: loadingPartners } = useQuery({
+    queryKey: ['partners'],
+    queryFn: async () => {
+      const res = await api.get('/users?role=partner&limit=100');
+
+      const list = normalizeList(res.data);
+
+      return list;
+    },
+    enabled: isAdmin,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  });
+
+
+  const loadingData = loadingPlans || loadingFlags || loadingPartners;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadPhase, setUploadPhase] = useState(''); // 'compressing' | 'uploading' | 'processing'
@@ -369,7 +407,6 @@ export default function ClientCreatePage() {
   const [selectedFlags, setSelectedFlags] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState({});
   const [cnpjDisplay, setCnpjDisplay] = useState('');
-  const cnpjDebounceRef = useRef(null);
 
   const {
     register,
@@ -405,43 +442,12 @@ export default function ClientCreatePage() {
     },
   });
 
+  useEffect(() => {
+    register('cnpj');
+  }, [register]);
+
   const bankName = watch('bank_bank_name');
   const bankFilled = !!bankName;
-
-  // ── Busca dados externos com cache ────────────────────────────────────────
-  useEffect(() => {
-    const fetchAll = async () => {
-      setLoadingData(true);
-      try {
-        await Promise.all([
-          (!plansCache || plansCache.length === 0)
-            ? api.get('/plans?limit=100')
-              .then(({ data }) => { plansCache = data.data ?? []; })
-              .catch(() => { toast.error('Erro ao carregar planos.'); plansCache = []; })
-            : Promise.resolve(),
-
-          (!flagsCache || flagsCache.length === 0)
-            ? api.get('/flags?limit=100')
-              .then(({ data }) => { flagsCache = data.data ?? []; })
-              .catch(() => { toast.error('Erro ao carregar bandeiras.'); flagsCache = []; })
-            : Promise.resolve(),
-
-          (isAdmin && (!partnersCache || partnersCache.length === 0))
-            ? api.get('/users?role=partner&limit=100')
-              .then(({ data }) => { partnersCache = data.data ?? []; })
-              .catch(() => { partnersCache = []; })
-            : Promise.resolve(),
-        ]);
-      } finally {
-        setPlans(plansCache ?? []);
-        setFlags(flagsCache ?? []);
-        setPartners(partnersCache ?? []);
-        setLoadingData(false);
-      }
-    };
-    fetchAll();
-  }, []);
-
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handleFileSelect = (slotKey, file) => {
     setSelectedFiles((prev) => ({ ...prev, [slotKey]: file }));
@@ -455,18 +461,9 @@ export default function ClientCreatePage() {
     });
   };
 
-  const handleCnpjChange = (e) => {
-    const raw = e.target.value;
-    setCnpjDisplay(maskCNPJ(raw));
-    if (cnpjDebounceRef.current) clearTimeout(cnpjDebounceRef.current);
-    cnpjDebounceRef.current = setTimeout(() => {
-      setValue('cnpj', onlyDigits(raw), { shouldValidate: true });
-    }, 400);
-  };
-
   // ── Totais ────────────────────────────────────────────────────────────────
   const selectedFlagObjects = flags.filter((f) => selectedFlags.includes(f.id));
-  const totalIndividual = selectedFlagObjects.reduce((acc, f) => acc + parseFloat(f.price || 0), 0);
+  const totalIndividual = selectedFlagObjects.reduce((acc, f) => acc + (Number(f.price) || 0), 0);
   const selectedPlan = plans.find((p) => p.id === selectedPlanId);
 
   // ── Submit ────────────────────────────────────────────────────────────────
@@ -549,8 +546,9 @@ export default function ClientCreatePage() {
       // ── Fase 3: Upload com progresso (apiUpload = timeout 120s) ──────
       const { data } = await apiUpload.post('/onboarding', formDataObj, {
         onUploadProgress: (e) => {
-          // Progresso do network: mapeado de 20% a 90%
-          const pct = Math.round((e.loaded / (e.total || 1)) * 70);
+          if (!e.total) return;
+
+          const pct = Math.round((e.loaded / e.total) * 70);
           setUploadProgress(20 + pct);
           if (e.loaded >= e.total) setUploadPhase('processing');
         },
@@ -558,12 +556,16 @@ export default function ClientCreatePage() {
 
       setUploadProgress(100);
 
+      // 🔥 INVALIDA CACHE      
+      await queryClient.invalidateQueries({ queryKey: ['clients'] });
+
       toast.success(
-        `Cliente cadastrado! Protocolo: ${data.data?.client?.protocol ?? ''}`,
-        { autoClose: 5000 }
+        `Cliente cadastrado com sucesso!`,
+        { autoClose: 4000 }
       );
 
       const clientId = data.data?.client?.id;
+
       navigate(clientId ? `/clientes/${clientId}` : '/clientes', { replace: true });
 
     } catch (error) {
@@ -623,9 +625,17 @@ export default function ClientCreatePage() {
 
               <Field>
                 <Label htmlFor="cnpj">CNPJ *</Label>
-                <Input id="cnpj" type="text" placeholder="00.000.000/0001-00"
-                  value={cnpjDisplay} $hasError={!!err('cnpj')} disabled={isSubmitting}
-                  onChange={handleCnpjChange} />
+                <Input
+                  id="cnpj"
+                  type="text"
+                  placeholder="00.000.000/0001-00"
+                  disabled={isSubmitting}
+                  value={cnpjDisplay}
+                  onChange={(e) => {
+                    const masked = maskCNPJ(e.target.value);
+                    setCnpjDisplay(masked);
+                    setValue('cnpj', onlyDigits(masked), { shouldValidate: true });
+                  }} />
                 {err('cnpj') && <FieldError><AlertCircle size={11} />{err('cnpj')}</FieldError>}
               </Field>
 
@@ -639,7 +649,7 @@ export default function ClientCreatePage() {
                 <Label htmlFor="state_registration">Inscrição Estadual</Label>
                 <Input id="state_registration" type="text" placeholder="Inscrição estadual (opcional)"
                   $hasError={!!err('state_registration')} disabled={isSubmitting}
-                  {...register('state_registration')} />
+                  {...register('state_registration', { onChange: (e) => setValue('state_registration', onlyDigits(e.target.value)) })} />
                 {err('state_registration') && <FieldError><AlertCircle size={11} />{err('state_registration')}</FieldError>}
               </Field>
 

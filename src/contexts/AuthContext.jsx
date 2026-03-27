@@ -66,7 +66,7 @@ function reducer(state, { type, payload }) {
         mustChangePassword: payload.mustChangePassword ?? false,
       };
 
-    case A.LOGOUT:      
+    case A.LOGOUT:
       return { ...INITIAL, isLoading: false };
 
     case A.PASSWORD_CHANGED:
@@ -101,12 +101,29 @@ export function AuthProvider({ children }) {
       const refreshToken = getRefreshToken();
 
       // Se não tem tokens, encerra o loading inicial
-      if (!accessToken && !refreshToken) {
+      if (!refreshToken) {
         dispatch({
           type: A.INIT,
           payload: { user: null, mustChangePassword: false },
         });
         return;
+      }
+
+      if (!accessToken && refreshToken) {
+        try {
+          const { data } = await api.post('/auth/refresh', { refreshToken });
+
+          const payload = data.data ?? data;
+
+          setTokens({
+            accessToken: payload.token ?? payload.accessToken,
+            refreshToken: payload.refreshToken,
+          });
+        } catch (e) {
+          clearTokens();
+          dispatch({ type: A.LOGOUT });
+          return;
+        }
       }
 
       try {
@@ -121,6 +138,15 @@ export function AuthProvider({ children }) {
           },
         });
       } catch (error) {
+        const status = error?.response?.status;
+
+        // 🔥 Evita poluir console com erro esperado
+        if (status === 401) {
+          clearTokens();
+          dispatch({ type: A.LOGOUT });
+          return;
+        }
+
         console.error('[AUTH INIT ERROR]', error?.message);
         clearTokens();
         dispatch({ type: A.LOGOUT });
@@ -146,7 +172,7 @@ export function AuthProvider({ children }) {
 
     try {
       const { data } = await api.post('/auth/login', { email, password });
-      
+
       const payload = data.data ?? data;
       const accessToken = payload.token ?? payload.accessToken;
       const { refreshToken, user } = payload;
