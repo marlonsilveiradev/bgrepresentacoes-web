@@ -14,7 +14,7 @@
 // Campos imutáveis (unique no banco):
 //   cnpj, corporate_name, email, state_registration
 // ============================================================
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -26,6 +26,7 @@ import {
   Upload, File as FileIcon, Trash2,
 } from 'lucide-react';
 
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api, { getApiErrorMessage } from '../../../../lib/api';
 import {
   Container, PageHeader, BackButton, TitleGroup,
@@ -140,8 +141,8 @@ const clientSchema = yup.object({
     .string()
     .max(10, 'Agência deve ter no máximo 10 caracteres.')
     .when('bank_bank_name', {
-      is:        (v) => !!v,
-      then:      (s) => s.required('Agência é obrigatória quando o banco é informado.'),
+      is: (v) => !!v,
+      then: (s) => s.required('Agência é obrigatória quando o banco é informado.'),
       otherwise: (s) => s.nullable().transform((v) => v || null),
     }),
 
@@ -155,8 +156,8 @@ const clientSchema = yup.object({
     .string()
     .max(20, 'Conta deve ter no máximo 20 caracteres.')
     .when('bank_bank_name', {
-      is:        (v) => !!v,
-      then:      (s) => s.required('Conta é obrigatória quando o banco é informado.'),
+      is: (v) => !!v,
+      then: (s) => s.required('Conta é obrigatória quando o banco é informado.'),
       otherwise: (s) => s.nullable().transform((v) => v || null),
     }),
 
@@ -170,8 +171,8 @@ const clientSchema = yup.object({
   bank_account_type: yup
     .string()
     .when('bank_bank_name', {
-      is:        (v) => !!v,
-      then:      (s) => s
+      is: (v) => !!v,
+      then: (s) => s
         .required('Tipo de conta é obrigatório.')
         .oneOf(['checking', 'savings'], 'Tipo de conta inválido.'),
       otherwise: (s) => s.nullable().transform((v) => v || null),
@@ -182,53 +183,53 @@ const clientSchema = yup.object({
 
 const DOCUMENT_SLOTS = [
   {
-    key:      'contrato',
+    key: 'contrato',
     fieldName: 'contrato',
-    type:     'company_document',
-    label:    'Contrato / Doc. da Empresa',
-    hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
+    type: 'company_document',
+    label: 'Contrato / Doc. da Empresa',
+    hint: 'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
   },
   {
-    key:      'proof_of_address',
+    key: 'proof_of_address',
     fieldName: 'documentos',
-    type:     'proof_of_address',
-    label:    'Comprovante de Endereço',
-    hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
+    type: 'proof_of_address',
+    label: 'Comprovante de Endereço',
+    hint: 'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
     docIndex: 0,
   },
   {
-    key:      'bank_account_proof',
+    key: 'bank_account_proof',
     fieldName: 'documentos',
-    type:     'bank_account_proof',
-    label:    'Comprovante Bancário',
-    hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
+    type: 'bank_account_proof',
+    label: 'Comprovante Bancário',
+    hint: 'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
     docIndex: 1,
   },
   {
-    key:      'card_machine_proof',
+    key: 'card_machine_proof',
     fieldName: 'documentos',
-    type:     'card_machine_proof',
-    label:    'Comprovante de Maquininha',
-    hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
+    type: 'card_machine_proof',
+    label: 'Comprovante de Maquininha',
+    hint: 'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
     docIndex: 2,
   },
 ];
 
 const BENEFIT_OPTIONS = [
-  { value: 'food', label: 'Vale Alimentação'        },
-  { value: 'meal', label: 'Vale Refeição'            },
-  { value: 'both', label: 'Alimentação + Refeição'  },
+  { value: 'food', label: 'Vale Alimentação' },
+  { value: 'meal', label: 'Vale Refeição' },
+  { value: 'both', label: 'Alimentação + Refeição' },
 ];
 
 const ACCOUNT_TYPE_OPTIONS = [
   { value: 'checking', label: 'Conta Corrente' },
-  { value: 'savings',  label: 'Conta Poupança'  },
+  { value: 'savings', label: 'Conta Poupança' },
 ];
 
 const UF_OPTIONS = [
-  'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA',
-  'MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN',
-  'RO','RR','RS','SC','SE','SP','TO',
+  'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+  'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN',
+  'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO',
 ];
 
 // Cache em memória — evita re-fetch a cada abertura da página de edição
@@ -238,24 +239,24 @@ let partnersCache = null;
 
 const maskPhone = (v = '') => {
   const d = v.replace(/\D/g, '').slice(0, 11);
-  if (d.length <= 2)  return `(${d}`;
-  if (d.length <= 6)  return `(${d.slice(0,2)}) ${d.slice(2)}`;
-  if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
-  return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if (d.length <= 2) return `(${d}`;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 };
 
 const maskCEP = (v = '') => {
   const d = v.replace(/\D/g, '').slice(0, 8);
   if (d.length <= 5) return d;
-  return `${d.slice(0,5)}-${d.slice(5)}`;
+  return `${d.slice(0, 5)}-${d.slice(5)}`;
 };
 
 const onlyDigits = (v = '') => v.replace(/\D/g, '');
 
 const formatFileSize = (bytes) => {
   if (!bytes) return '';
-  if (bytes < 1024)          return `${bytes} B`;
-  if (bytes < 1024 * 1024)   return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
@@ -293,8 +294,8 @@ function EditSkeleton() {
 // ── Slot de documento ─────────────────────────────────────────────────────────
 
 function DocumentSlot({ slot, existingDoc, selectedFile, onFileSelect, onClearFile, disabled }) {
-  const inputRef    = useRef(null);
-  const hasFile     = !!selectedFile;
+  const inputRef = useRef(null);
+  const hasFile = !!selectedFile;
   const hasExisting = !!existingDoc;
 
   return (
@@ -364,22 +365,23 @@ function DocumentSlot({ slot, existingDoc, selectedFile, onFileSelect, onClearFi
 // ── Componente principal ──────────────────────────────────────────────────────
 
 export default function ClientEditPage() {
-  const { id }   = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient()
 
-  const [isLoading,       setIsLoading]      = useState(true);
-  const [isSubmitting,    setIsSubmitting]    = useState(false);
-  const [clientName,      setClientName]      = useState('');
-  const [partners,        setPartners]        = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [clientName, setClientName] = useState('');
+  const [partners, setPartners] = useState([]);
   const [loadingPartners, setLoadingPartners] = useState(false);
-  const [existingDocs,    setExistingDocs]    = useState({});
-  const [selectedFiles,   setSelectedFiles]   = useState({});
+  const [existingDocs, setExistingDocs] = useState({});
+  const [selectedFiles, setSelectedFiles] = useState({});
 
   // Campos únicos imutáveis — só exibição, nunca no payload nem no schema
   const [readonlyFields, setReadonlyFields] = useState({
-    corporate_name:     '',
-    cnpj:               '',
-    email:              '',
+    corporate_name: '',
+    cnpj: '',
+    email: '',
     state_registration: '',
   });
 
@@ -394,29 +396,29 @@ export default function ClientEditPage() {
   } = useForm({
     resolver: yupResolver(clientSchema),
     defaultValues: {
-      trade_name:           '',
-      phone:                '',
-      benefit_type:         'food',
-      notes:                '',
-      address_street:       '',
-      address_number:       '',
-      address_complement:   '',
+      trade_name: '',
+      phone: '',
+      benefit_type: 'food',
+      notes: '',
+      address_street: '',
+      address_number: '',
+      address_complement: '',
       address_neighborhood: '',
-      address_city:         '',
-      address_state:        '',
-      address_zip:          '',
-      partner_id:           '',
-      bank_bank_name:       '',
-      bank_agency:          '',
-      bank_agency_digit:    '',
-      bank_account:         '',
-      bank_account_digit:   '',
-      bank_account_type:    'checking',
+      address_city: '',
+      address_state: '',
+      address_zip: '',
+      partner_id: '',
+      bank_bank_name: '',
+      bank_agency: '',
+      bank_agency_digit: '',
+      bank_account: '',
+      bank_account_digit: '',
+      bank_account_type: 'checking',
     },
   });
 
   // Indica se os campos bancários condicionais devem ser obrigatórios
-  const bankName   = watch('bank_bank_name');
+  const bankName = watch('bank_bank_name');
   const bankFilled = !!bankName;
 
   // ── Carrega dados do cliente ──────────────────────────────────────────────
@@ -429,9 +431,9 @@ export default function ClientEditPage() {
       setClientName(c.trade_name || c.corporate_name || '');
 
       setReadonlyFields({
-        corporate_name:     c.corporate_name     ?? '',
-        cnpj:               c.cnpj               ?? '',
-        email:              c.email              ?? '',
+        corporate_name: c.corporate_name ?? '',
+        cnpj: c.cnpj ?? '',
+        email: c.email ?? '',
         state_registration: c.state_registration ?? '',
       });
 
@@ -442,24 +444,24 @@ export default function ClientEditPage() {
       const bank = c.bankAccounts?.[0];
 
       reset({
-        trade_name:           c.trade_name            ?? '',
-        phone:                maskPhone(c.phone        ?? ''),
-        benefit_type:         c.benefit_type          ?? 'food',
-        notes:                c.notes                 ?? '',
-        address_street:       c.address_street        ?? '',
-        address_number:       c.address_number        ?? '',
-        address_complement:   c.address_complement    ?? '',
-        address_neighborhood: c.address_neighborhood  ?? '',
-        address_city:         c.address_city          ?? '',
-        address_state:        c.address_state         ?? '',
-        address_zip:          maskCEP(c.address_zip   ?? ''),
-        partner_id:           c.partner?.id           ?? c.partner_id ?? '',
-        bank_bank_name:       bank?.bank_name         ?? '',
-        bank_agency:          bank?.agency            ?? '',
-        bank_agency_digit:    bank?.agency_digit      ?? '',
-        bank_account:         bank?.account           ?? '',
-        bank_account_digit:   bank?.account_digit     ?? '',
-        bank_account_type:    bank?.account_type      ?? 'checking',
+        trade_name: c.trade_name ?? '',
+        phone: maskPhone(c.phone ?? ''),
+        benefit_type: c.benefit_type ?? 'food',
+        notes: c.notes ?? '',
+        address_street: c.address_street ?? '',
+        address_number: c.address_number ?? '',
+        address_complement: c.address_complement ?? '',
+        address_neighborhood: c.address_neighborhood ?? '',
+        address_city: c.address_city ?? '',
+        address_state: c.address_state ?? '',
+        address_zip: maskCEP(c.address_zip ?? ''),
+        partner_id: c.partner?.id ?? c.partner_id ?? '',
+        bank_bank_name: bank?.bank_name ?? '',
+        bank_agency: bank?.agency ?? '',
+        bank_agency_digit: bank?.agency_digit ?? '',
+        bank_account: bank?.account ?? '',
+        bank_account_digit: bank?.account_digit ?? '',
+        bank_account_type: bank?.account_type ?? 'checking',
       });
     } catch (error) {
       toast.error(getApiErrorMessage(error, 'Erro ao carregar dados do cliente.'));
@@ -514,29 +516,29 @@ export default function ClientEditPage() {
       const hasFiles = Object.keys(selectedFiles).length > 0;
 
       const textPayload = {
-        trade_name:           formData.trade_name           || undefined,
-        phone:                onlyDigits(formData.phone)    || undefined,
-        benefit_type:         formData.benefit_type,
-        notes:                formData.notes                || undefined,
-        address_street:       formData.address_street       || undefined,
-        address_number:       formData.address_number       || undefined,
-        address_complement:   formData.address_complement   || undefined,
+        trade_name: formData.trade_name || undefined,
+        phone: onlyDigits(formData.phone) || undefined,
+        benefit_type: formData.benefit_type,
+        notes: formData.notes || undefined,
+        address_street: formData.address_street || undefined,
+        address_number: formData.address_number || undefined,
+        address_complement: formData.address_complement || undefined,
         address_neighborhood: formData.address_neighborhood || undefined,
-        address_city:         formData.address_city         || undefined,
-        address_state:        formData.address_state        || undefined,
+        address_city: formData.address_city || undefined,
+        address_state: formData.address_state || undefined,
         address_zip: formData.address_zip || undefined,
-        partner_id:           formData.partner_id           || null,
+        partner_id: formData.partner_id || null,
         ...(bankFilled
           ? {
-              bankAccount: {
-                bank_name:     formData.bank_bank_name,
-                agency:        formData.bank_agency,
-                agency_digit:  formData.bank_agency_digit || undefined,
-                account:       formData.bank_account,
-                account_digit: formData.bank_account_digit || undefined,
-                account_type:  formData.bank_account_type,
-              },
-            }
+            bankAccount: {
+              bank_name: formData.bank_bank_name,
+              agency: formData.bank_agency,
+              agency_digit: formData.bank_agency_digit || undefined,
+              account: formData.bank_account,
+              account_digit: formData.bank_account_digit || undefined,
+              account_type: formData.bank_account_type,
+            },
+          }
           : {}),
       };
 
@@ -567,6 +569,9 @@ export default function ClientEditPage() {
       }
 
       toast.success('Cliente atualizado com sucesso!', { toastId: 'client-updated' });
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-recent-clients'] });
+      queryClient.invalidateQueries({ queryKey: ['client', id] });
       navigate(`/clientes/${id}`, { replace: true });
 
     } catch (error) {

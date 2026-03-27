@@ -292,8 +292,8 @@ export default function ClientsPage() {
 
               <PageButton
                 type="button"
-                onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
-                disabled={page >= pagination.totalPages}
+                onClick={() => setPage((p) => Math.min(data?.pagination.totalPages, p + 1))}
+                disabled={page >= data?.pagination.totalPages}
                 aria-label="Próxima página"
               >
                 <ChevronRight size={15} />

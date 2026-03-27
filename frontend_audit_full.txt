@@ -1,0 +1,4347 @@
+########################################
+# AUDITORIA ENTERPRISE - REACT FRONTEND
+# Data: Thu Mar 26 21:48:30     2026
+########################################
+
+========================================
+1. ESTRUTURA DO PROJETO
+========================================
+⚠ tree não instalado → fallback
+.
+./.git
+./.git/gk
+./.git/hooks
+./.git/info
+./.git/logs
+./.git/logs/refs
+./.git/objects
+./.git/objects/00
+./.git/objects/03
+./.git/objects/04
+./.git/objects/06
+./.git/objects/07
+./.git/objects/0a
+./.git/objects/0b
+./.git/objects/0e
+./.git/objects/0f
+./.git/objects/11
+./.git/objects/13
+./.git/objects/14
+./.git/objects/16
+./.git/objects/17
+./.git/objects/18
+./.git/objects/19
+./.git/objects/1a
+./.git/objects/1c
+./.git/objects/1d
+./.git/objects/1e
+./.git/objects/1f
+./.git/objects/20
+./.git/objects/21
+./.git/objects/23
+./.git/objects/24
+./.git/objects/25
+./.git/objects/27
+./.git/objects/2a
+./.git/objects/2d
+./.git/objects/2e
+./.git/objects/31
+./.git/objects/33
+./.git/objects/34
+./.git/objects/35
+./.git/objects/37
+./.git/objects/38
+./.git/objects/39
+./.git/objects/3a
+./.git/objects/3c
+./.git/objects/3f
+./.git/objects/40
+./.git/objects/43
+./.git/objects/44
+./.git/objects/45
+./.git/objects/46
+./.git/objects/47
+./.git/objects/48
+./.git/objects/4a
+./.git/objects/4c
+./.git/objects/4e
+./.git/objects/4f
+./.git/objects/50
+./.git/objects/51
+./.git/objects/52
+./.git/objects/53
+./.git/objects/54
+./.git/objects/56
+./.git/objects/57
+./.git/objects/59
+./.git/objects/5c
+./.git/objects/5f
+./.git/objects/60
+./.git/objects/62
+./.git/objects/63
+./.git/objects/64
+./.git/objects/66
+./.git/objects/68
+./.git/objects/6b
+./.git/objects/6c
+./.git/objects/6d
+./.git/objects/6e
+./.git/objects/70
+./.git/objects/71
+./.git/objects/72
+./.git/objects/74
+./.git/objects/75
+./.git/objects/76
+./.git/objects/77
+./.git/objects/7a
+./.git/objects/7b
+./.git/objects/7d
+./.git/objects/7e
+./.git/objects/7f
+./.git/objects/80
+./.git/objects/81
+./.git/objects/82
+./.git/objects/83
+./.git/objects/85
+./.git/objects/86
+./.git/objects/87
+./.git/objects/88
+./.git/objects/8e
+./.git/objects/8f
+./.git/objects/90
+./.git/objects/91
+./.git/objects/92
+./.git/objects/95
+./.git/objects/99
+./.git/objects/9b
+./.git/objects/9d
+./.git/objects/9e
+./.git/objects/9f
+./.git/objects/a1
+./.git/objects/a2
+./.git/objects/a3
+./.git/objects/a4
+./.git/objects/a5
+./.git/objects/a8
+./.git/objects/ab
+./.git/objects/ac
+./.git/objects/ad
+./.git/objects/af
+./.git/objects/b0
+./.git/objects/b2
+./.git/objects/b5
+./.git/objects/b7
+./.git/objects/b9
+./.git/objects/ba
+./.git/objects/bd
+./.git/objects/be
+./.git/objects/bf
+./.git/objects/c0
+./.git/objects/c2
+./.git/objects/c3
+./.git/objects/c4
+./.git/objects/c5
+./.git/objects/c6
+./.git/objects/cd
+./.git/objects/cf
+./.git/objects/d0
+./.git/objects/d1
+./.git/objects/d4
+./.git/objects/d5
+./.git/objects/d6
+./.git/objects/d7
+./.git/objects/d8
+./.git/objects/d9
+./.git/objects/db
+./.git/objects/dc
+./.git/objects/dd
+./.git/objects/df
+./.git/objects/e0
+./.git/objects/e1
+./.git/objects/e2
+./.git/objects/e3
+./.git/objects/e4
+./.git/objects/e5
+./.git/objects/e6
+./.git/objects/e7
+./.git/objects/e9
+./.git/objects/ea
+./.git/objects/eb
+./.git/objects/ef
+./.git/objects/f0
+./.git/objects/f1
+./.git/objects/f3
+./.git/objects/f6
+./.git/objects/f7
+./.git/objects/f8
+./.git/objects/fc
+./.git/objects/fd
+./.git/objects/fe
+./.git/objects/info
+./.git/objects/pack
+./.git/refs
+./.git/refs/heads
+./.git/refs/remotes
+./.git/refs/tags
+./.github
+./.github/workflows
+./dist
+./dist/assets
+./node_modules
+./node_modules/.bin
+./node_modules/.vite
+./node_modules/.vite/deps
+./node_modules/@babel
+./node_modules/@babel/code-frame
+./node_modules/@babel/compat-data
+./node_modules/@babel/core
+./node_modules/@babel/generator
+./node_modules/@babel/helper-compilation-targets
+./node_modules/@babel/helper-globals
+./node_modules/@babel/helper-module-imports
+./node_modules/@babel/helper-module-transforms
+./node_modules/@babel/helper-plugin-utils
+./node_modules/@babel/helper-string-parser
+./node_modules/@babel/helper-validator-identifier
+./node_modules/@babel/helper-validator-option
+./node_modules/@babel/helpers
+./node_modules/@babel/parser
+./node_modules/@babel/plugin-transform-react-jsx-self
+./node_modules/@babel/plugin-transform-react-jsx-source
+./node_modules/@babel/template
+./node_modules/@babel/traverse
+./node_modules/@babel/types
+./node_modules/@emotion
+./node_modules/@emotion/is-prop-valid
+./node_modules/@emotion/memoize
+./node_modules/@emotion/unitless
+./node_modules/@esbuild
+./node_modules/@esbuild/win32-x64
+./node_modules/@eslint
+./node_modules/@eslint/eslintrc
+./node_modules/@eslint/js
+./node_modules/@eslint-community
+./node_modules/@eslint-community/eslint-utils
+./node_modules/@eslint-community/regexpp
+./node_modules/@hookform
+./node_modules/@hookform/resolvers
+./node_modules/@humanwhocodes
+./node_modules/@humanwhocodes/config-array
+./node_modules/@humanwhocodes/module-importer
+./node_modules/@humanwhocodes/object-schema
+./node_modules/@jridgewell
+./node_modules/@jridgewell/gen-mapping
+./node_modules/@jridgewell/remapping
+./node_modules/@jridgewell/resolve-uri
+./node_modules/@jridgewell/sourcemap-codec
+./node_modules/@jridgewell/trace-mapping
+./node_modules/@nodelib
+./node_modules/@nodelib/fs.scandir
+./node_modules/@nodelib/fs.stat
+./node_modules/@nodelib/fs.walk
+./node_modules/@remix-run
+./node_modules/@remix-run/router
+./node_modules/@rolldown
+./node_modules/@rolldown/pluginutils
+./node_modules/@rollup
+./node_modules/@rollup/rollup-win32-x64-gnu
+./node_modules/@rollup/rollup-win32-x64-msvc
+./node_modules/@standard-schema
+./node_modules/@standard-schema/utils
+./node_modules/@tanstack
+./node_modules/@tanstack/query-core
+./node_modules/@tanstack/react-query
+./node_modules/@types
+./node_modules/@types/babel__core
+./node_modules/@types/babel__generator
+./node_modules/@types/babel__template
+./node_modules/@types/babel__traverse
+./node_modules/@types/estree
+./node_modules/@types/stylis
+./node_modules/@ungap
+./node_modules/@ungap/structured-clone
+./node_modules/@vitejs
+./node_modules/@vitejs/plugin-react
+./node_modules/acorn
+./node_modules/acorn/bin
+./node_modules/acorn/dist
+./node_modules/acorn-jsx
+./node_modules/ajv
+./node_modules/ajv/dist
+./node_modules/ajv/lib
+./node_modules/ajv/scripts
+./node_modules/ansi-regex
+./node_modules/ansi-styles
+./node_modules/argparse
+./node_modules/argparse/lib
+./node_modules/asynckit
+./node_modules/asynckit/lib
+./node_modules/axios
+./node_modules/axios/dist
+./node_modules/axios/lib
+./node_modules/balanced-match
+./node_modules/balanced-match/.github
+./node_modules/baseline-browser-mapping
+./node_modules/baseline-browser-mapping/dist
+./node_modules/brace-expansion
+./node_modules/browser-image-compression
+./node_modules/browser-image-compression/dist
+./node_modules/browserslist
+./node_modules/call-bind-apply-helpers
+./node_modules/call-bind-apply-helpers/.github
+./node_modules/call-bind-apply-helpers/test
+./node_modules/callsites
+./node_modules/camelize
+./node_modules/camelize/.github
+./node_modules/camelize/example
+./node_modules/camelize/test
+./node_modules/caniuse-lite
+./node_modules/caniuse-lite/data
+./node_modules/caniuse-lite/dist
+./node_modules/chalk
+./node_modules/chalk/source
+./node_modules/clsx
+./node_modules/clsx/dist
+./node_modules/color-convert
+./node_modules/color-name
+./node_modules/combined-stream
+./node_modules/combined-stream/lib
+./node_modules/concat-map
+./node_modules/concat-map/example
+./node_modules/concat-map/test
+./node_modules/convert-source-map
+./node_modules/cross-spawn
+./node_modules/cross-spawn/lib
+./node_modules/css-color-keywords
+./node_modules/css-to-react-native
+./node_modules/css-to-react-native/src
+./node_modules/csstype
+./node_modules/date-fns
+./node_modules/date-fns/docs
+./node_modules/date-fns/fp
+./node_modules/date-fns/locale
+./node_modules/date-fns/parse
+./node_modules/date-fns/_lib
+./node_modules/debug
+./node_modules/debug/src
+./node_modules/deep-is
+./node_modules/deep-is/example
+./node_modules/deep-is/test
+./node_modules/delayed-stream
+./node_modules/delayed-stream/lib
+./node_modules/doctrine
+./node_modules/doctrine/lib
+./node_modules/dunder-proto
+./node_modules/dunder-proto/.github
+./node_modules/dunder-proto/test
+./node_modules/electron-to-chromium
+./node_modules/es-define-property
+./node_modules/es-define-property/.github
+./node_modules/es-define-property/test
+./node_modules/es-errors
+./node_modules/es-errors/.github
+./node_modules/es-errors/test
+./node_modules/es-object-atoms
+./node_modules/es-object-atoms/.github
+./node_modules/es-object-atoms/test
+./node_modules/es-set-tostringtag
+./node_modules/es-set-tostringtag/test
+./node_modules/esbuild
+./node_modules/esbuild/bin
+./node_modules/esbuild/lib
+./node_modules/escalade
+./node_modules/escalade/dist
+./node_modules/escalade/sync
+./node_modules/escape-string-regexp
+./node_modules/eslint
+./node_modules/eslint/bin
+./node_modules/eslint/conf
+./node_modules/eslint/lib
+./node_modules/eslint/messages
+./node_modules/eslint-scope
+./node_modules/eslint-scope/dist
+./node_modules/eslint-scope/lib
+./node_modules/eslint-visitor-keys
+./node_modules/eslint-visitor-keys/dist
+./node_modules/eslint-visitor-keys/lib
+./node_modules/espree
+./node_modules/espree/dist
+./node_modules/espree/lib
+./node_modules/esquery
+./node_modules/esquery/dist
+./node_modules/esrecurse
+./node_modules/estraverse
+./node_modules/esutils
+./node_modules/esutils/lib
+./node_modules/fast-deep-equal
+./node_modules/fast-deep-equal/es6
+./node_modules/fast-json-stable-stringify
+./node_modules/fast-json-stable-stringify/.github
+./node_modules/fast-json-stable-stringify/benchmark
+./node_modules/fast-json-stable-stringify/example
+./node_modules/fast-json-stable-stringify/test
+./node_modules/fast-levenshtein
+./node_modules/fastq
+./node_modules/fastq/test
+./node_modules/file-entry-cache
+./node_modules/find-up
+./node_modules/flat-cache
+./node_modules/flat-cache/src
+./node_modules/flatted
+./node_modules/flatted/cjs
+./node_modules/flatted/esm
+./node_modules/flatted/golang
+./node_modules/flatted/php
+./node_modules/flatted/python
+./node_modules/flatted/types
+./node_modules/follow-redirects
+./node_modules/form-data
+./node_modules/form-data/lib
+./node_modules/fs.realpath
+./node_modules/function-bind
+./node_modules/function-bind/.github
+./node_modules/function-bind/test
+./node_modules/gensync
+./node_modules/gensync/test
+./node_modules/get-intrinsic
+./node_modules/get-intrinsic/.github
+./node_modules/get-intrinsic/test
+./node_modules/get-proto
+./node_modules/get-proto/.github
+./node_modules/get-proto/test
+./node_modules/glob
+./node_modules/glob-parent
+./node_modules/globals
+./node_modules/gopd
+./node_modules/gopd/.github
+./node_modules/gopd/test
+./node_modules/graphemer
+./node_modules/graphemer/lib
+./node_modules/has-flag
+./node_modules/has-symbols
+./node_modules/has-symbols/.github
+./node_modules/has-symbols/test
+./node_modules/has-tostringtag
+./node_modules/has-tostringtag/.github
+./node_modules/has-tostringtag/test
+./node_modules/hasown
+./node_modules/hasown/.github
+./node_modules/ignore
+./node_modules/import-fresh
+./node_modules/imurmurhash
+./node_modules/inflight
+./node_modules/inherits
+./node_modules/is-extglob
+./node_modules/is-glob
+./node_modules/is-path-inside
+./node_modules/isexe
+./node_modules/isexe/test
+./node_modules/js-tokens
+./node_modules/js-yaml
+./node_modules/js-yaml/bin
+./node_modules/js-yaml/dist
+./node_modules/js-yaml/lib
+./node_modules/jsesc
+./node_modules/jsesc/bin
+./node_modules/jsesc/man
+./node_modules/json-buffer
+./node_modules/json-buffer/test
+./node_modules/json-schema-traverse
+./node_modules/json-schema-traverse/spec
+./node_modules/json-stable-stringify-without-jsonify
+./node_modules/json-stable-stringify-without-jsonify/example
+./node_modules/json-stable-stringify-without-jsonify/test
+./node_modules/json5
+./node_modules/json5/dist
+./node_modules/json5/lib
+./node_modules/keyv
+./node_modules/keyv/src
+./node_modules/levn
+./node_modules/levn/lib
+./node_modules/locate-path
+./node_modules/lodash.merge
+./node_modules/loose-envify
+./node_modules/lru-cache
+./node_modules/lucide-react
+./node_modules/lucide-react/dist
+./node_modules/math-intrinsics
+./node_modules/math-intrinsics/.github
+./node_modules/math-intrinsics/constants
+./node_modules/math-intrinsics/test
+./node_modules/mime-db
+./node_modules/mime-types
+./node_modules/minimatch
+./node_modules/ms
+./node_modules/nanoid
+./node_modules/nanoid/async
+./node_modules/nanoid/bin
+./node_modules/nanoid/non-secure
+./node_modules/nanoid/url-alphabet
+./node_modules/natural-compare
+./node_modules/node-releases
+./node_modules/node-releases/data
+./node_modules/once
+./node_modules/optionator
+./node_modules/optionator/lib
+./node_modules/p-limit
+./node_modules/p-locate
+./node_modules/parent-module
+./node_modules/path-exists
+./node_modules/path-is-absolute
+./node_modules/path-key
+./node_modules/picocolors
+./node_modules/postcss
+./node_modules/postcss/lib
+./node_modules/postcss-value-parser
+./node_modules/postcss-value-parser/lib
+./node_modules/prelude-ls
+./node_modules/prelude-ls/lib
+./node_modules/property-expr
+./node_modules/proxy-from-env
+./node_modules/punycode
+./node_modules/queue-microtask
+./node_modules/react
+./node_modules/react/cjs
+./node_modules/react/umd
+./node_modules/react-dom
+./node_modules/react-dom/cjs
+./node_modules/react-dom/umd
+./node_modules/react-hook-form
+./node_modules/react-hook-form/dist
+./node_modules/react-refresh
+./node_modules/react-refresh/cjs
+./node_modules/react-router
+./node_modules/react-router/dist
+./node_modules/react-router-dom
+./node_modules/react-router-dom/dist
+./node_modules/react-toastify
+./node_modules/react-toastify/addons
+./node_modules/react-toastify/dist
+./node_modules/react-toastify/scss
+./node_modules/resolve-from
+./node_modules/reusify
+./node_modules/reusify/.github
+./node_modules/reusify/benchmarks
+./node_modules/rimraf
+./node_modules/rollup
+./node_modules/rollup/dist
+./node_modules/run-parallel
+./node_modules/scheduler
+./node_modules/scheduler/cjs
+./node_modules/scheduler/umd
+./node_modules/semver
+./node_modules/semver/bin
+./node_modules/shallowequal
+./node_modules/shebang-command
+./node_modules/shebang-regex
+./node_modules/source-map-js
+./node_modules/source-map-js/lib
+./node_modules/strip-ansi
+./node_modules/strip-json-comments
+./node_modules/styled-components
+./node_modules/styled-components/dist
+./node_modules/styled-components/native
+./node_modules/styled-components/test-utils
+./node_modules/stylis
+./node_modules/stylis/dist
+./node_modules/stylis/src
+./node_modules/supports-color
+./node_modules/text-table
+./node_modules/text-table/example
+./node_modules/text-table/test
+./node_modules/tiny-case
+./node_modules/toposort
+./node_modules/tslib
+./node_modules/tslib/modules
+./node_modules/type-check
+./node_modules/type-check/lib
+./node_modules/type-fest
+./node_modules/type-fest/source
+./node_modules/type-fest/ts41
+./node_modules/update-browserslist-db
+./node_modules/uri-js
+./node_modules/uri-js/dist
+./node_modules/uzip
+./node_modules/vite
+./node_modules/vite/bin
+./node_modules/vite/dist
+./node_modules/vite/types
+./node_modules/which
+./node_modules/which/bin
+./node_modules/word-wrap
+./node_modules/wrappy
+./node_modules/yallist
+./node_modules/yocto-queue
+./node_modules/yup
+./node_modules/yup/node_modules
+./src
+./src/components
+./src/components/layout
+./src/contexts
+./src/features
+./src/features/auth
+./src/features/clients
+./src/features/dashboard
+./src/features/users
+./src/lib
+./src/router
+./src/styles
+
+========================================
+2. DEPENDÊNCIAS
+========================================
+
+--- FILE: package.json ---
+{
+  "name": "bg-representacoes-web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .js,.jsx"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-query": "^5.95.2",
+    "axios": "^1.13.6",
+    "browser-image-compression": "^2.0.2",
+    "date-fns": "^3.6.0",
+    "lucide-react": "^0.383.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.71.2",
+    "react-router-dom": "^6.30.3",
+    "react-toastify": "^10.0.6",
+    "styled-components": "^6.3.11",
+    "yup": "^1.7.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "eslint": "^8.57.0",
+    "vite": "^5.3.4"
+  }
+}
+
+[...TRUNCATED...]
+
+⚠ jq não instalado
+
+========================================
+3. CONFIGURAÇÕES
+========================================
+
+--- FILE: vite.config.js ---
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
+
+export default defineConfig({
+  plugins: [react()],
+  base: '/bgrepresentacoes-web/',
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@components': path.resolve(__dirname, './src/components'),
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@contexts': path.resolve(__dirname, './src/contexts'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
+      '@services': path.resolve(__dirname, './src/services'),
+      '@styles': path.resolve(__dirname, './src/styles'),
+      '@utils': path.resolve(__dirname, './src/utils'),
+    },
+  },
+
+  server: {
+    port: 3001,
+    // Proxy para desenvolvimento local — redireciona /api para o backend
+    // Em produção, o Nginx cuida disso
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+    },
+  },
+})
+
+[...TRUNCATED...]
+
+
+--- FILE: .env.example ---
+VITE_API_URL=https://sua-api-aqui.com/api/v1
+[...TRUNCATED...]
+
+
+========================================
+4. ARQUITETURA SRC
+========================================
+src
+src/components
+src/components/layout
+src/components/layout/MainLayout
+src/components/layout/Navbar
+src/components/layout/Sidebar
+src/contexts
+src/features
+src/features/auth
+src/features/auth/pages
+src/features/auth/pages/ChangePasswordPage
+src/features/auth/pages/LoginPage
+src/features/clients
+src/features/clients/pages
+src/features/clients/pages/ClientCreatePage
+src/features/clients/pages/ClientDetailPage
+src/features/clients/pages/ClientEditPage
+src/features/clients/pages/ClientsPage
+src/features/clients/pages/ForbiddenPage
+src/features/dashboard
+src/features/dashboard/pages
+src/features/dashboard/pages/DashboardPage
+src/features/users
+src/features/users/pages
+src/features/users/pages/UsersPage
+src/lib
+src/router
+src/styles
+
+========================================
+5. CONTEXT / STATE
+========================================
+
+--- FILE: src/contexts/AuthContext.jsx ---
+import {
+  createContext, useCallback, useContext,
+  useEffect, useMemo, useReducer, useRef,
+} from 'react';
+import { flushSync } from 'react-dom';
+import { toast } from 'react-toastify';
+import api, {
+  clearTokens,
+  getAccessToken,
+  getRefreshToken,
+  getApiErrorMessage,
+  setTokens,
+} from '../lib/api';
+
+// ── Actions ─────────────────────────────────────────────────
+const A = {
+  INIT: 'INIT',
+  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
+  LOGOUT: 'LOGOUT',
+  PASSWORD_CHANGED: 'PASSWORD_CHANGED',
+  UPDATE_USER: 'UPDATE_USER',
+  SET_LOADING: 'SET_LOADING',
+};
+
+// ── Estado inicial ──────────────────────────────────────────
+const INITIAL = {
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+  mustChangePassword: false,
+};
+
+const normalizeUser = (user) => {
+  if (!user) return null;
+
+  // Caso os dados venham dentro de um objeto dataValues (Sequelize)
+  const userData = user.dataValues || user;
+
+  return {
+    ...userData,
+    firstName: userData.name?.split(' ')[0] || 'Usuário',
+  };
+};
+
+// ── Reducer ─────────────────────────────────────────────────
+function reducer(state, { type, payload }) {
+  switch (type) {
+    case A.INIT:
+      return {
+        ...state,
+        user: normalizeUser(payload.user) ?? state.user,
+        isAuthenticated: !!(payload.user ?? state.user),
+        isLoading: false,
+        mustChangePassword:
+          payload.mustChangePassword !== undefined
+            ? payload.mustChangePassword
+            : state.mustChangePassword,
+      };
+
+    case A.LOGIN_SUCCESS:
+      return {
+        ...state,
+        user: normalizeUser(payload.user),
+        isAuthenticated: true,
+        isLoading: false,
+        mustChangePassword: payload.mustChangePassword ?? false,
+      };
+
+    case A.LOGOUT:
+      return { ...INITIAL, isLoading: false };
+
+    case A.PASSWORD_CHANGED:
+      return { ...state, mustChangePassword: false };
+
+    case A.UPDATE_USER:
+      return { ...state, user: normalizeUser({ ...state.user, ...payload }) };
+
+    case A.SET_LOADING:
+      return { ...state, isLoading: payload };
+
+    default:
+      return state;
+  }
+}
+
+// ── Context ─────────────────────────────────────────────────
+export const AuthContext = createContext(null);
+
+// ── Provider ────────────────────────────────────────────────
+export function AuthProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, INITIAL);
+  const initialized = useRef(false);
+
+  // ── INIT (RESTAURA SESSÃO) ───────────────────────────────
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+
+    const init = async () => {
+      const accessToken = getAccessToken();
+      const refreshToken = getRefreshToken();
+
+      // Se não tem tokens, encerra o loading inicial
+      if (!refreshToken) {
+        dispatch({
+          type: A.INIT,
+          payload: { user: null, mustChangePassword: false },
+        });
+        return;
+      }
+
+      if (!accessToken && refreshToken) {
+        try {
+          const { data } = await api.post('/auth/refresh', { refreshToken });
+
+          const payload = data.data ?? data;
+
+          setTokens({
+            accessToken: payload.token ?? payload.accessToken,
+            refreshToken: payload.refreshToken,
+          });
+        } catch (e) {
+          clearTokens();
+          dispatch({ type: A.LOGOUT });
+          return;
+        }
+      }
+
+      try {
+        const { data } = await api.get('/users/profile');
+        const user = data.data || data;
+
+        dispatch({
+          type: A.INIT,
+          payload: {
+            user,
+            mustChangePassword: user.mustChangePassword ?? (user.last_login_at === null),
+          },
+        });
+      } catch (error) {
+        const status = error?.response?.status;
+
+        // 🔥 Evita poluir console com erro esperado
+        if (status === 401) {
+          clearTokens();
+          dispatch({ type: A.LOGOUT });
+          return;
+        }
+
+        console.error('[AUTH INIT ERROR]', error?.message);
+        clearTokens();
+        dispatch({ type: A.LOGOUT });
+      }
+    };
+
+    init();
+  }, []);
+
+  // ── Evento sessão expirada (Interceptor 401) ──────────────
+  useEffect(() => {
+    const handle = () => {
+      clearTokens();
+      dispatch({ type: A.LOGOUT });
+    };
+    window.addEventListener('bg:session-expired', handle);
+    return () => window.removeEventListener('bg:session-expired', handle);
+  }, []);
+
+  // ── LOGIN ───────────────────────────────────────────────
+  const login = useCallback(async (email, password) => {
+    dispatch({ type: A.SET_LOADING, payload: true });
+
+    try {
+      const { data } = await api.post('/auth/login', { email, password });
+
+      const payload = data.data ?? data;
+      const accessToken = payload.token ?? payload.accessToken;
+      const { refreshToken, user } = payload;
+      const mustChangePassword = payload.mustChangePassword === true;
+
+      setTokens({ accessToken, refreshToken });
+
+      // flushSync garante que o estado mude antes de qualquer redirecionamento
+      flushSync(() => {
+        dispatch({
+          type: A.LOGIN_SUCCESS,
+          payload: { user, mustChangePassword },
+        });
+      });
+
+      toast.success('Login efetuado com sucesso!', { toastId: 'login-ok' });
+      return { mustChangePassword };
+
+    } catch (error) {
+      dispatch({ type: A.SET_LOADING, payload: false });
+      throw new Error(getApiErrorMessage(error, 'E-mail ou senha inválidos.'));
+    }
+  }, []);
+
+  // ── CHANGE PASSWORD ─────────────────────────────────────
+  const changePassword = useCallback(async (currentPassword, newPassword, confirmPassword) => {
+    try {
+      await api.patch('/auth/change-password', {
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      });
+
+      dispatch({ type: A.PASSWORD_CHANGED });
+      toast.success('Senha alterada com sucesso!');
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Erro ao alterar a senha.'));
+    }
+  }, []);
+
+  // ── LOGOUT ──────────────────────────────────────────────
+  const logout = useCallback(async () => {
+    try {
+      // Tenta avisar o servidor enquanto os tokens ainda estão no localStorage
+      await api.post('/auth/logout');
+    } catch (error) {
+      console.warn('[LOGOUT API ERROR] Sessão encerrada apenas localmente');
+    } finally {
+      // Limpa os dados locais independente do sucesso da API
+      clearTokens();
+      dispatch({ type: A.LOGOUT });
+      toast.success('Sessão encerrada.');
+    }
+  }, []);
+
+  // ── UPDATE USER ─────────────────────────────────────────
+  const updateUser = useCallback((updates) => {
+    dispatch({ type: A.UPDATE_USER, payload: updates });
+  }, []);
+
+  // ── Helpers ─────────────────────────────────────────────
+  const isAdmin = state.user?.role === 'admin';
+  const isUser = state.user?.role === 'user';
+  const isPartner = state.user?.role === 'partner';
+
+  const hasRole = useCallback(
+    (...roles) => roles.includes(state.user?.role),
+    [state.user?.role]
+  );
+
+  // ── Context value ───────────────────────────────────────
+  const value = useMemo(() => ({
+    user: state.user,
+    isAuthenticated: state.isAuthenticated,
+    isLoading: state.isLoading,
+    mustChangePassword: state.mustChangePassword,
+    isAdmin, isUser, isPartner, hasRole,
+    login, logout, changePassword, updateUser,
+  }), [
+    state.user, state.isAuthenticated, state.isLoading, state.mustChangePassword,
+    isAdmin, isUser, isPartner, hasRole,
+    login, logout, changePassword, updateUser,
+  ]);
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth deve ser usado dentro de <AuthProvider>.');
+  return ctx;
+}
+
+export default AuthContext;
+[...TRUNCATED...]
+
+
+========================================
+6. SERVICES / API
+========================================
+
+--- FILE: src/lib/api.js ---
+// import axios from 'axios';
+
+// // ── BASE_URL ──────────────────────────────────────────────────────────────────
+// const BASE_URL = import.meta.env.VITE_API_URL || 'https://bgrepresentacoes-api-production.up.railway.app/api/v1';
+
+
+// // ── Chaves de storage ─────────────────────────────────────────────────────────
+// const KEYS = {
+//   ACCESS_TOKEN:  'bg:access_token',
+//   REFRESH_TOKEN: 'bg:refresh_token',
+// };
+
+// // ── Helpers de token ──────────────────────────────────────────────────────────
+// export const getAccessToken = () => {
+//   try {
+//     return localStorage.getItem(KEYS.ACCESS_TOKEN);
+//   } catch (error) {
+//     console.warn('[SECURITY] Falha ao acessar accessToken');
+//     return null;
+//   }
+// };
+
+// export const getRefreshToken = () => {
+//   try {
+//     return localStorage.getItem(KEYS.REFRESH_TOKEN);
+//   } catch (error) {
+//     console.warn('[SECURITY] Falha ao acessar refreshToken');
+//     return null;
+//   }
+// };
+
+// export const setTokens = ({ accessToken, refreshToken }) => {
+//   try {
+//     if (accessToken) {
+//       localStorage.setItem(KEYS.ACCESS_TOKEN, accessToken);
+//     }
+//     if (refreshToken) {
+//       localStorage.setItem(KEYS.REFRESH_TOKEN, refreshToken);
+//     }
+//   } catch (error) {
+//     console.error('[SECURITY] Erro ao salvar tokens');
+//   }
+// };
+
+// export const clearTokens = () => {
+//   try {
+//     localStorage.removeItem(KEYS.ACCESS_TOKEN);
+//     localStorage.removeItem(KEYS.REFRESH_TOKEN);
+//   } catch (error) {
+//     console.warn('[SECURITY] Erro ao limpar tokens');
+//   }
+// };
+
+// // ── Fila para requisições paralelas durante refresh ───────────────────────────
+// let isRefreshing = false;
+// let failedQueue  = [];
+
+// const processQueue = (error, token = null) => {
+//   failedQueue.forEach(({ resolve, reject }) =>
+//     error ? reject(error) : resolve(token)
+//   );
+//   failedQueue = [];
+// };
+
+// // ── Interceptors reutilizados nas duas instâncias ─────────────────────────────
+
+// const onRequest = (config) => {
+//   const token = getAccessToken();
+//   if (token) config.headers.Authorization = `Bearer ${token}`;
+//   return config;
+// };
+
+// const onResponseError = async (error) => {
+//   const original = error.config;
+
+//   const is401           = error.response?.status === 401;
+//   const notRetried      = !original._retry;
+//   const notRefreshRoute = !original.url?.includes('/auth/refresh');
+
+//   if (is401 && notRetried && notRefreshRoute) {
+//     original._retry = true;
+
+//     if (isRefreshing) {
+//       return new Promise((resolve, reject) => {
+//         failedQueue.push({ resolve, reject });
+//       }).then((newToken) => {
+//         original.headers.Authorization = `Bearer ${newToken}`;
+//         return axios(original);
+//       });
+//     }
+
+//     isRefreshing = true;
+//     const refreshToken = getRefreshToken();
+
+//     if (!refreshToken) {
+//       isRefreshing = false;
+//       clearTokens();
+//       window.dispatchEvent(new CustomEvent('bg:session-expired'));
+//       return Promise.reject(error);
+//     }
+
+//     try {
+//       const { data } = await axios.post(
+//         `${BASE_URL}/auth/refresh`,
+//         { refreshToken },
+//         { headers: { 'Content-Type': 'application/json' } },
+//       );
+
+//       const payload    = data.data ?? data;
+//       const newAccess  = payload.token ?? payload.accessToken;
+//       const newRefresh = payload.refreshToken;
+
+//       if (!newAccess) throw new Error('Refresh não retornou accessToken');
+
+//       setTokens({ accessToken: newAccess, refreshToken: newRefresh });
+//       processQueue(null, newAccess);
+
+//       original.headers.Authorization = `Bearer ${newAccess}`;
+//       return axios(original);
+
+//     } catch (refreshError) {
+//       processQueue(refreshError, null);
+//       clearTokens();
+//       window.dispatchEvent(new CustomEvent('bg:session-expired'));
+//       return Promise.reject(refreshError);
+
+//     } finally {
+//       isRefreshing = false;
+//     }
+//   }
+
+//   return Promise.reject(error);
+// };
+
+// // ── Instância padrão — requisições normais (timeout 15s) ─────────────────────
+// const api = axios.create({
+//   baseURL: BASE_URL,
+//   timeout: 15_000,
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Accept:         'application/json',
+//   },
+// });
+
+// api.interceptors.request.use(onRequest, (e) => Promise.reject(e));
+// api.interceptors.response.use((r) => r, onResponseError);
+
+// // ── Instância de upload — arquivos pesados (timeout 120s) ────────────────────
+// // Usada exclusivamente para POST /onboarding e PATCH /clients/:id com arquivos.
+// // Timeout maior evita cancelamento prematuro em conexões móveis lentas.
+// // Suporta onUploadProgress para exibir barra de progresso.
+// // Content-Type não definido — Axios detecta o boundary do multipart automaticamente.
+// export const apiUpload = axios.create({
+//   baseURL: BASE_URL,
+//   timeout: 120_000,
+//   headers: {
+//     Accept: 'application/json',
+//   },
+// });
+
+// apiUpload.interceptors.request.use(onRequest, (e) => Promise.reject(e));
+// apiUpload.interceptors.response.use((r) => r, onResponseError);
+
+// // ── Helpers de erro ───────────────────────────────────────────────────────────
+// export const getApiErrorMessage = (
+//   error,
+//   fallback = 'Ocorreu um erro inesperado.',
+// ) =>
+//   error?.response?.data?.message ??
+//   error?.response?.data?.error   ??
+//   error?.message                 ??
+//   fallback;
+
+// export const getValidationErrors = (error) =>
+//   error?.response?.status === 422
+//     ? (error.response.data?.errors ?? null)
+//     : null;
+
+// export default api;
+
+import axios from 'axios';
+
+// ── BASE_URL ──────────────────────────────────────────────────────────────────
+const BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  'https://bgrepresentacoes-api-production.up.railway.app/api/v1';
+
+// ── Chaves de storage ─────────────────────────────────────────────────────────
+const KEYS = {
+  REFRESH_TOKEN: 'bg:refresh_token',
+};
+
+// ── 🔥 ACCESS TOKEN EM MEMÓRIA ────────────────────────────────────────────────
+let memoryAccessToken = null;
+
+// ── Helpers de token ──────────────────────────────────────────────────────────
+export const getAccessToken = () => {
+  return memoryAccessToken;
+};
+
+export const getRefreshToken = () => {
+  try {
+    return localStorage.getItem(KEYS.REFRESH_TOKEN);
+  } catch (error) {
+    console.warn('[SECURITY] Falha ao acessar refreshToken');
+    return null;
+  }
+};
+
+export const setTokens = ({ accessToken, refreshToken }) => {
+  try {
+    if (accessToken) {
+      memoryAccessToken = accessToken; // 🔥 agora só em memória
+    }
+
+    if (refreshToken) {
+      localStorage.setItem(KEYS.REFRESH_TOKEN, refreshToken);
+    }
+  } catch (error) {
+    console.error('[SECURITY] Erro ao salvar tokens');
+  }
+};
+
+export const clearTokens = () => {
+  try {
+    memoryAccessToken = null; // 🔥 limpa memória
+    localStorage.removeItem(KEYS.REFRESH_TOKEN);
+  } catch (error) {
+    console.warn('[SECURITY] Erro ao limpar tokens');
+  }
+};
+
+// ── Fila para requisições paralelas durante refresh ───────────────────────────
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(({ resolve, reject }) =>
+    error ? reject(error) : resolve(token)
+  );
+  failedQueue = [];
+};
+
+// ── Interceptors ──────────────────────────────────────────────────────────────
+
+const onRequest = (config) => {
+  const token = getAccessToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+};
+
+const onResponseError = async (error) => {
+  const original = error.config;
+
+  const is401 = error.response?.status === 401;
+  const notRetried = !original._retry;
+  const notRefreshRoute = !original.url?.includes('/auth/refresh');
+
+  if (is401 && notRetried && notRefreshRoute) {
+    original._retry = true;
+
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      }).then((newToken) => {
+        original.headers.Authorization = `Bearer ${newToken}`;
+        return axios(original);
+      });
+    }
+
+    isRefreshing = true;
+    const refreshToken = getRefreshToken();
+
+    if (!refreshToken) {
+      isRefreshing = false;
+      clearTokens();
+      window.dispatchEvent(new CustomEvent('bg:session-expired'));
+      return Promise.reject(error);
+    }
+
+    try {
+      const { data } = await axios.post(
+        `${BASE_URL}/auth/refresh`,
+        { refreshToken },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      const payload = data.data ?? data;
+      const newAccess = payload.token ?? payload.accessToken;
+      const newRefresh = payload.refreshToken;
+
+      if (!newAccess) throw new Error('Refresh não retornou accessToken');
+
+      setTokens({ accessToken: newAccess, refreshToken: newRefresh });
+      processQueue(null, newAccess);
+
+      original.headers.Authorization = `Bearer ${newAccess}`;
+      return axios(original);
+
+    } catch (refreshError) {
+
+[...TRUNCATED...]
+
+
+========================================
+7. ROTAS
+========================================
+
+--- FILE: src/components/layout/ProtectedRoute.jsx ---
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+
+export default function ProtectedRoute({ allowedRoles }) {
+  const { isAuthenticated, isLoading, user, mustChangePassword } = useAuth();
+  const location = useLocation();
+
+  const isChangePasswordRoute = location.pathname.includes('/alterar-senha');
+
+  // 🟡 1. Aguarda carregamento
+  if (isLoading) {
+    return null; // ou spinner
+  }
+
+  // 🔥 2. Regra obrigatória: troca de senha
+  if (mustChangePassword) {
+    if (!isChangePasswordRoute) {
+      return <Navigate to="/alterar-senha" replace />;
+    }
+    return <Outlet />;
+  }
+
+  // 3. Se o usuário NÃO precisa trocar a senha, mas está tentando acessar a rota de alterar senha,
+  // redireciona para o dashboard
+  if (isChangePasswordRoute) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // 🔴 4. Não autenticado
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // 🔒 5. Validação de role
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // ✅ 6. Permitido
+  return <Outlet />;
+}
+[...TRUNCATED...]
+
+
+--- FILE: src/router/AppRouter.jsx ---
+// ============================================================
+// src/router/AppRouter.jsx
+// ============================================================
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { ThemeProvider } from 'styled-components';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import theme from '../styles/theme';
+import GlobalStyle from '../styles/GlobalStyle';
+import { AuthProvider } from '../contexts/AuthContext';
+import ProtectedRoute from '../components/layout/ProtectedRoute';
+import MainLayout from '../components/layout/MainLayout';
+
+// Auth
+const LoginPage = lazy(() => import('../features/auth/pages/LoginPage'));
+const ChangePasswordPage = lazy(() => import('../features/auth/pages/ChangePasswordPage'));
+
+//Dashboard
+const DashboardPage = lazy(() => import('../features/dashboard/pages/DashboardPage'));
+
+// Clients
+const ClientCreatePage = lazy(() => import('../features/clients/pages/ClientCreatePage'));
+const ClientEditPage = lazy(() => import('../features/clients/pages/ClientEditPage'));
+const ClientDetailPage = lazy(() => import('../features/clients/pages/ClientDetailPage'));
+const ClientsPage = lazy(() => import('../features/clients/pages/ClientsPage'));
+
+// Users
+const UsersPage = lazy(() => import('../features/users/pages/UsersPage'));
+
+// Placeholder
+const Placeholder = ({ title }) => (
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '60vh',
+    color: '#7a6455',
+  }}>
+    <p style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+      Em construção
+    </p>
+    <p style={{ fontSize: '22px', fontWeight: '700', fontFamily: 'serif' }}>{title}</p>
+  </div>
+);
+
+export default function AppRouter() {
+  const isGitHubPages = window.location.hostname.includes('github.io');
+  const Router = isGitHubPages ? HashRouter : BrowserRouter;
+  const routerProps = isGitHubPages ? {} : { basename: import.meta.env.BASE_URL };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+
+      <Router {...routerProps}>
+        <AuthProvider>
+          <ToastContainer
+            position="top-right"
+            autoClose={4000}
+            theme="light"
+          />
+            <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center' }}>Carregando...</div>}> 
+          <Routes>
+
+            {/* ── Públicas ───────────────────────── */}
+            <Route path="/login" element={<LoginPage />} />
+
+            {/* ── Protegidas (BASE) ───────────────── */}
+            <Route element={<ProtectedRoute />}>
+              
+              {/* Sem layout */}
+              <Route path="/alterar-senha" element={<ChangePasswordPage />} />
+
+              {/* Com layout */}
+              <Route element={<MainLayout />}>
+
+                {/* 🔓 Acesso geral */}
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/clientes" element={<ClientsPage />} />
+                <Route path="/clientes/:id" element={<ClientDetailPage />} />
+                <Route path="/clientes/:id/editar" element={<ClientEditPage />} />
+                <Route path="/vendas" element={<Placeholder title="Vendas" />} />
+                <Route path="/perfil" element={<Placeholder title="Meu Perfil" />} />
+
+                {/* 🔒 Admin + User */}
+                <Route element={<ProtectedRoute allowedRoles={['admin', 'user']} />}>
+                  <Route path="/onboarding" element={<ClientCreatePage />} />
+                </Route>
+
+                {/* 🔒 Apenas Admin */}
+                <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                  <Route path="/usuarios" element={<UsersPage />} />
+                  <Route path="/bandeiras" element={<Placeholder title="Bandeiras" />} />
+                  <Route path="/planos" element={<Placeholder title="Planos" />} />
+                  <Route path="/relatorios" element={<Placeholder title="Relatórios" />} />
+                </Route>
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
+              </Route>
+            </Route>
+
+          </Routes>
+          </Suspense>
+        </AuthProvider>
+      </Router>
+    </ThemeProvider>
+  );
+}
+[...TRUNCATED...]
+
+
+========================================
+8. HOOKS
+========================================
+
+========================================
+9. COMPONENTES CRÍTICOS
+========================================
+
+--- FILE: src/components/layout/ProtectedRoute.jsx ---
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+
+export default function ProtectedRoute({ allowedRoles }) {
+  const { isAuthenticated, isLoading, user, mustChangePassword } = useAuth();
+  const location = useLocation();
+
+  const isChangePasswordRoute = location.pathname.includes('/alterar-senha');
+
+  // 🟡 1. Aguarda carregamento
+  if (isLoading) {
+    return null; // ou spinner
+  }
+
+  // 🔥 2. Regra obrigatória: troca de senha
+  if (mustChangePassword) {
+    if (!isChangePasswordRoute) {
+      return <Navigate to="/alterar-senha" replace />;
+    }
+    return <Outlet />;
+  }
+
+  // 3. Se o usuário NÃO precisa trocar a senha, mas está tentando acessar a rota de alterar senha,
+  // redireciona para o dashboard
+  if (isChangePasswordRoute) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // 🔴 4. Não autenticado
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // 🔒 5. Validação de role
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // ✅ 6. Permitido
+  return <Outlet />;
+}
+[...TRUNCATED...]
+
+
+========================================
+10. PÁGINAS
+========================================
+
+--- FILE: src/components/layout/MainLayout/index.jsx ---
+// ============================================================
+// src/components/layout/MainLayout/index.jsx
+// Junta Sidebar + Navbar + Outlet (conteúdo das páginas)
+// ============================================================
+import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import Sidebar from '../Sidebar';
+import Navbar  from '../Navbar';
+import { LayoutWrapper, ContentArea, PageContent } from './styles';
+
+export default function MainLayout() {
+  // Controla o drawer da sidebar no mobile
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  return (
+    <LayoutWrapper>
+      {/* Sidebar — recebe estado de aberto/fechado para mobile */}
+      <Sidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
+      {/* Área principal: navbar + conteúdo da rota */}
+      <ContentArea>
+        <Navbar onMenuClick={() => setSidebarOpen((v) => !v)} />
+
+        <PageContent>
+          {/*
+            <Outlet /> é onde o react-router renderiza
+            a página filha da rota atual (ex: ClientsPage, Dashboard…)
+          */}
+          <Outlet />
+        </PageContent>
+      </ContentArea>
+    </LayoutWrapper>
+  );
+}
+
+[...TRUNCATED...]
+
+
+--- FILE: src/components/layout/Navbar/index.jsx ---
+// ============================================================
+// src/components/layout/Navbar/index.jsx
+// ============================================================
+import { useLocation } from 'react-router-dom';
+import { LogOut, Menu } from 'lucide-react';
+import { useAuth } from '../../../contexts/AuthContext';
+import {
+  NavbarWrapper,
+  NavLeft,
+  HamburgerButton,
+  PageTitle,
+  NavRight,
+  UserGreeting,
+  GreetingName,
+  GreetingRole,
+  Divider,
+  LogoutButton,
+} from './styles';
+
+// ── Mapa de rota → título de página ──────────────────────────────────────────
+const PAGE_TITLES = {
+  '/dashboard':  'Dashboard',
+  '/clientes':   'Clientes',
+  '/vendas':     'Vendas',
+  '/usuarios':   'Usuários',
+  '/bandeiras':  'Bandeiras',
+  '/planos':     'Planos',
+  '/relatorios': 'Relatórios',
+  '/perfil':     'Meu Perfil',
+  '/onboarding': 'Novo Cliente',
+};
+
+// Tradução dos roles
+const ROLE_LABELS = {
+  admin:   'Administrador',
+  user:    'Usuário',
+  partner: 'Parceiro',
+};
+
+// ── Componente ────────────────────────────────────────────────────────────────
+export default function Navbar({ onMenuClick }) {
+  const { user, logout } = useAuth();
+  const location = useLocation();
+  // Resolve o título da página atual
+  // Para rotas dinâmicas como /clientes/:id, pega o prefixo
+  const currentTitle = (() => {
+    const exact = PAGE_TITLES[location.pathname];
+    if (exact) return exact;
+    const prefix = Object.keys(PAGE_TITLES).find((k) =>
+      location.pathname.startsWith(k + '/')
+    );
+    return prefix ? PAGE_TITLES[prefix] : 'BG Representações';
+  })();
+
+  const firstName = user?.name?.split(' ')[0] ?? 'Usuário';
+    return (
+    <NavbarWrapper>
+      <NavLeft>
+        {/* Botão hamburguer — só aparece em mobile */}
+        <HamburgerButton
+          type="button"
+          onClick={onMenuClick}
+          aria-label="Abrir menu"
+        >
+          <Menu size={18} />
+        </HamburgerButton>
+
+        <PageTitle>{currentTitle}</PageTitle>
+      </NavLeft>
+
+      <NavRight>
+        {/* Saudação + role do usuário */}
+        <UserGreeting>
+          <GreetingName>Olá, {firstName}</GreetingName>
+          <GreetingRole>{ROLE_LABELS[user?.role] ?? user?.role}</GreetingRole>
+        </UserGreeting>
+
+        <Divider />
+
+        {/* Botão de logout */}
+        <LogoutButton type="button" onClick={logout}>
+          <LogOut size={15} />
+          <span>Sair</span>
+        </LogoutButton>
+      </NavRight>
+    </NavbarWrapper>
+  );
+}
+
+[...TRUNCATED...]
+
+
+--- FILE: src/components/layout/Sidebar/index.jsx ---
+// ============================================================
+// src/components/layout/Sidebar/index.jsx
+// ============================================================
+import {
+  LayoutDashboard,
+  Users,
+  UsersRound,
+  ShoppingCart,
+  Flag,
+  BarChart2,
+  UserCircle,
+} from 'lucide-react';
+import { useAuth } from '../../../contexts/AuthContext';
+import {
+  SidebarWrapper,
+  SidebarHeader,
+  LogoMark,
+  LogoText,
+  LogoName,
+  Nav,
+  NavSection,
+  NavSectionLabel,
+  NavItem,
+  NavItemLabel,
+  SidebarFooter,
+  UserCard,
+  UserAvatar,
+  UserInfo,
+  UserName,
+  UserRole,
+  MobileOverlay,
+} from './styles';
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+// Gera iniciais do nome para o avatar (ex: "João Silva" → "JS")
+const getInitials = (name = '') =>
+  name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0].toUpperCase())
+    .join('');
+
+// Tradução dos roles para português
+const ROLE_LABELS = {
+  admin:   'Administrador',
+  user:    'Usuário',
+  partner: 'Parceiro',
+};
+
+// ── Estrutura de navegação ────────────────────────────────────────────────────
+// Cada item pode ter: path, label, icon, adminOnly
+const NAV_ITEMS = [
+  {
+    section: 'Principal',
+    items: [
+      { path: '/dashboard', label: 'Dashboard',  icon: LayoutDashboard },
+      { path: '/clientes',  label: 'Clientes',   icon: UsersRound      },
+      { path: '/vendas',    label: 'Vendas',      icon: ShoppingCart    },
+    ],
+  },
+  {
+    section: 'Administração',
+    adminOnly: true,          // seção inteira visível só para admin
+    items: [
+      { path: '/usuarios',   label: 'Usuários',   icon: Users      },
+      { path: '/bandeiras',  label: 'Bandeiras',  icon: Flag       },
+      { path: '/planos',     label: 'Planos',     icon: BarChart2  },
+      { path: '/relatorios', label: 'Relatórios', icon: BarChart2  },
+    ],
+  },
+  {
+    section: 'Conta',
+    items: [
+      { path: '/perfil', label: 'Meu Perfil', icon: UserCircle },
+    ],
+  },
+];
+
+// ── Componente ────────────────────────────────────────────────────────────────
+export default function Sidebar({ open, onClose }) {
+  const { user, isAdmin } = useAuth();
+
+  return (
+    <>
+      {/* Overlay escuro no mobile */}
+      <MobileOverlay $open={open} onClick={onClose} />
+
+      <SidebarWrapper $open={open}>
+        {/* Cabeçalho / Logo */}
+        <SidebarHeader>
+          <LogoMark>BG</LogoMark>
+          <LogoText>
+            <LogoName>BG Representações</LogoName>
+            
+          </LogoText>
+        </SidebarHeader>
+
+        {/* Itens de navegação */}
+        <Nav>
+          {NAV_ITEMS.map((group) => {
+            // Oculta seções adminOnly para não-admins
+            if (group.adminOnly && !isAdmin) return null;
+
+            return (
+              <div key={group.section}>
+                <NavSection>
+                  <NavSectionLabel>{group.section}</NavSectionLabel>
+                </NavSection>
+
+                {group.items.map(({ path, label, icon: Icon }) => (
+                  <NavItem
+                    key={path}
+                    to={path}
+                    onClick={onClose} // fecha drawer no mobile ao navegar
+                  >
+                    <Icon size={17} />
+                    <NavItemLabel>{label}</NavItemLabel>
+                  </NavItem>
+                ))}
+              </div>
+            );
+          })}
+        </Nav>
+
+        {/* Rodapé: info do usuário logado */}
+        <SidebarFooter>
+          <UserCard>
+            <UserAvatar>{getInitials(user?.name)}</UserAvatar>
+            <UserInfo>
+              <UserName>{user?.name ?? 'Usuário'}</UserName>
+              <UserRole>{ROLE_LABELS[user?.role] ?? user?.role}</UserRole>
+            </UserInfo>
+          </UserCard>
+        </SidebarFooter>
+      </SidebarWrapper>
+    </>
+  );
+}
+
+[...TRUNCATED...]
+
+
+--- FILE: src/features/auth/pages/ChangePasswordPage/index.jsx ---
+// ============================================================
+// src/features/auth/pages/ChangePasswordPage/index.jsx
+// ============================================================
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { ShieldCheck, Eye, EyeOff } from 'lucide-react';
+
+import { useAuth } from '../../../../contexts/AuthContext';
+import {
+  PageWrapper,
+  Card,
+  IconBadge,
+  CardTitle,
+  CardSubtitle,
+  Form,
+  Field,
+  Label,
+  Input,
+  ErrorText,
+  Button,
+} from './styles';
+
+// ── Regras de senha — idênticas ao backend (authValidators.js) ─────────────────
+// Backend exige: mínimo 8 chars, maiúscula, minúscula, número e caractere especial
+const PASSWORD_POLICY = yup
+  .string()
+  .required('Campo obrigatório.')
+  .min(8, 'A senha deve ter pelo menos 8 caracteres.')
+  .matches(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula.')
+  .matches(/[a-z]/, 'A senha deve conter pelo menos uma letra minúscula.')
+  .matches(/[0-9]/, 'A senha deve conter pelo menos um número.')
+  .matches(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, 'A senha deve conter pelo menos um caractere especial.');
+
+const schema = yup.object({
+  currentPassword: yup.string().required('Informe a senha atual.'),
+  newPassword:     PASSWORD_POLICY,
+  confirmPassword: yup
+    .string()
+    .required('Confirme a nova senha.')
+    .oneOf([yup.ref('newPassword')], 'As senhas não coincidem.'),
+});
+
+// ── Requisitos visuais de senha ────────────────────────────────────────────────
+const REQUIREMENTS = [
+  { label: 'Mínimo 8 caracteres',        test: (v) => v.length >= 8 },
+  { label: 'Letra maiúscula (A–Z)',        test: (v) => /[A-Z]/.test(v) },
+  { label: 'Letra minúscula (a–z)',        test: (v) => /[a-z]/.test(v) },
+  { label: 'Número (0–9)',                 test: (v) => /[0-9]/.test(v) },
+  { label: 'Caractere especial (!@#$...)', test: (v) => /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(v) },
+];
+
+// ── Componente de checklist de requisitos ─────────────────────────────────────
+function PasswordChecklist({ password }) {
+  if (!password) return null;
+  return (
+    <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      {REQUIREMENTS.map((req) => {
+        const ok = req.test(password);
+        return (
+          <span
+            key={req.label}
+            style={{
+              fontSize: '12px',
+              color: ok ? '#059669' : '#b45309',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            {ok ? '✓' : '○'} {req.label}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Componente principal ───────────────────────────────────────────────────────
+export default function ChangePasswordPage() {
+  const { changePassword, user } = useAuth();
+  const navigate = useNavigate();
+
+  const [isLoading, setIsLoading]             = useState(false);
+  const [showCurrent, setShowCurrent]         = useState(false);
+  const [showNew, setShowNew]                 = useState(false);
+  const [showConfirm, setShowConfirm]         = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(schema) });
+
+  // Observa o campo da nova senha para o checklist em tempo real
+  const newPasswordValue = watch('newPassword') ?? '';
+
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    try {
+      await changePassword(data.currentPassword, data.newPassword, data.confirmPassword);
+      navigate('/dashboard', { replace: true });
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <PageWrapper>
+      <Card>
+        <IconBadge>
+          <ShieldCheck size={28} />
+        </IconBadge>
+
+        <CardTitle>Alterar senha</CardTitle>
+
+        <CardSubtitle>
+          {user?.name ? `Olá, ${user.name.split(' ')[0]}. ` : ''}
+          Você precisa definir uma nova senha para continuar.
+        </CardSubtitle>
+
+        <Form onSubmit={handleSubmit(onSubmit)}>
+
+          {/* ── Senha atual ── */}
+          <Field>
+            <Label>Senha atual</Label>
+            <div style={{ position: 'relative' }}>
+              <Input
+                type={showCurrent ? 'text' : 'password'}
+                autoComplete="current-password"
+                {...register('currentPassword')}
+                style={{ paddingRight: '40px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrent((v) => !v)}
+                aria-label={showCurrent ? 'Ocultar senha' : 'Mostrar senha'}
+                style={{
+                  position: 'absolute', right: '10px', top: '50%',
+                  transform: 'translateY(-50%)', background: 'none',
+                  border: 'none', cursor: 'pointer', color: '#9ca3af', padding: 0,
+                }}
+              >
+                {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+            {errors.currentPassword && <ErrorText>{errors.currentPassword.message}</ErrorText>}
+          </Field>
+
+          {/* ── Nova senha ── */}
+          <Field>
+            <Label>Nova senha</Label>
+            <div style={{ position: 'relative' }}>
+              <Input
+                type={showNew ? 'text' : 'password'}
+                autoComplete="new-password"
+                {...register('newPassword')}
+                style={{ paddingRight: '40px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowNew((v) => !v)}
+                aria-label={showNew ? 'Ocultar senha' : 'Mostrar senha'}
+                style={{
+                  position: 'absolute', right: '10px', top: '50%',
+                  transform: 'translateY(-50%)', background: 'none',
+                  border: 'none', cursor: 'pointer', color: '#9ca3af', padding: 0,
+                }}
+              >
+                {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+            {errors.newPassword && <ErrorText>{errors.newPassword.message}</ErrorText>}
+            {/* Checklist visual — aparece enquanto o usuário digita */}
+            <PasswordChecklist password={newPasswordValue} />
+          </Field>
+
+          {/* ── Confirmar nova senha ── */}
+          <Field>
+            <Label>Confirmar nova senha</Label>
+            <div style={{ position: 'relative' }}>
+              <Input
+                type={showConfirm ? 'text' : 'password'}
+                autoComplete="new-password"
+                {...register('confirmPassword')}
+                style={{ paddingRight: '40px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm((v) => !v)}
+                aria-label={showConfirm ? 'Ocultar senha' : 'Mostrar senha'}
+                style={{
+                  position: 'absolute', right: '10px', top: '50%',
+                  transform: 'translateY(-50%)', background: 'none',
+                  border: 'none', cursor: 'pointer', color: '#9ca3af', padding: 0,
+                }}
+              >
+                {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+            {errors.confirmPassword && <ErrorText>{errors.confirmPassword.message}</ErrorText>}
+          </Field>
+
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Salvando...' : 'Alterar senha'}
+          </Button>
+
+        </Form>
+      </Card>
+    </PageWrapper>
+  );
+}
+[...TRUNCATED...]
+
+
+--- FILE: src/features/auth/pages/LoginPage/index.jsx ---
+// ============================================================
+// src/features/auth/pages/LoginPage/index.jsx
+// Lógica e estrutura — estilos em ./styles.js
+// ============================================================
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { Eye, EyeOff, LogIn, AlertCircle, X, ArrowRight } from 'lucide-react';
+
+import { useAuth } from '../../../../contexts/AuthContext';
+import {
+  PageWrapper,
+  BrandPanel,
+  BrandContent,
+  BrandTop,
+  LogoMark,
+  LogoName,
+  BrandHeadline,
+  BrandBody,
+  StatRow,
+  Stat,
+  StatValue,
+  StatLabel,
+  BrandFooter,
+  MobileAccessButton,
+  FormPanel,
+  FormInner,
+  MobileOverlay,
+  OverlayHeader,
+  OverlayBrand,
+  OverlayLogoMark,
+  OverlayLogoName,
+  CloseButton,
+  FormHeader,
+  FormEyebrow,
+  FormTitle,
+  FormSubtitle,
+  FieldGroup,
+  Field,
+  Label,
+  InputWrapper,
+  StyledInput,
+  ToggleButton,
+  FieldError,
+  SubmitButton,
+  Spinner,
+  FormDivider,
+  FormFooter,
+} from './styles';
+
+// ── FormContent: formulário compartilhado entre desktop e overlay mobile ──────
+// Extraído como componente interno para não duplicar JSX
+function FormContent({ onSubmitSuccess }) {
+  const { login } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading]       = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ defaultValues: { email: '', password: '' } });
+
+  const onSubmit = async ({ email, password }) => {
+    setIsLoading(true);
+    try {
+      // ── FIX: desestrutura mustChangePassword diretamente do resultado ──────
+      // Antes estava: const result = await login(...)
+      //               if (result) { onSubmitSuccess(mustChangePassword) }
+      // "mustChangePassword" nunca foi declarado naquele escopo,
+      // causando ReferenceError → catch exibia erro → ficava na tela de login.
+      const { mustChangePassword } = await login(email, password);
+      onSubmitSuccess(mustChangePassword);
+    } catch (error) {
+      toast.error(error.message, { toastId: 'login-error' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <FormHeader>
+        <FormEyebrow>Área restrita</FormEyebrow>
+        <FormTitle>Bem-vindo de volta</FormTitle>
+        <FormSubtitle>
+          Use as credenciais fornecidas pelo administrador para acessar sua conta.
+        </FormSubtitle>
+      </FormHeader>
+
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <FieldGroup>
+
+          {/* Campo: E-mail */}
+          <Field>
+            <Label htmlFor="email">E-mail</Label>
+            <InputWrapper>
+              <StyledInput
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                autoComplete="email"
+                $hasError={!!errors.email}
+                disabled={isLoading}
+                {...register('email', {
+                  required: 'O e-mail é obrigatório.',
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: 'Informe um e-mail válido.',
+                  },
+                })}
+              />
+            </InputWrapper>
+            {errors.email && (
+              <FieldError>
+                <AlertCircle size={12} />
+                {errors.email.message}
+              </FieldError>
+            )}
+          </Field>
+
+          {/* Campo: Senha */}
+          <Field>
+            <Label htmlFor="password">Senha</Label>
+            <InputWrapper>
+              <StyledInput
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                $hasError={!!errors.password}
+                $hasToggle
+                disabled={isLoading}
+                {...register('password', {
+                  required: 'A senha é obrigatória.',
+                  minLength: {
+                    value: 6,
+                    message: 'Mínimo 6 caracteres.',
+                  },
+                })}
+              />
+              <ToggleButton
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </ToggleButton>
+            </InputWrapper>
+            {errors.password && (
+              <FieldError>
+                <AlertCircle size={12} />
+                {errors.password.message}
+              </FieldError>
+            )}
+          </Field>
+
+        </FieldGroup>
+
+        <SubmitButton
+          type="submit"
+          disabled={isLoading}
+          $isLoading={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <Spinner />
+              Carregando…
+            </>
+          ) : (
+            <>
+              <LogIn size={17} />
+              Entrar
+            </>
+          )}
+        </SubmitButton>
+      </form>
+
+      <FormDivider />
+      <FormFooter>
+        Problemas com o acesso? Fale com o administrador do sistema.
+      </FormFooter>
+    </>
+  );
+}
+
+// ── Componente principal ──────────────────────────────────────────────────────
+export default function LoginPage() {
+  const navigate = useNavigate();
+
+  // Controla visibilidade do overlay fullscreen (mobile)
+  const [overlayOpen, setOverlayOpen] = useState(false);
+
+  // Bloqueia scroll do body enquanto o overlay estiver aberto
+  useEffect(() => {
+    document.body.style.overflow = overlayOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [overlayOpen]);
+
+  // Teclado: ESC fecha o overlay
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') setOverlayOpen(false);
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, []);
+
+  // Callback chamado pelo FormContent após login bem-sucedido
+  const handleLoginSuccess = (mustChangePassword) => {
+  
+
+  document.body.style.overflow = '';
+  if (mustChangePassword) {
+    navigate('/alterar-senha', { replace: true });
+  } else {
+    navigate('/dashboard', { replace: true });
+  }
+};
+  // const handleLoginSuccess = (mustChangePassword) => {
+  //   document.body.style.overflow = '';
+  //   if (mustChangePassword) {
+  //     navigate('/alterar-senha', { replace: true });
+  //   } else {
+  //     navigate('/dashboard', { replace: true });
+  //   }
+  // };
+
+  return (
+    <PageWrapper>
+
+      {/* ── LADO A: Landing / Marca ── */}
+      <BrandPanel>
+        <BrandContent>
+          <BrandTop>
+            <LogoMark>BG</LogoMark>
+            <LogoName>BG Representações</LogoName>
+          </BrandTop>
+
+          <BrandHeadline>
+            Gestão de <em>benefícios</em> com{' '}
+            precisão corporativa.
+          </BrandHeadline>
+
+          <BrandBody>
+            Plataforma integrada para gerenciamento de clientes,
+            vendas e cartões de vale alimentação — com rastreabilidade
+            completa e auditoria em cada etapa.
+          </BrandBody>
+
+          <StatRow>
+            <Stat>
+              <StatValue>100%</StatValue>
+              <StatLabel>Auditado</StatLabel>
+            </Stat>
+            <Stat>
+              <StatValue>JWT</StatValue>
+              <StatLabel>Segurança</StatLabel>
+            </Stat>
+            <Stat>
+              <StatValue>3 níveis</StatValue>
+              <StatLabel>de acesso</StatLabel>
+            </Stat>
+          </StatRow>
+
+          {/*
+            Botão "Acessar Sistema" — VISÍVEL APENAS EM MOBILE
+            No desktop este botão fica oculto (display: none via CSS)
+          */}
+          <MobileAccessButton
+            type="button"
+            onClick={() => setOverlayOpen(true)}
+            aria-label="Abrir formulário de login"
+          >
+            Acessar Sistema
+            <ArrowRight size={17} />
+          </MobileAccessButton>
+        </BrandContent>
+
+        <BrandFooter>
+          © {new Date().getFullYear()} BG Representações — Uso interno exclusivo.
+        </BrandFooter>
+      </BrandPanel>
+
+      {/* ── LADO B: Formulário (desktop — coluna fixa) ── */}
+      <FormPanel>
+        <FormInner>
+          <FormContent onSubmitSuccess={handleLoginSuccess} />
+        </FormInner>
+      </FormPanel>
+
+      {/*
+        ── Overlay fullscreen (mobile apenas) ──
+        Ativado pelo clique em MobileAccessButton.
+        Cobre 100% da viewport com fundo neutral[50].
+        $open controla opacity + visibility via CSS no styles.js.
+      */}
+      <MobileOverlay
+
+[...TRUNCATED...]
+
+
+--- FILE: src/features/clients/pages/ClientCreatePage/index.jsx ---
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { toast } from 'react-toastify';
+import imageCompression from 'browser-image-compression';
+import {
+  ArrowLeft, Building2, MapPin, Landmark, FileText,
+  Save, X, AlertCircle, Upload, File as FileIcon,
+  Trash2, PackageCheck, Layers, Check,
+} from 'lucide-react';
+
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import api, { apiUpload, getApiErrorMessage } from '../../../../lib/api';
+import { useAuth } from '../../../../contexts/AuthContext';
+import {
+  Container, PageHeader, BackButton, TitleGroup, PageTitle, PageSubtitle,
+  Card, CardHeader, CardIconWrapper, CardTitle,
+  FormGrid, FullSpan, Field, Label, Input, Select, Textarea,
+  FieldError, FieldHint,
+  BankSection, BankSectionTitle,
+  ModeToggle, ModeButton,
+  PlansGrid, PlanCard, PlanCardHeader, PlanName, PlanPrice,
+  PlanDescription, PlanFlagsPreview, PlanFlagTag,
+  FlagsGrid, FlagCheckCard, FlagCheckbox, FlagCheckInfo,
+  FlagCheckName, FlagCheckPrice,
+  TotalBox, TotalLabel, TotalValue,
+  DocumentsGrid, DocumentUploadCard, DocumentUploadLabel,
+  DropZone, DropZoneIcon, DropZoneText, DropZoneSubtext,
+  FileInfo, FileInfoText, FileName, FileMeta, RemoveFileButton,
+  FormFooter, CancelButton, SaveButton, Spinner,
+  UploadProgressBar, UploadProgressFill, UploadProgressLabel,
+  SkeletonBar, SkeletonCard, Divider, EmptyState, EmptyText,
+} from './styles';
+
+
+const normalizeList = (res) => {
+  if (!res) return [];
+  if (Array.isArray(res)) return res;
+  if (Array.isArray(res.data)) return res.data;
+  if (Array.isArray(res.results)) return res.results;
+  return [];
+};
+
+// ── Função de validação de CNPJ ─────────────────────────────────────────────
+const isValidCNPJ = (cnpjDigits) => {
+  if (!cnpjDigits) return false;
+  const cnpj = cnpjDigits.padStart(14, '0'); // Garante 14 dígitos
+  if (/^(\d)\1+$/.test(cnpj)) return false; // Todos dígitos iguais
+
+  let tamanho = cnpj.length - 2;
+  let numeros = cnpj.substring(0, tamanho);
+  const digitos = cnpj.substring(tamanho);
+  let soma = 0;
+  let pos = tamanho - 7;
+  for (let i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+  if (resultado != digitos.charAt(0)) return false;
+
+  tamanho = tamanho + 1;
+  numeros = cnpj.substring(0, tamanho);
+  soma = 0;
+  pos = tamanho - 7;
+  for (let i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+  if (resultado != digitos.charAt(1)) return false;
+
+  return true;
+};
+
+// ── Schema Yup ────────────────────────────────────────────────────────────────
+const createSchema = yup.object({
+  corporate_name: yup
+    .string()
+    .required('A razão social é obrigatória.')
+    .max(200, 'Razão social deve ter no máximo 200 caracteres.'),
+
+  cnpj: yup
+    .string()
+    .required('O CNPJ é obrigatório.')
+    .transform((v) => v?.replace(/\D/g, '') || '')
+    .test('cnpj-valido', 'CNPJ inválido (dígitos verificadores não conferem).', (v) => {
+      if (!v) return false; // Já obrigatório, mas por segurança
+      return v.length === 14 && isValidCNPJ(v);
+    }),
+
+  email: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .email('Informe um e-mail válido.'),
+
+  state_registration: yup
+    .string()
+    .nullable()
+    .transform((v) => v?.replace(/\D/g, '') || null)
+    .matches(/^\d*$/, 'A inscrição estadual deve conter apenas números.')
+    .max(15, 'Inscrição estadual deve ter no máximo 15 caracteres.'),
+
+  trade_name: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(200, 'Nome fantasia deve ter no máximo 200 caracteres.'),
+
+  phone: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(20, 'Telefone deve ter no máximo 20 caracteres.'),
+
+  benefit_type: yup
+    .string()
+    .required('O tipo de benefício é obrigatório.')
+    .oneOf(['food', 'meal', 'both'], 'Tipo inválido.'),
+
+  notes: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null),
+
+  partner_id: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null),
+
+  address_street: yup
+    .string().nullable().transform((v) => v || null)
+    .max(255, 'Logradouro deve ter no máximo 255 caracteres.'),
+
+  address_number: yup
+    .string().nullable().transform((v) => v || null)
+    .max(10, 'Número deve ter no máximo 10 caracteres.'),
+
+  address_complement: yup
+    .string().nullable().transform((v) => v || null)
+    .max(100, 'Complemento deve ter no máximo 100 caracteres.'),
+
+  address_neighborhood: yup
+    .string().nullable().transform((v) => v || null)
+    .max(100, 'Bairro deve ter no máximo 100 caracteres.'),
+
+  address_city: yup
+    .string().nullable().transform((v) => v || null)
+    .max(100, 'Cidade deve ter no máximo 100 caracteres.'),
+
+  address_state: yup
+    .string().nullable().transform((v) => v || null)
+    .max(2, 'UF deve ter 2 caracteres.'),
+
+  address_zip: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .test('cep-valido', 'CEP inválido. Use o formato 00000-000.', (v) => {
+      if (!v) return true;
+      return v.replace(/\D/g, '').length === 8;
+    }),
+
+  bank_bank_name: yup
+    .string().nullable().transform((v) => v || null)
+    .max(100, 'Nome do banco deve ter no máximo 100 caracteres.'),
+
+  bank_agency: yup
+    .string()
+    .max(10, 'Agência deve ter no máximo 10 caracteres.')
+    .when('bank_bank_name', {
+      is: (v) => !!v,
+      then: (s) => s.required('Agência é obrigatória quando o banco é informado.'),
+      otherwise: (s) => s.nullable().transform((v) => v || null),
+    }),
+
+  bank_agency_digit: yup
+    .string().nullable().transform((v) => v || null)
+    .max(2, 'Dígito deve ter no máximo 2 caracteres.'),
+
+  bank_account: yup
+    .string()
+    .max(20, 'Conta deve ter no máximo 20 caracteres.')
+    .when('bank_bank_name', {
+      is: (v) => !!v,
+      then: (s) => s.required('Conta é obrigatória quando o banco é informado.'),
+      otherwise: (s) => s.nullable().transform((v) => v || null),
+    }),
+
+  bank_account_digit: yup
+    .string().nullable().transform((v) => v || null)
+    .max(2, 'Dígito deve ter no máximo 2 caracteres.'),
+
+  bank_account_type: yup
+    .string()
+    .when('bank_bank_name', {
+      is: (v) => !!v,
+      then: (s) => s.required('Tipo é obrigatório.').oneOf(['checking', 'savings'], 'Tipo inválido.'),
+      otherwise: (s) => s.nullable().transform((v) => v || null),
+    }),
+});
+
+// ── Constantes ────────────────────────────────────────────────────────────────
+
+const DOCUMENT_SLOTS = [
+  { key: 'contrato', type: 'company_document', label: 'Contrato / Doc. da Empresa', fieldName: 'contrato' },
+  { key: 'proof_of_address', type: 'proof_of_address', label: 'Comprovante de Endereço', fieldName: 'documentos', docIndex: 0 },
+  { key: 'bank_account_proof', type: 'bank_account_proof', label: 'Comprovante Bancário', fieldName: 'documentos', docIndex: 1 },
+  { key: 'card_machine_proof', type: 'card_machine_proof', label: 'Comprovante de Maquininha', fieldName: 'documentos', docIndex: 2 },
+];
+
+const BENEFIT_OPTIONS = [
+  { value: 'food', label: 'Vale Alimentação' },
+  { value: 'meal', label: 'Vale Refeição' },
+  { value: 'both', label: 'Alimentação + Refeição' },
+];
+
+const ACCOUNT_TYPE_OPTIONS = [
+  { value: 'checking', label: 'Conta Corrente' },
+  { value: 'savings', label: 'Conta Poupança' },
+];
+
+const UF_OPTIONS = [
+  'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+  'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN',
+  'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO',
+];
+
+// ── Compressão de imagens ─────────────────────────────────────────────────────
+// PDFs passam direto. Imagens são reduzidas para no máximo 1MB / 1920px.
+const compressImage = async (file) => {
+  if (!file.type.startsWith('image/')) return file;
+  try {
+    const compressed = await imageCompression(file, {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+      fileType: file.type,
+    });
+    return new File([compressed], file.name, { type: file.type });
+  } catch {
+    return file; // fallback: envia o original se a compressão falhar
+  }
+};
+
+// ── Masks ─────────────────────────────────────────────────────────────────────
+
+const maskCNPJ = (v = '') => {
+  const d = v.replace(/\D/g, '').slice(0, 14);
+  if (d.length <= 2) return d;
+  if (d.length <= 5) return `${d.slice(0, 2)}.${d.slice(2)}`;
+  if (d.length <= 8) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5)}`;
+  if (d.length <= 12) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8)}`;
+  return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
+};
+
+const maskPhone = (v = '') => {
+  const d = v.replace(/\D/g, '').slice(0, 11);
+  if (d.length <= 2) return `(${d}`;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+};
+
+const maskCEP = (v = '') => {
+  const d = v.replace(/\D/g, '').slice(0, 8);
+  if (d.length <= 5) return d;
+  return `${d.slice(0, 5)}-${d.slice(5)}`;
+};
+
+const onlyDigits = (v = '') => v.replace(/\D/g, '');
+const formatBRL = (n = 0) => Number(n).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const formatFileSize = (bytes) => {
+  if (!bytes) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+
+function CreateSkeleton() {
+  const fields = (n) => Array.from({ length: n }).map((_, i) => (
+    <Field key={i}>
+      <SkeletonBar $w="45%" $h="11px" />
+      <SkeletonBar $h="44px" style={{ borderRadius: '8px', marginTop: '2px' }} />
+    </Field>
+  ));
+  return (
+    <Container>
+      <PageHeader>
+        <SkeletonBar $w="80px" $h="36px" style={{ borderRadius: '6px' }} />
+        <TitleGroup>
+          <SkeletonBar $w="180px" $h="28px" />
+          <SkeletonBar $w="120px" $h="14px" style={{ marginTop: '4px' }} />
+        </TitleGroup>
+      </PageHeader>
+
+[...TRUNCATED...]
+
+
+--- FILE: src/features/clients/pages/ClientDetailPage/index.jsx ---
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import {
+    ArrowLeft, Building2, MapPin, CreditCard,
+    FileText, Flag, Landmark, Download, Loader2, Pencil,
+} from 'lucide-react';
+
+import api, { getApiErrorMessage } from '../../../../lib/api';
+import { useAuth } from '../../../../contexts/AuthContext';
+import {
+    Container, PageHeader, HeaderLeft, BackButton,
+    TitleGroup, PageTitle, ProtocolTag, HeaderActions,
+    Card, CardHeader, CardIconWrapper, CardTitle,
+    TwoColumnGrid, InfoGrid, InfoGroup, InfoLabel,
+    InfoValue, InfoValueMuted,
+    StatusBadge, STATUS_LABELS,
+    FlagList, FlagItem, FlagInfo, FlagName, FlagOrigin, FlagPrice,
+    DocumentList, DocumentItem, DocumentIconWrapper,
+    DocumentInfo, DocumentMeta, DocumentDownloadButton,
+    BankCard, EmptyState, EmptyText,
+    SkeletonBar, SkeletonCard, Divider, FileNameText,
+} from './styles';
+
+// ── Formatadores ──────────────────────────────────────────────────────────────
+const formatCNPJ = (v) => {
+    if (!v) return '—';
+    const d = v.replace(/\D/g, '');
+    if (d.length !== 14) return v;
+    return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+};
+
+const formatPhone = (v) => {
+    if (!v) return '—';
+    const d = v.replace(/\D/g, '');
+    if (d.length === 11) return d.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+    if (d.length === 10) return d.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3');
+    return v;
+};
+
+const formatDate = (iso) => {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+};
+
+const formatCurrency = (v) => {
+    if (v === null || v === undefined) return '—';
+    return Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+};
+
+const BENEFIT_LABELS = { food: 'Vale Alimentação', meal: 'Vale Refeição', both: 'Alimentação + Refeição' };
+const DOCUMENT_TYPE_LABELS = { company_document: 'Documento da Empresa', proof_of_address: 'Comprovante de Endereço', bank_account_proof: 'Comprovante Bancário', card_machine_proof: 'Comprovante de Maquininha' };
+const ACCOUNT_TYPE_LABELS = { checking: 'Conta Corrente', savings: 'Conta Poupança' };
+
+const formatFileSize = (bytes) => {
+    if (!bytes) return '';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+// ── Skeleton (O QUE ESTAVA FALTANDO) ──────────────────────────────────────────
+function DetailSkeleton() {
+    return (
+        <Container>
+            <PageHeader>
+                <HeaderLeft>
+                    <SkeletonBar $w="80px" $h="36px" style={{ borderRadius: '6px' }} />
+                    <TitleGroup>
+                        <SkeletonBar $w="220px" $h="28px" />
+                        <SkeletonBar $w="120px" $h="14px" style={{ marginTop: '4px' }} />
+                    </TitleGroup>
+                </HeaderLeft>
+            </PageHeader>
+            <TwoColumnGrid>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <SkeletonCard>
+                        <SkeletonBar $w="40%" $h="18px" /><Divider />
+                        <InfoGrid>
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <InfoGroup key={i}>
+                                    <SkeletonBar $w="50%" $h="11px" />
+                                    <SkeletonBar $w="80%" $h="16px" style={{ marginTop: '4px' }} />
+                                </InfoGroup>
+                            ))}
+                        </InfoGrid>
+                    </SkeletonCard>
+                </div>
+            </TwoColumnGrid>
+        </Container>
+    );
+}
+
+// ── Select de status de bandeira ──────────────────────────────────────────────
+const FLAG_STATUS_OPTIONS = [
+    { value: 'pending', label: 'Pendente' },
+    { value: 'analysis', label: 'Em análise' },
+    { value: 'approved', label: 'Aprovado' },
+];
+
+const STATUS_SELECT_COLORS = {
+    approved: { bg: '#d1fae5', color: '#065f46' },
+    analysis: { bg: '#dbeafe', color: '#1e40af' },
+    pending: { bg: '#fef3c7', color: '#92400e' },
+};
+
+function FlagStatusSelect({ clientFlagId, currentStatus, onUpdated, onOptimisticUpdate }) {
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [localStatus, setLocalStatus] = useState(currentStatus);
+    const colors = STATUS_SELECT_COLORS[localStatus] ?? STATUS_SELECT_COLORS.pending;
+
+    useEffect(() => { setLocalStatus(currentStatus); }, [currentStatus]);
+
+    const handleChange = async (e) => {
+        const newStatus = e.target.value;
+        const prevStatus = localStatus;
+        if (newStatus === prevStatus) return;
+
+        setLocalStatus(newStatus);
+        onOptimisticUpdate(clientFlagId, newStatus);
+        setIsUpdating(true);
+        try {
+            await api.patch(`/client-flags/${clientFlagId}/status`, { status: newStatus });
+            toast.success('Status da bandeira atualizado.');
+            onUpdated();
+        } catch (error) {
+            setLocalStatus(prevStatus);
+            onOptimisticUpdate(clientFlagId, prevStatus);
+            toast.error(getApiErrorMessage(error, 'Erro ao atualizar status.'));
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    return (
+        <select
+            value={localStatus}
+            onChange={handleChange}
+            disabled={isUpdating}
+            style={{
+                height: '28px', padding: '0 28px 0 8px',
+                border: '1.5px solid #e4d9cf', borderRadius: '99px',
+                fontFamily: 'inherit', fontSize: '11px', fontWeight: 600,
+                backgroundColor: colors.bg, color: colors.color,
+                cursor: 'pointer', appearance: 'none',
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center',
+            }}
+        >
+            {FLAG_STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+        </select>
+    );
+}
+
+// ── Componente principal ──────────────────────────────────────────────────────
+export default function ClientDetailPage() {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const { isAdmin, isPartner, isUser, user } = useAuth();
+
+    const [client, setClient] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [downloading, setDownloading] = useState(null);
+
+    const fetchClient = useCallback(async () => {
+
+        try {
+            const { data } = await api.get(`/clients/${id}`);
+            setClient(data.data);
+        } catch (error) {
+            toast.error(getApiErrorMessage(error, 'Erro ao carregar dados.'));
+            navigate('/clientes', { replace: true });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [id, navigate]);
+
+    useEffect(() => { fetchClient(); }, [fetchClient]);
+
+    const handleOptimisticFlagUpdate = useCallback((flagId, newStatus) => {
+        setClient((prev) => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                clientFlags: prev.clientFlags.map((cf) => cf.id === flagId ? { ...cf, status: newStatus } : cf),
+            };
+        });
+    }, []);
+
+    const refetchAfterFlagUpdate = useCallback(async () => {
+        try {
+            const { data } = await api.get(`/clients/${id}`);
+
+            setClient(data.data);
+        } catch { /* silencioso */ }
+    }, [id]);
+
+    const handleDownload = async (doc) => {
+        setDownloading(doc.id);
+        try {
+            const response = await api.get(`/documents/${doc.id}/download`, { responseType: 'blob' });
+            const url = URL.createObjectURL(response.data);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = doc.original_name ?? `documento-${doc.id}`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            toast.error(getApiErrorMessage(error, 'Erro no download.'));
+        } finally {
+            setDownloading(null);
+        }
+    };
+
+    if (isLoading) return <DetailSkeleton />;
+    if (!client) return null;
+
+    const {
+        corporate_name, trade_name, cnpj, state_registration,
+        phone, email, protocol, benefit_type, overall_status,
+        notes, createdAt, address_street, address_number, address_complement,
+        address_neighborhood, address_city, address_state, address_zip,
+        clientFlags = [], documents = [], bankAccounts = [],
+    } = client;
+
+    const canEdit = !isPartner && (isAdmin || (isUser && client.created_by === user?.id));
+    const canEditFlags = !isPartner && (isAdmin || (isUser && client.created_by === user?.id));
+
+    const hasAddress = address_street || address_city;
+    const addressLine = [address_street, address_number, address_complement].filter(Boolean).join(', ');
+    const addressCity = [address_neighborhood, address_city, address_state].filter(Boolean).join(' — ');
+
+    return (
+        <Container>
+            <PageHeader>
+                <HeaderLeft>
+                    <BackButton onClick={() => navigate('/clientes')} title="Voltar">
+                        <ArrowLeft size={18} /> Voltar
+                    </BackButton>
+                    <TitleGroup>
+                        <PageTitle>{trade_name || corporate_name}</PageTitle>
+                        <ProtocolTag>Protocolo #{protocol}</ProtocolTag>
+                    </TitleGroup>
+                </HeaderLeft>
+
+                <HeaderActions>
+                    {canEdit && (
+                        <button
+                            onClick={() => navigate(`/clientes/${id}/editar`)}
+                            style={{
+                                display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px',
+                                border: '1.5px solid #e4d9cf', borderRadius: '8px', background: 'transparent',
+                                fontSize: '13px', fontWeight: 500, color: '#7a6455', cursor: 'pointer'
+                            }}
+                        >
+                            <Pencil size={14} /> Editar
+                        </button>
+                    )}
+                    <StatusBadge $status={overall_status}>
+                        {STATUS_LABELS[overall_status] ?? overall_status}
+                    </StatusBadge>
+                </HeaderActions>
+            </PageHeader>
+
+            <TwoColumnGrid>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <Card>
+                        <CardHeader>
+                            <CardIconWrapper><Building2 size={18} /></CardIconWrapper>
+                            <CardTitle>Dados da Empresa</CardTitle>
+                        </CardHeader>
+                        <InfoGrid>
+                            <InfoGroup><InfoLabel>Razão Social</InfoLabel><InfoValue>{corporate_name || '—'}</InfoValue></InfoGroup>
+                            {!isPartner && <InfoGroup><InfoLabel>Nome Fantasia</InfoLabel><InfoValue>{trade_name || '—'}</InfoValue></InfoGroup>}
+                            <InfoGroup><InfoLabel>CNPJ</InfoLabel><InfoValue>{formatCNPJ(cnpj)}</InfoValue></InfoGroup>
+                            {!isPartner && <InfoGroup><InfoLabel>Inscrição Estadual</InfoLabel><InfoValue>{state_registration || '—'}</InfoValue></InfoGroup>}
+                            <InfoGroup><InfoLabel>Telefone</InfoLabel><InfoValue>{formatPhone(phone)}</InfoValue></InfoGroup>
+                            {!isPartner && <InfoGroup><InfoLabel>E-mail</InfoLabel><InfoValue>{email || '—'}</InfoValue></InfoGroup>}
+                            <InfoGroup><InfoLabel>Tipo de Benefício</InfoLabel><InfoValue>{BENEFIT_LABELS[benefit_type] ?? benefit_type ?? '—'}</InfoValue></InfoGroup>
+                            <InfoGroup><InfoLabel>Cadastrado em</InfoLabel><InfoValue>{formatDate(createdAt)}</InfoValue></InfoGroup>
+                            {!isPartner && notes && (
+                                <InfoGroup $span>
+                                    <InfoLabel>Observações Internas</InfoLabel>
+                                    <InfoValueMuted>{notes}</InfoValueMuted>
+                                </InfoGroup>
+                            )}
+                        </InfoGrid>
+                    </Card>
+
+                    <Card>
+                        <CardHeader><CardIconWrapper><MapPin size={18} /></CardIconWrapper><CardTitle>Endereço</CardTitle></CardHeader>
+                        {hasAddress ? (
+                            <InfoGrid $cols={2}>
+                                <InfoGroup $span><InfoLabel>Logradouro</InfoLabel><InfoValue>{addressLine || '—'}</InfoValue></InfoGroup>
+                                <InfoGroup><InfoLabel>Bairro / Cidade / UF</InfoLabel><InfoValue>{addressCity || '—'}</InfoValue></InfoGroup>
+                                <InfoGroup><InfoLabel>CEP</InfoLabel><InfoValue>{address_zip || '—'}</InfoValue></InfoGroup>
+                            </InfoGrid>
+                        ) : <EmptyState><EmptyText>Endereço não informado.</EmptyText></EmptyState>}
+
+[...TRUNCATED...]
+
+
+--- FILE: src/features/clients/pages/ClientEditPage/index.jsx ---
+// ============================================================
+// src/features/clients/pages/ClientEditPage/index.jsx
+//
+// Validação com Yup espelhando as regras das models do backend:
+//   Client.js, ClientBankAccount.js, ClientDocument.js
+//
+// Protocolo de envio:
+//   • Sem arquivos  → PATCH /clients/:id  (application/json)
+//   • Com arquivos  → PATCH /clients/:id  (multipart/form-data)
+//       campo "data"       = JSON.stringify(dadosTextuais)
+//       campo "contrato"   = File (company_document)
+//       campo "documentos" = File[] até 3 (endereço → banco → maquininha)
+//
+// Campos imutáveis (unique no banco):
+//   cnpj, corporate_name, email, state_registration
+// ============================================================
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { toast } from 'react-toastify';
+import {
+  ArrowLeft, Building2, MapPin, Landmark,
+  FileText, Save, X, AlertCircle, Lock,
+  Upload, File as FileIcon, Trash2,
+} from 'lucide-react';
+
+import api, { getApiErrorMessage } from '../../../../lib/api';
+import {
+  Container, PageHeader, BackButton, TitleGroup,
+  PageTitle, PageSubtitle,
+  Card, CardHeader, CardIconWrapper, CardTitle,
+  FormGrid, FullSpan,
+  Field, Label, LockIcon, Input, Select, Textarea,
+  ReadonlyField, ReadonlyHint,
+  FieldError, FieldHint,
+  BankSection, BankSectionTitle,
+  DocumentsGrid, DocumentUploadCard, DocumentUploadLabel,
+  DropZone, DropZoneIcon, DropZoneText, DropZoneSubtext,
+  FileInfo, FileInfoText, FileName, FileMeta, RemoveFileButton,
+  FormFooter, CancelButton, SaveButton, Spinner,
+  SkeletonBar, SkeletonCard, Divider,
+} from './styles';
+
+// ── Schema Yup ────────────────────────────────────────────────────────────────
+// ATENÇÃO: .transform() sempre ANTES de .test() — o Yup transforma e depois valida.
+// Campos imutáveis (cnpj, corporate_name, email, state_registration) não entram
+// no schema pois não são registrados no react-hook-form.
+
+const clientSchema = yup.object({
+
+  // ── Empresa ───────────────────────────────────────────────────────────────
+  trade_name: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(200, 'Nome fantasia deve ter no máximo 200 caracteres.'),
+
+  phone: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(20, 'Telefone deve ter no máximo 20 caracteres.'),
+
+  benefit_type: yup
+    .string()
+    .required('O tipo de benefício é obrigatório.')
+    .oneOf(['food', 'meal', 'both'], 'Selecione um tipo de benefício válido.'),
+
+  notes: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null),
+
+  partner_id: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null),
+
+  // ── Endereço ──────────────────────────────────────────────────────────────
+  address_street: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(255, 'Logradouro deve ter no máximo 255 caracteres.'),
+
+  address_number: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(10, 'Número deve ter no máximo 10 caracteres.'),
+
+  address_complement: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(100, 'Complemento deve ter no máximo 100 caracteres.'),
+
+  address_neighborhood: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(100, 'Bairro deve ter no máximo 100 caracteres.'),
+
+  address_city: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(100, 'Cidade deve ter no máximo 100 caracteres.'),
+
+  address_state: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(2, 'UF deve ter 2 caracteres.'),
+
+  // FIX: .transform() ANTES de .test() para evitar falso positivo em campo vazio
+  address_zip: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .test('cep-valido', 'CEP inválido. Use o formato 00000-000.', (v) => {
+      if (!v) return true; // campo opcional — vazio é válido
+      const digits = v.replace(/\D/g, '');
+      return digits.length === 8;
+    }),
+
+  // ── Banco (condicional) ───────────────────────────────────────────────────
+  // Agência e Conta tornam-se obrigatórios quando o nome do banco é informado.
+  // bank_account_digit é opcional mesmo quando o banco está preenchido.
+
+  bank_bank_name: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(100, 'Nome do banco deve ter no máximo 100 caracteres.'),
+
+  bank_agency: yup
+    .string()
+    .max(10, 'Agência deve ter no máximo 10 caracteres.')
+    .when('bank_bank_name', {
+      is:        (v) => !!v,
+      then:      (s) => s.required('Agência é obrigatória quando o banco é informado.'),
+      otherwise: (s) => s.nullable().transform((v) => v || null),
+    }),
+
+  bank_agency_digit: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(2, 'Dígito da agência deve ter no máximo 2 caracteres.'),
+
+  bank_account: yup
+    .string()
+    .max(20, 'Conta deve ter no máximo 20 caracteres.')
+    .when('bank_bank_name', {
+      is:        (v) => !!v,
+      then:      (s) => s.required('Conta é obrigatória quando o banco é informado.'),
+      otherwise: (s) => s.nullable().transform((v) => v || null),
+    }),
+
+  // Intencional: opcional mesmo quando banco preenchido (decisão de negócio)
+  bank_account_digit: yup
+    .string()
+    .nullable()
+    .transform((v) => v || null)
+    .max(2, 'Dígito da conta deve ter no máximo 2 caracteres.'),
+
+  bank_account_type: yup
+    .string()
+    .when('bank_bank_name', {
+      is:        (v) => !!v,
+      then:      (s) => s
+        .required('Tipo de conta é obrigatório.')
+        .oneOf(['checking', 'savings'], 'Tipo de conta inválido.'),
+      otherwise: (s) => s.nullable().transform((v) => v || null),
+    }),
+});
+
+// ── Constantes ────────────────────────────────────────────────────────────────
+
+const DOCUMENT_SLOTS = [
+  {
+    key:      'contrato',
+    fieldName: 'contrato',
+    type:     'company_document',
+    label:    'Contrato / Doc. da Empresa',
+    hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
+  },
+  {
+    key:      'proof_of_address',
+    fieldName: 'documentos',
+    type:     'proof_of_address',
+    label:    'Comprovante de Endereço',
+    hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
+    docIndex: 0,
+  },
+  {
+    key:      'bank_account_proof',
+    fieldName: 'documentos',
+    type:     'bank_account_proof',
+    label:    'Comprovante Bancário',
+    hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
+    docIndex: 1,
+  },
+  {
+    key:      'card_machine_proof',
+    fieldName: 'documentos',
+    type:     'card_machine_proof',
+    label:    'Comprovante de Maquininha',
+    hint:     'Substitui o documento existente. PDF, JPG ou PNG · máx. 3 MB.',
+    docIndex: 2,
+  },
+];
+
+const BENEFIT_OPTIONS = [
+  { value: 'food', label: 'Vale Alimentação'        },
+  { value: 'meal', label: 'Vale Refeição'            },
+  { value: 'both', label: 'Alimentação + Refeição'  },
+];
+
+const ACCOUNT_TYPE_OPTIONS = [
+  { value: 'checking', label: 'Conta Corrente' },
+  { value: 'savings',  label: 'Conta Poupança'  },
+];
+
+const UF_OPTIONS = [
+  'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA',
+  'MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN',
+  'RO','RR','RS','SC','SE','SP','TO',
+];
+
+// Cache em memória — evita re-fetch a cada abertura da página de edição
+let partnersCache = null;
+
+// ── Masks ─────────────────────────────────────────────────────────────────────
+
+const maskPhone = (v = '') => {
+  const d = v.replace(/\D/g, '').slice(0, 11);
+  if (d.length <= 2)  return `(${d}`;
+  if (d.length <= 6)  return `(${d.slice(0,2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+};
+
+const maskCEP = (v = '') => {
+  const d = v.replace(/\D/g, '').slice(0, 8);
+  if (d.length <= 5) return d;
+  return `${d.slice(0,5)}-${d.slice(5)}`;
+};
+
+const onlyDigits = (v = '') => v.replace(/\D/g, '');
+
+const formatFileSize = (bytes) => {
+  if (!bytes) return '';
+  if (bytes < 1024)          return `${bytes} B`;
+  if (bytes < 1024 * 1024)   return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+
+function EditSkeleton() {
+  const fakeFields = (n) =>
+    Array.from({ length: n }).map((_, i) => (
+      <Field key={i}>
+        <SkeletonBar $w="45%" $h="11px" />
+        <SkeletonBar $h="44px" style={{ borderRadius: '8px', marginTop: '2px' }} />
+      </Field>
+    ));
+  return (
+    <Container>
+      <PageHeader>
+        <SkeletonBar $w="80px" $h="36px" style={{ borderRadius: '6px' }} />
+        <TitleGroup>
+          <SkeletonBar $w="200px" $h="28px" />
+          <SkeletonBar $w="140px" $h="14px" style={{ marginTop: '4px' }} />
+        </TitleGroup>
+      </PageHeader>
+      <SkeletonCard>
+        <SkeletonBar $w="35%" $h="20px" /><Divider />
+        <FormGrid>{fakeFields(6)}</FormGrid>
+      </SkeletonCard>
+      <SkeletonCard>
+        <SkeletonBar $w="30%" $h="20px" /><Divider />
+        <FormGrid>{fakeFields(4)}</FormGrid>
+      </SkeletonCard>
+    </Container>
+  );
+}
+
+// ── Slot de documento ─────────────────────────────────────────────────────────
+
+function DocumentSlot({ slot, existingDoc, selectedFile, onFileSelect, onClearFile, disabled }) {
+  const inputRef    = useRef(null);
+  const hasFile     = !!selectedFile;
+  const hasExisting = !!existingDoc;
+
+  return (
+
+[...TRUNCATED...]
+
+
+--- FILE: src/features/clients/pages/ClientsPage/index.jsx ---
+// ============================================================
+// src/features/clients/pages/ClientsPage/index.jsx
+// Lista de clientes com busca, filtro e paginação
+// ============================================================
+import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { Search, UserPlus, Users, ChevronLeft, ChevronRight } from 'lucide-react';
+
+import { useQuery } from '@tanstack/react-query';
+import api, { getApiErrorMessage } from '../../../../lib/api';
+import { useAuth } from '../../../../contexts/AuthContext';
+import {
+  PageHeader, PageTitleGroup, PageTitle, PageSubtitle, PrimaryButton,
+  FilterBar, SearchWrapper, SearchIcon, SearchInput, FilterSelect,
+  TableWrapper, Table, Thead, Th, Tbody, Tr, Td, TdMuted,
+  EmptyState, EmptyIcon, EmptyTitle, EmptySubtitle, StatusBadge, STATUS_LABELS,
+  SkeletonRow, SkeletonCell, SkeletonBar,
+  Pagination, PaginationInfo, PaginationButtons, PageButton,
+} from './styles';
+
+// ── Configurações ─────────────────────────────────────────────────────────────
+const PER_PAGE = 15;
+
+// ── Badge de status ───────────────────────────────────────────────────────────
+const StatusBadgeComponent = ({ status }) => (
+  <StatusBadge $status={status}>
+    {STATUS_LABELS[status] ?? status}
+  </StatusBadge>
+);
+
+// ── Skeleton de carregamento ──────────────────────────────────────────────────
+function TableSkeleton() {
+  return Array.from({ length: 5 }).map((_, i) => (
+    <SkeletonRow key={i}>
+      <SkeletonCell><SkeletonBar $w="60%" /></SkeletonCell>
+      <SkeletonCell><SkeletonBar $w="80%" /></SkeletonCell>
+      <SkeletonCell><SkeletonBar $w="50%" /></SkeletonCell>
+      <SkeletonCell><SkeletonBar $w="70%" /></SkeletonCell>
+      <SkeletonCell><SkeletonBar $w="40%" /></SkeletonCell>
+    </SkeletonRow>
+  ));
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+// Aplica máscara de CNPJ: 00.000.000/0001-00
+const maskCNPJ = (digits = '') => {
+  const d = digits.slice(0, 14);
+  if (d.length <= 2) return d;
+  if (d.length <= 5) return `${d.slice(0, 2)}.${d.slice(2)}`;
+  if (d.length <= 8) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5)}`;
+  if (d.length <= 12) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8)}`;
+  return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
+};
+
+// Retorna true se a string contiver apenas dígitos (e separadores de CNPJ)
+const looksLikeCNPJ = (v = '') => /^[\d.\-/]+$/.test(v) && /\d/.test(v);
+
+const formatDate = (iso) => {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+  });
+};
+
+const formatBenefitType = (type) => {
+  const labels = { food: 'Alimentação', meal: 'Refeição', both: 'Ambos' };
+  return labels[type] ?? type ?? '—';
+};
+
+const fetchClients = async () => {
+  const { data } = await api.get('/clients');
+  return data.data || data;
+};
+
+// ── Componente principal ──────────────────────────────────────────────────────
+export default function ClientsPage() {
+  const navigate = useNavigate();
+  const { hasRole } = useAuth();
+
+  // ── Estado ───────────────────────────────────────────────────────────────────
+  const [status, setStatus] = useState('');
+  const [page, setPage] = useState(1);
+
+  // Dois valores de busca separados:
+  //   displaySearch → o que o usuário VÊ no input (com máscara se for CNPJ)
+  //   apiSearch     → o que é ENVIADO para a API (sempre sem máscara)
+  const [displaySearch, setDisplaySearch] = useState('');
+  const [apiSearch, setApiSearch] = useState('');
+  const debounceRef = useRef(null);
+
+  // ── Busca clientes na API ─────────────────────────────────────────────────────
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['clients', page, apiSearch, status],
+    queryFn: async () => {
+      const params = new URLSearchParams({ page, limit: PER_PAGE });
+
+      if (apiSearch) params.set('search', apiSearch);
+      if (status) params.set('overall_status', status);
+
+      const { data } = await api.get(`/clients?${params.toString()}`);
+
+      return {
+        clients: data.data ?? [],
+        pagination: {
+          total: data.pagination?.total ?? 0,
+          totalPages: data.pagination?.totalPages ?? 1,
+          currentPage: data.pagination?.currentPage ?? 1,
+        },
+      };
+    },
+    keepPreviousData: true,
+  });
+
+  if (error) {
+    toast.error(getApiErrorMessage(error, 'Erro ao carregar clientes.'));
+  }
+
+  // ── Handler do campo de busca ─────────────────────────────────────────────────
+  //
+  // Estratégia:
+  //   1. Extrai apenas os dígitos do que o usuário digitou
+  //   2. Se o input for só numérico (CNPJ): exibe COM máscara, envia SÓ dígitos
+  //   3. Se o input tiver letras (nome/razão social): exibe SEM máscara, envia como está
+  //
+  const handleSearch = (e) => {
+    const raw = e.target.value;
+    const digits = raw.replace(/\D/g, '');
+
+    if (looksLikeCNPJ(raw)) {
+      const masked = maskCNPJ(digits);
+      setDisplaySearch(masked);
+      scheduleSearch(masked);
+    } else if (raw === '') {
+      setDisplaySearch('');
+      scheduleSearch('');
+    } else {
+      setDisplaySearch(raw);
+      scheduleSearch(raw);
+    }
+  };
+
+  // Aguarda 400ms após o usuário parar de digitar antes de chamar a API
+  const scheduleSearch = (value) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setApiSearch(value);
+      setPage(1);
+    }, 400);
+  };
+
+  const handleStatus = (e) => {
+    setStatus(e.target.value);
+    setPage(1);
+  };
+
+  // ── Renderização ──────────────────────────────────────────────────────────────
+  return (
+    <>
+      {/* Cabeçalho */}
+      <PageHeader>
+        <PageTitleGroup>
+          <PageTitle>Clientes</PageTitle>
+          <PageSubtitle>
+            {data?.pagination.total > 0
+              ? `${data?.pagination.total} cliente${data?.pagination.total !== 1 ? 's' : ''} cadastrado${data?.pagination.total !== 1 ? 's' : ''}`
+              : 'Nenhum cliente cadastrado ainda'}
+          </PageSubtitle>
+        </PageTitleGroup>
+
+        {hasRole('admin', 'user') && (
+          <PrimaryButton type="button" onClick={() => navigate('/onboarding')}>
+            <UserPlus size={16} />
+            Novo Cliente
+          </PrimaryButton>
+        )}
+      </PageHeader>
+
+      {/* Filtros */}
+      <FilterBar>
+        <SearchWrapper>
+          <SearchIcon> <Search size={15} /></SearchIcon>
+          <SearchInput
+            type="text"
+            placeholder="Buscar por Razão Social ou CNPJ…"
+            style={{ paddingLeft: '30px' }}
+            value={displaySearch}
+            onChange={handleSearch}
+          />
+        </SearchWrapper>
+
+        <FilterSelect value={status} onChange={handleStatus}>
+          <option value="">Todos os status</option>
+          <option value="pending">Pendente</option>
+          <option value="analysis">Em análise</option>
+          <option value="approved">Aprovado</option>
+        </FilterSelect>
+      </FilterBar>
+
+      {/* Tabela */}
+      <TableWrapper>
+        <Table>
+          <Thead>
+            <tr>
+              <Th>Razão Social</Th>
+              <Th>CNPJ</Th>
+              <Th>Benefício</Th>
+              <Th>Status</Th>
+              <Th>Cadastro</Th>
+            </tr>
+          </Thead>
+
+          <Tbody>
+            {isLoading && <TableSkeleton />}
+
+            {!isLoading && data?.clients.map((client) => (
+              <Tr
+                key={client.id}
+                onClick={() => navigate(`/clientes/${client.id}`)}
+                title="Ver detalhes"
+              >
+                <Td>{client.corporate_name}</Td>
+                <TdMuted>{maskCNPJ(client.cnpj) ?? '—'}</TdMuted>
+                <TdMuted>{formatBenefitType(client.benefit_type)}</TdMuted>
+                <Td><StatusBadgeComponent status={client.overall_status} /></Td>
+                <TdMuted>{formatDate(client.createdAt)}</TdMuted>
+              </Tr>
+            ))}
+
+            {!isLoading && data?.clients.length === 0 && (
+              <tr>
+                <td colSpan={5}>
+                  <EmptyState>
+                    <EmptyIcon><Users size={40} /></EmptyIcon>
+                    <EmptyTitle>Nenhum cliente encontrado</EmptyTitle>
+                    <EmptySubtitle>
+                      {displaySearch || status
+                        ? 'Tente ajustar os filtros para ver mais resultados.'
+                        : 'Clique em "Novo Cliente" para iniciar o cadastro.'}
+                    </EmptySubtitle>
+                  </EmptyState>
+                </td>
+              </tr>
+            )}
+          </Tbody>
+        </Table>
+
+        {/* Paginação */}
+        {!isLoading && data?.pagination.totalPages > 1 && (
+          <Pagination>
+            <PaginationInfo>
+              Página {data?.pagination.currentPage} de {data?.pagination.totalPages}
+              {' '}· {data?.pagination.total} registros
+            </PaginationInfo>
+
+            <PaginationButtons>
+              <PageButton
+                type="button"
+                onClick={() => setPage((p) => Math.min(data?.pagination.totalPages || 1, p + 1))}
+                disabled={page >= (data?.pagination.totalPages || 1)}
+                aria-label="Página anterior"
+              >
+                <ChevronLeft size={15} />
+              </PageButton>
+
+              {Array.from({ length: data?.pagination.totalPages }, (_, i) => i + 1)
+                .filter((p) =>
+                  p === 1 ||
+                  p === data?.pagination.totalPages ||
+                  Math.abs(p - page) <= 2
+                )
+                .reduce((acc, p, idx, arr) => {
+                  if (idx > 0 && p - arr[idx - 1] > 1) acc.push('…');
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((p, i) =>
+                  p === '…' ? (
+                    <PageButton key={`ellipsis-${i}`} disabled as="span">…</PageButton>
+                  ) : (
+                    <PageButton
+                      key={p}
+                      type="button"
+                      $active={p === page}
+                      onClick={() => setPage(p)}
+                    >
+                      {p}
+                    </PageButton>
+                  )
+                )}
+
+              <PageButton
+                type="button"
+                onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                disabled={page >= pagination.totalPages}
+                aria-label="Próxima página"
+              >
+                <ChevronRight size={15} />
+              </PageButton>
+
+[...TRUNCATED...]
+
+
+--- FILE: src/features/clients/pages/ForbiddenPage/index.jsx ---
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ShieldAlert, ArrowLeft } from 'lucide-react';
+import * as S from './styles';
+
+const ForbiddenPage = () => {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    // Redireciona para o dashboard ou para a home
+    navigate('/dashboard');
+  };
+
+  return (
+    <S.Container>
+      <S.ContentCard>
+        <S.IconContainer>
+          <ShieldAlert size={44} />
+        </S.IconContainer>
+
+        <S.Title>Acesso Negado</S.Title>
+
+        <S.Message>
+          Você não possui as permissões necessárias para visualizar esta página. 
+          Se você acredita que isso é um erro, entre em contato com o suporte técnico 
+          ou com o seu administrador.
+        </S.Message>
+
+        <S.BackButton onClick={handleBack}>
+          <ArrowLeft size={18} />
+          Voltar ao Dashboard
+        </S.BackButton>
+      </S.ContentCard>
+    </S.Container>
+  );
+};
+
+export default ForbiddenPage;
+[...TRUNCATED...]
+
+
+--- FILE: src/features/dashboard/pages/DashboardPage/index.jsx ---
+// src/features/dashboard/pages/DashboardPage/index.jsx
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { format, startOfMonth, endOfMonth } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import {
+  Users, TrendingUp, Clock, UserPlus,
+  DollarSign, Calendar, Activity,
+} from 'lucide-react';
+
+import api from '../../../../lib/api';
+import { useAuth } from '../../../../contexts/AuthContext';
+import * as S from './styles';
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value || 0);
+};
+
+const formatDate = (date) => {
+  if (!date) return '';
+  return format(new Date(date), "dd 'de' MMMM", { locale: ptBR });
+};
+
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Bom dia';
+  if (hour < 18) return 'Boa tarde';
+  return 'Boa noite';
+};
+
+const STATUS_CONFIG = {
+  pending: { label: 'Pendente', color: '#d97706' },
+  analysis: { label: 'Em análise', color: '#2563eb' },
+  approved: { label: 'Aprovado', color: '#059669' },
+  cancelled: { label: 'Cancelado', color: '#dc2626' },
+};
+
+export default function DashboardPage() {
+  const navigate = useNavigate();
+  const { user, isAdmin, isUser } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [metrics, setMetrics] = useState({
+    totalClients: 0,
+    totalSales: 0,
+    clientsInAnalysis: 0,
+    approvalRate: 0,
+  });
+  const [recentClients, setRecentClients] = useState([]);
+  const [recentSales, setRecentSales] = useState([]);
+  const [statusDistribution, setStatusDistribution] = useState({
+    pending: 0,
+    analysis: 0,
+    approved: 0,
+  });
+
+  const greeting = getGreeting();
+  const currentDate = format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      setLoading(true);
+      try {
+        const startDate = format(startOfMonth(new Date()), 'yyyy-MM-dd');
+        const endDate = format(endOfMonth(new Date()), 'yyyy-MM-dd');
+
+        const results = await Promise.allSettled([
+          api.get('/clients', { params: { limit: '100' } }),
+          api.get('/reports/sales', { params: { date_start: startDate, date_end: endDate } }),
+          api.get('/clients', { params: { limit: '5' } }),
+          api.get('/sales'), 
+        ]);
+        
+
+        let allClients = [];
+        if (results[0].status === 'fulfilled') {
+          allClients = results[0].value.data?.data || [];
+        }
+
+        let totalSalesValue = 0;
+        if (results[1].status === 'fulfilled') {
+          totalSalesValue = results[1].value.data?.summary?.total_value || 0;
+        }
+
+        if (results[2].status === 'fulfilled') {
+          setRecentClients(results[2].value.data?.data || []);
+        }
+
+        if (results[3].status === 'fulfilled') {
+          const salesArray = results[3].value.data?.data || [];
+          setRecentSales(salesArray);
+        } else {
+          console.error('Erro ao carregar vendas recentes:', results[3].reason);
+          setRecentSales([]);
+        }
+
+        const totalClients = allClients.length;
+        const clientsInAnalysis = allClients.filter(c => c.overall_status === 'analysis').length;
+        const approvedClients = allClients.filter(c => c.overall_status === 'approved').length;
+        const approvalRate = totalClients > 0 ? (approvedClients / totalClients) * 100 : 0;
+
+        setStatusDistribution({
+          pending: allClients.filter(c => c.overall_status === 'pending').length,
+          analysis: clientsInAnalysis,
+          approved: approvedClients,
+        });
+
+        setMetrics({
+          totalClients,
+          totalSales: totalSalesValue,
+          clientsInAnalysis,
+          approvalRate: Math.round(approvalRate),
+        });
+
+      } catch (error) {
+        console.error('Erro ao carregar dashboard:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <S.Container>
+        <S.WelcomeSection>
+          <S.WelcomeGreeting>Carregando dashboard...</S.WelcomeGreeting>
+        </S.WelcomeSection>
+      </S.Container>
+    );
+  }
+
+  return (
+    <S.Container>
+      <S.WelcomeSection>
+        <div>
+          <S.WelcomeGreeting>
+            {greeting}, {user?.name?.split(' ')[0] || 'Usuário'}!
+          </S.WelcomeGreeting>
+          <S.WelcomeDate>{currentDate}</S.WelcomeDate>
+        </div>
+      </S.WelcomeSection>
+
+      <S.MetricsGrid>
+        <S.MetricCard>
+          <S.MetricIcon $color="#B45A14"><Users size={24} /></S.MetricIcon>
+          <S.MetricInfo>
+            <S.MetricValue>{metrics.totalClients}</S.MetricValue>
+            <S.MetricLabel>Total de Clientes</S.MetricLabel>
+          </S.MetricInfo>
+        </S.MetricCard>
+
+        <S.MetricCard>
+          <S.MetricIcon $color="#059669"><DollarSign size={24} /></S.MetricIcon>
+          <S.MetricInfo>
+            <S.MetricValue>{formatCurrency(metrics.totalSales)}</S.MetricValue>
+            <S.MetricLabel>Vendas no Mês</S.MetricLabel>
+          </S.MetricInfo>
+        </S.MetricCard>
+
+        <S.MetricCard>
+          <S.MetricIcon $color="#2563eb"><Clock size={24} /></S.MetricIcon>
+          <S.MetricInfo>
+            <S.MetricValue>{metrics.clientsInAnalysis}</S.MetricValue>
+            <S.MetricLabel>Em Análise</S.MetricLabel>
+          </S.MetricInfo>
+        </S.MetricCard>
+
+        <S.MetricCard>
+          <S.MetricIcon $color="#8b5cf6"><TrendingUp size={24} /></S.MetricIcon>
+          <S.MetricInfo>
+            <S.MetricValue>{metrics.approvalRate}%</S.MetricValue>
+            <S.MetricLabel>Taxa de Aprovação</S.MetricLabel>
+          </S.MetricInfo>
+        </S.MetricCard>
+      </S.MetricsGrid>
+
+      <S.TwoColumnGrid>
+        <S.LeftColumn>
+          <S.ChartCard>
+            <S.CardTitle>Distribuição de Clientes</S.CardTitle>
+            <S.ProgressSection>
+              {Object.entries(statusDistribution).map(([status, count]) => {
+                const total = metrics.totalClients || 1;
+                const percentage = (count / total) * 100;
+                const config = STATUS_CONFIG[status];
+                return (
+                  <div key={status} style={{ marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '12px', color: '#7a6455' }}>{config?.label || status}</span>
+                      <span style={{ fontSize: '12px', fontWeight: 500, color: '#5e4d42' }}>{count} ({Math.round(percentage)}%)</span>
+                    </div>
+                    <S.ProgressBarWrapper>
+                      <S.ProgressBar $percentage={percentage} $color={config?.color} />
+                    </S.ProgressBarWrapper>
+                  </div>
+                );
+              })}
+              <S.ProgressStats>
+                <S.ProgressStat>
+                  <S.ProgressStatValue>{metrics.totalClients}</S.ProgressStatValue>
+                  <S.ProgressStatLabel>Total</S.ProgressStatLabel>
+                </S.ProgressStat>
+                <S.ProgressStat>
+                  <S.ProgressStatValue>{metrics.approvalRate}%</S.ProgressStatValue>
+                  <S.ProgressStatLabel>Aprovados</S.ProgressStatLabel>
+                </S.ProgressStat>
+              </S.ProgressStats>
+            </S.ProgressSection>
+          </S.ChartCard>
+
+          <S.ChartCard>
+            <S.CardTitle>Últimos Clientes</S.CardTitle>
+            {recentClients.length > 0 ? (
+              <S.ActivityList>
+                {recentClients.map((client) => (
+                  <S.ActivityItem key={client.id} onClick={() => navigate(`/clientes/${client.id}`)}>
+                    <S.ActivityIcon $color="#B45A14"><UserPlus size={16} /></S.ActivityIcon>
+                    <S.ActivityContent>
+                      <S.ActivityTitle>{client.corporate_name}</S.ActivityTitle>
+                      <S.ActivityDate>Cadastrado em {formatDate(client.createdAt)}</S.ActivityDate>
+                    </S.ActivityContent>
+                    <S.StatusBadge $status={client.overall_status}>
+                      {STATUS_CONFIG[client.overall_status]?.label || client.overall_status}
+                    </S.StatusBadge>
+                  </S.ActivityItem>
+                ))}
+              </S.ActivityList>
+            ) : <S.EmptyActivity>Nenhum cliente cadastrado.</S.EmptyActivity>}
+          </S.ChartCard>
+        </S.LeftColumn>
+
+        <S.RightColumn>
+          <S.ChartCard>
+            <S.CardTitle>Últimas Vendas</S.CardTitle>
+            {recentSales.length > 0 ? (
+              <S.ActivityList>
+                {recentSales.map((sale) => (
+                  <S.ActivityItem key={sale.id} onClick={() => navigate(`/clientes/${sale.client_id}`)}>
+                    <S.ActivityIcon $color="#059669"><TrendingUp size={16} /></S.ActivityIcon>
+                    <S.ActivityContent>
+                      <S.ActivityTitle>{sale.client?.corporate_name || 'Venda'} - {formatCurrency(sale.total_value)}</S.ActivityTitle>
+                      <S.ActivityDate>{sale.plan_name || 'Serviço'} • {formatDate(sale.createdAt)}</S.ActivityDate>
+                    </S.ActivityContent>
+                    <S.StatusBadge $status={sale.status}>
+                      {STATUS_CONFIG[sale.status]?.label || sale.status}
+                    </S.StatusBadge>
+                  </S.ActivityItem>
+                ))}
+              </S.ActivityList>
+            ) : <S.EmptyActivity>Nenhuma venda registrada.</S.EmptyActivity>}
+          </S.ChartCard>
+
+          <S.QuickActions>
+            <S.QuickActionsTitle>Ações Rápidas</S.QuickActionsTitle>
+            <S.ActionsGrid>
+              {(isAdmin || isUser) && (
+                <>
+                  <S.ActionButton onClick={() => navigate('/onboarding')}><UserPlus size={18} /> Novo Cliente</S.ActionButton>
+                  <S.ActionButton onClick={() => navigate('/clientes')}><Users size={18} /> Ver Clientes</S.ActionButton>
+                </>
+              )}
+              {isAdmin && <S.ActionButton onClick={() => navigate('/relatorios')}><Activity size={18} /> Relatórios</S.ActionButton>}
+              <S.ActionButton onClick={() => navigate('/perfil')}><Calendar size={18} /> Meu Perfil</S.ActionButton>
+            </S.ActionsGrid>
+          </S.QuickActions>
+        </S.RightColumn>
+      </S.TwoColumnGrid>
+    </S.Container>
+  );
+}
+[...TRUNCATED...]
+
+
+--- FILE: src/features/users/pages/UsersPage/index.jsx ---
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import {
+  Search, UserPlus, Users, ChevronLeft, ChevronRight,
+  ShieldCheck, User, Handshake, CheckCircle2, XCircle,
+  X, AlertCircle, Eye, EyeOff, Edit,
+} from 'lucide-react';
+
+import api, { getApiErrorMessage } from '../../../../lib/api';
+import { useAuth } from '../../../../contexts/AuthContext';
+
+import {
+  PageHeader, PageTitleGroup, PageTitle, PageSubtitle, PrimaryButton,
+  FilterBar, SearchWrapper, SearchIcon, SearchInput, FilterSelect,
+  TableWrapper, Table, Thead, Th, Tbody, Tr, Td, TdMuted, TdActions,
+  ActionButton,
+  RoleBadge, ROLE_LABELS,
+  StatusDot,
+  EmptyState, EmptyIcon, EmptyTitle, EmptySubtitle,
+  SkeletonRow, SkeletonCell, SkeletonBar,
+  Pagination, PaginationInfo, PaginationButtons, PageButton,
+  // Modal
+  Overlay, ModalBox, ModalHeader, ModalTitle, ModalCloseButton,
+  ModalBody, ModalFooter, CancelButton, SubmitButton, Spinner,
+  Field, Label, Input, Select, FieldError, PasswordWrapper, TogglePasswordButton,
+  TempPasswordBox, TempPasswordLabel, TempPasswordValue, CopyButton,
+} from './styles';
+
+// ── Configurações ─────────────────────────────────────────────────────────────
+const PER_PAGE = 15;
+
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+function TableSkeleton() {
+  return Array.from({ length: 6 }).map((_, i) => (
+    <SkeletonRow key={i}>
+      <SkeletonCell><SkeletonBar $w="55%" /></SkeletonCell>
+      <SkeletonCell><SkeletonBar $w="70%" /></SkeletonCell>
+      <SkeletonCell><SkeletonBar $w="40%" /></SkeletonCell>
+      <SkeletonCell><SkeletonBar $w="30%" /></SkeletonCell>
+      <SkeletonCell><SkeletonBar $w="50%" /></SkeletonCell>
+      <SkeletonCell><SkeletonBar $w="60px" /></SkeletonCell>
+    </SkeletonRow>
+  ));
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const formatDate = (iso) => {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+  });
+};
+
+const ROLE_ICONS = {
+  admin:   <ShieldCheck size={12} />,
+  user:    <User size={12} />,
+  partner: <Handshake size={12} />,
+};
+
+// ── Modal de criação de usuário (não alterado) ───────────────────────────────
+function CreateUserModal({ onClose, onCreated }) {
+  const [form, setForm]           = useState({ name: '', email: '', role: 'user' });
+  const [errors, setErrors]       = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [tempPassword, setTempPassword] = useState(null);
+  const [copied, setCopied]       = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
+
+  const validate = () => {
+    const errs = {};
+    if (!form.name.trim())                    errs.name  = 'Nome é obrigatório.';
+    else if (form.name.trim().length > 150)   errs.name  = 'Nome deve ter no máximo 150 caracteres.';
+    if (!form.email.trim())                   errs.email = 'E-mail é obrigatório.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+                                              errs.email = 'Informe um e-mail válido.';
+    if (!['admin', 'user', 'partner'].includes(form.role))
+                                              errs.role  = 'Selecione um papel válido.';
+    return errs;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const handleSubmit = async () => {
+    const errs = validate();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+
+    setIsSubmitting(true);
+    try {
+      const { data } = await api.post('/users', {
+        name:  form.name.trim(),
+        email: form.email.toLowerCase().trim(),
+        role:  form.role,
+      });
+      setTempPassword(data.data?.temporaryPassword ?? null);
+      toast.success('Usuário criado com sucesso!');
+      onCreated();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Erro ao criar usuário.'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCopy = () => {
+    if (!tempPassword) return;
+    navigator.clipboard.writeText(tempPassword).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <Overlay onClick={onClose}>
+      <ModalBox onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <ModalHeader>
+          <ModalTitle id="modal-title">Novo Usuário</ModalTitle>
+          <ModalCloseButton type="button" onClick={onClose} aria-label="Fechar">
+            <X size={18} />
+          </ModalCloseButton>
+        </ModalHeader>
+
+        <ModalBody>
+          {tempPassword && (
+            <TempPasswordBox>
+              <TempPasswordLabel>
+                ⚠️ Senha temporária gerada — anote e repasse ao usuário. Ela não será exibida novamente.
+              </TempPasswordLabel>
+              <PasswordWrapper>
+                <TempPasswordValue type={showPassword ? 'text' : 'password'} value={tempPassword} readOnly />
+                <TogglePasswordButton
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? 'Ocultar' : 'Mostrar'}
+                >
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                </TogglePasswordButton>
+              </PasswordWrapper>
+              <CopyButton type="button" onClick={handleCopy}>
+                {copied ? '✓ Copiado!' : 'Copiar senha'}
+              </CopyButton>
+            </TempPasswordBox>
+          )}
+
+          {!tempPassword && (
+            <>
+              <Field>
+                <Label htmlFor="user-name">Nome *</Label>
+                <Input
+                  id="user-name"
+                  name="name"
+                  type="text"
+                  placeholder="Nome completo"
+                  value={form.name}
+                  onChange={handleChange}
+                  $hasError={!!errors.name}
+                  disabled={isSubmitting}
+                  autoFocus
+                />
+                {errors.name && <FieldError><AlertCircle size={11} />{errors.name}</FieldError>}
+              </Field>
+
+              <Field>
+                <Label htmlFor="user-email">E-mail *</Label>
+                <Input
+                  id="user-email"
+                  name="email"
+                  type="email"
+                  placeholder="usuario@empresa.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  $hasError={!!errors.email}
+                  disabled={isSubmitting}
+                />
+                {errors.email && <FieldError><AlertCircle size={11} />{errors.email}</FieldError>}
+              </Field>
+
+              <Field>
+                <Label htmlFor="user-role">Papel *</Label>
+                <Select
+                  id="user-role"
+                  name="role"
+                  value={form.role}
+                  onChange={handleChange}
+                  $hasError={!!errors.role}
+                  disabled={isSubmitting}
+                >
+                  <option value="user">Usuário</option>
+                  <option value="admin">Administrador</option>
+                  <option value="partner">Parceiro</option>
+                </Select>
+                {errors.role && <FieldError><AlertCircle size={11} />{errors.role}</FieldError>}
+              </Field>
+            </>
+          )}
+        </ModalBody>
+
+        <ModalFooter>
+          <CancelButton type="button" onClick={onClose} disabled={isSubmitting}>
+            {tempPassword ? 'Fechar' : 'Cancelar'}
+          </CancelButton>
+
+          {!tempPassword && (
+            <SubmitButton type="button" onClick={handleSubmit} disabled={isSubmitting}>
+              {isSubmitting ? <><Spinner />Criando…</> : <><UserPlus size={15} />Criar Usuário</>}
+            </SubmitButton>
+          )}
+        </ModalFooter>
+      </ModalBox>
+    </Overlay>
+  );
+}
+
+// ── Modal de edição de usuário (novo) ─────────────────────────────────────────
+function EditUserModal({ user, onClose, onUpdated }) {
+  const [form, setForm] = useState({
+    name:  user.name,
+    email: user.email,
+    role:  user.role,
+    is_active: user.is_active,
+  });
+  const [newPassword, setNewPassword] = useState('');
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Impede scroll do body
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  // Fecha ao pressionar Escape
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
+
+  const validate = () => {
+    const errs = {};
+    if (!form.name.trim())                    errs.name  = 'Nome é obrigatório.';
+    else if (form.name.trim().length > 150)   errs.name  = 'Nome deve ter no máximo 150 caracteres.';
+    if (!form.email.trim())                   errs.email = 'E-mail é obrigatório.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+                                              errs.email = 'Informe um e-mail válido.';
+    if (!['admin', 'user', 'partner'].includes(form.role))
+                                              errs.role  = 'Selecione um papel válido.';
+    if (newPassword && newPassword.length < 8) {
+      errs.newPassword = 'A senha deve ter pelo menos 8 caracteres.';
+    }
+    return errs;
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const val = type === 'checkbox' ? checked : value;
+    setForm((prev) => ({ ...prev, [name]: val }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const handleSubmit = async () => {
+    const errs = validate();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+
+    setIsSubmitting(true);
+    try {
+      // Monta payload com todos os campos, incluindo a senha se fornecida
+      const payload = {
+        name: form.name.trim(),
+        email: form.email.toLowerCase().trim(),
+        role: form.role,
+        is_active: form.is_active,
+      };
+      if (newPassword) {
+        payload.password = newPassword; // backend fará o hash automaticamente
+      }
+
+      await api.patch(`/users/${user.id}`, payload);
+      toast.success('Usuário atualizado com sucesso!');
+      onUpdated(); // recarrega a lista
+      onClose();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Erro ao atualizar usuário.'));
+    } finally {
+
+[...TRUNCATED...]
+
+
+========================================
+11. IMPORTS (MAPA)
+========================================
+src/components/layout/MainLayout/index.jsx:import { useState } from 'react';
+src/components/layout/MainLayout/index.jsx:import { Outlet } from 'react-router-dom';
+src/components/layout/MainLayout/index.jsx:import Sidebar from '../Sidebar';
+src/components/layout/MainLayout/index.jsx:import Navbar  from '../Navbar';
+src/components/layout/MainLayout/index.jsx:import { LayoutWrapper, ContentArea, PageContent } from './styles';
+src/components/layout/MainLayout/styles.js:import styled from 'styled-components';
+src/components/layout/Navbar/index.jsx:import { useLocation } from 'react-router-dom';
+src/components/layout/Navbar/index.jsx:import { LogOut, Menu } from 'lucide-react';
+src/components/layout/Navbar/index.jsx:import { useAuth } from '../../../contexts/AuthContext';
+src/components/layout/Navbar/index.jsx:import {
+src/components/layout/Navbar/styles.js:import styled from 'styled-components';
+src/components/layout/ProtectedRoute.jsx:import { Navigate, Outlet, useLocation } from 'react-router-dom';
+src/components/layout/ProtectedRoute.jsx:import { useAuth } from '../../contexts/AuthContext';
+src/components/layout/Sidebar/index.jsx:import {
+src/components/layout/Sidebar/index.jsx:import { useAuth } from '../../../contexts/AuthContext';
+src/components/layout/Sidebar/index.jsx:import {
+src/components/layout/Sidebar/styles.js:import styled, { keyframes, css } from 'styled-components';
+src/components/layout/Sidebar/styles.js:import { NavLink } from 'react-router-dom';
+src/contexts/AuthContext.jsx:import {
+src/contexts/AuthContext.jsx:import { flushSync } from 'react-dom';
+src/contexts/AuthContext.jsx:import { toast } from 'react-toastify';
+src/contexts/AuthContext.jsx:import api, {
+src/features/auth/pages/ChangePasswordPage/index.jsx:import { useState } from 'react';
+src/features/auth/pages/ChangePasswordPage/index.jsx:import { useForm } from 'react-hook-form';
+src/features/auth/pages/ChangePasswordPage/index.jsx:import { yupResolver } from '@hookform/resolvers/yup';
+src/features/auth/pages/ChangePasswordPage/index.jsx:import * as yup from 'yup';
+src/features/auth/pages/ChangePasswordPage/index.jsx:import { useNavigate } from 'react-router-dom';
+src/features/auth/pages/ChangePasswordPage/index.jsx:import { toast } from 'react-toastify';
+src/features/auth/pages/ChangePasswordPage/index.jsx:import { ShieldCheck, Eye, EyeOff } from 'lucide-react';
+src/features/auth/pages/ChangePasswordPage/index.jsx:import { useAuth } from '../../../../contexts/AuthContext';
+src/features/auth/pages/ChangePasswordPage/index.jsx:import {
+src/features/auth/pages/ChangePasswordPage/styles.js:import styled from 'styled-components';
+src/features/auth/pages/LoginPage/index.jsx:import { useEffect, useState } from 'react';
+src/features/auth/pages/LoginPage/index.jsx:import { useForm } from 'react-hook-form';
+src/features/auth/pages/LoginPage/index.jsx:import { useNavigate } from 'react-router-dom';
+src/features/auth/pages/LoginPage/index.jsx:import { toast } from 'react-toastify';
+src/features/auth/pages/LoginPage/index.jsx:import { Eye, EyeOff, LogIn, AlertCircle, X, ArrowRight } from 'lucide-react';
+src/features/auth/pages/LoginPage/index.jsx:import { useAuth } from '../../../../contexts/AuthContext';
+src/features/auth/pages/LoginPage/index.jsx:import {
+src/features/auth/pages/LoginPage/styles.js:import styled, { keyframes, css } from 'styled-components';
+src/features/clients/pages/ClientCreatePage/index.jsx:import { useState, useEffect, useRef } from 'react';
+src/features/clients/pages/ClientCreatePage/index.jsx:import { useNavigate } from 'react-router-dom';
+src/features/clients/pages/ClientCreatePage/index.jsx:import { useForm } from 'react-hook-form';
+src/features/clients/pages/ClientCreatePage/index.jsx:import { yupResolver } from '@hookform/resolvers/yup';
+src/features/clients/pages/ClientCreatePage/index.jsx:import * as yup from 'yup';
+src/features/clients/pages/ClientCreatePage/index.jsx:import { toast } from 'react-toastify';
+src/features/clients/pages/ClientCreatePage/index.jsx:import imageCompression from 'browser-image-compression';
+src/features/clients/pages/ClientCreatePage/index.jsx:import {
+src/features/clients/pages/ClientCreatePage/index.jsx:import { useQuery, useQueryClient } from '@tanstack/react-query';
+src/features/clients/pages/ClientCreatePage/index.jsx:import api, { apiUpload, getApiErrorMessage } from '../../../../lib/api';
+src/features/clients/pages/ClientCreatePage/index.jsx:import { useAuth } from '../../../../contexts/AuthContext';
+src/features/clients/pages/ClientCreatePage/index.jsx:import {
+src/features/clients/pages/ClientCreatePage/styles.js:import styled, { keyframes } from 'styled-components';
+src/features/clients/pages/ClientDetailPage/index.jsx:import { useState, useEffect, useCallback } from 'react';
+src/features/clients/pages/ClientDetailPage/index.jsx:import { useParams, useNavigate } from 'react-router-dom';
+src/features/clients/pages/ClientDetailPage/index.jsx:import { toast } from 'react-toastify';
+src/features/clients/pages/ClientDetailPage/index.jsx:import {
+src/features/clients/pages/ClientDetailPage/index.jsx:import api, { getApiErrorMessage } from '../../../../lib/api';
+src/features/clients/pages/ClientDetailPage/index.jsx:import { useAuth } from '../../../../contexts/AuthContext';
+src/features/clients/pages/ClientDetailPage/index.jsx:import {
+src/features/clients/pages/ClientDetailPage/styles.js:import styled, { keyframes } from 'styled-components';
+src/features/clients/pages/ClientEditPage/index.jsx:import { useState, useEffect, useCallback, useRef } from 'react';
+src/features/clients/pages/ClientEditPage/index.jsx:import { useParams, useNavigate } from 'react-router-dom';
+src/features/clients/pages/ClientEditPage/index.jsx:import { useForm } from 'react-hook-form';
+src/features/clients/pages/ClientEditPage/index.jsx:import { yupResolver } from '@hookform/resolvers/yup';
+src/features/clients/pages/ClientEditPage/index.jsx:import * as yup from 'yup';
+src/features/clients/pages/ClientEditPage/index.jsx:import { toast } from 'react-toastify';
+src/features/clients/pages/ClientEditPage/index.jsx:import {
+src/features/clients/pages/ClientEditPage/index.jsx:import api, { getApiErrorMessage } from '../../../../lib/api';
+src/features/clients/pages/ClientEditPage/index.jsx:import {
+src/features/clients/pages/ClientEditPage/styles.js:import styled, { keyframes } from 'styled-components';
+src/features/clients/pages/ClientsPage/index.jsx:import { useState, useRef } from 'react';
+src/features/clients/pages/ClientsPage/index.jsx:import { useNavigate } from 'react-router-dom';
+src/features/clients/pages/ClientsPage/index.jsx:import { toast } from 'react-toastify';
+src/features/clients/pages/ClientsPage/index.jsx:import { Search, UserPlus, Users, ChevronLeft, ChevronRight } from 'lucide-react';
+src/features/clients/pages/ClientsPage/index.jsx:import { useQuery } from '@tanstack/react-query';
+src/features/clients/pages/ClientsPage/index.jsx:import api, { getApiErrorMessage } from '../../../../lib/api';
+src/features/clients/pages/ClientsPage/index.jsx:import { useAuth } from '../../../../contexts/AuthContext';
+src/features/clients/pages/ClientsPage/index.jsx:import {
+src/features/clients/pages/ClientsPage/styles.js:import styled, { keyframes } from 'styled-components';
+src/features/clients/pages/ForbiddenPage/index.jsx:import React from 'react';
+src/features/clients/pages/ForbiddenPage/index.jsx:import { useNavigate } from 'react-router-dom';
+src/features/clients/pages/ForbiddenPage/index.jsx:import { ShieldAlert, ArrowLeft } from 'lucide-react';
+src/features/clients/pages/ForbiddenPage/index.jsx:import * as S from './styles';
+src/features/clients/pages/ForbiddenPage/styles.js:import styled from 'styled-components';
+src/features/dashboard/pages/DashboardPage/index.jsx:import { useState, useEffect } from 'react';
+src/features/dashboard/pages/DashboardPage/index.jsx:import { useNavigate } from 'react-router-dom';
+src/features/dashboard/pages/DashboardPage/index.jsx:import { format, startOfMonth, endOfMonth } from 'date-fns';
+src/features/dashboard/pages/DashboardPage/index.jsx:import { ptBR } from 'date-fns/locale';
+src/features/dashboard/pages/DashboardPage/index.jsx:import {
+src/features/dashboard/pages/DashboardPage/index.jsx:import api from '../../../../lib/api';
+src/features/dashboard/pages/DashboardPage/index.jsx:import { useAuth } from '../../../../contexts/AuthContext';
+src/features/dashboard/pages/DashboardPage/index.jsx:import * as S from './styles';
+src/features/dashboard/pages/DashboardPage/styles.js:import styled, { keyframes } from 'styled-components';
+src/features/users/pages/UsersPage/index.jsx:import { useState, useEffect, useCallback, useRef } from 'react';
+src/features/users/pages/UsersPage/index.jsx:import { useNavigate } from 'react-router-dom';
+src/features/users/pages/UsersPage/index.jsx:import { toast } from 'react-toastify';
+src/features/users/pages/UsersPage/index.jsx:import {
+src/features/users/pages/UsersPage/index.jsx:import api, { getApiErrorMessage } from '../../../../lib/api';
+src/features/users/pages/UsersPage/index.jsx:import { useAuth } from '../../../../contexts/AuthContext';
+src/features/users/pages/UsersPage/index.jsx:import {
+src/features/users/pages/UsersPage/styles.js:import styled, { keyframes, css } from 'styled-components';
+src/lib/api.js:// import axios from 'axios';
+src/lib/api.js:import axios from 'axios';
+src/main.jsx:import React from 'react'
+src/main.jsx:import ReactDOM from 'react-dom/client'
+src/main.jsx:import AppRouter from './router/AppRouter'
+src/main.jsx:import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+src/router/AppRouter.jsx:import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+src/router/AppRouter.jsx:import { lazy, Suspense } from 'react';
+src/router/AppRouter.jsx:import { ThemeProvider } from 'styled-components';
+src/router/AppRouter.jsx:import { ToastContainer } from 'react-toastify';
+src/router/AppRouter.jsx:import 'react-toastify/dist/ReactToastify.css';
+src/router/AppRouter.jsx:import theme from '../styles/theme';
+src/router/AppRouter.jsx:import GlobalStyle from '../styles/GlobalStyle';
+src/router/AppRouter.jsx:import { AuthProvider } from '../contexts/AuthContext';
+src/router/AppRouter.jsx:import ProtectedRoute from '../components/layout/ProtectedRoute';
+src/router/AppRouter.jsx:import MainLayout from '../components/layout/MainLayout';
+src/styles/GlobalStyle.js:import { createGlobalStyle } from 'styled-components';
+
+========================================
+12. HOOKS USO
+========================================
+useEffect: 23
+useState: 68
+
+========================================
+13. CHAMADAS HTTP
+========================================
+HTTP calls: 35
+
+========================================
+14. PROBLEMAS
+========================================
+console.log: 0
+TODO/FIXME: 0
+
+Arquivos grandes:
+src/features/auth/pages/LoginPage/index.jsx (327 linhas)
+src/features/auth/pages/LoginPage/styles.js (606 linhas)
+src/features/clients/pages/ClientCreatePage/index.jsx (988 linhas)
+src/features/clients/pages/ClientCreatePage/styles.js (771 linhas)
+src/features/clients/pages/ClientDetailPage/index.jsx (398 linhas)
+src/features/clients/pages/ClientDetailPage/styles.js (436 linhas)
+src/features/clients/pages/ClientEditPage/index.jsx (982 linhas)
+src/features/clients/pages/ClientEditPage/styles.js (789 linhas)
+src/features/clients/pages/ClientsPage/index.jsx (306 linhas)
+src/features/clients/pages/ClientsPage/styles.js (371 linhas)
+src/features/dashboard/pages/DashboardPage/styles.js (328 linhas)
+src/features/users/pages/UsersPage/index.jsx (733 linhas)
+src/features/users/pages/UsersPage/styles.js (657 linhas)
+src/lib/api.js (353 linhas)
+
+========================================
+15. MÉTRICAS
+========================================
+Arquivos: 31
+Linhas: 10171
+
+========================================
+16. RESUMO
+========================================
+Projeto com 31 arquivos e 10171 linhas.
+Projeto pequeno
+
+========================================
+FIM
+========================================

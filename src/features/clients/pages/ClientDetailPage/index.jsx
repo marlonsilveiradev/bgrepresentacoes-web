@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+// src/features/clients/pages/ClientDetailPage/index.jsx
+import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     ArrowLeft, Building2, MapPin, CreditCard,
     FileText, Flag, Landmark, Download, Loader2, Pencil,
@@ -59,7 +61,7 @@ const formatFileSize = (bytes) => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-// ── Skeleton (O QUE ESTAVA FALTANDO) ──────────────────────────────────────────
+// ── Skeleton ──────────────────────────────────────────────────────────────────
 function DetailSkeleton() {
     return (
         <Container>
@@ -104,12 +106,14 @@ const STATUS_SELECT_COLORS = {
     pending: { bg: '#fef3c7', color: '#92400e' },
 };
 
+// ── FlagStatusSelect ──────────────────────────────────────────────────────────
+// ALTERAÇÃO: adicionado useQueryClient para invalidar cache do dashboard e lista
 function FlagStatusSelect({ clientFlagId, currentStatus, onUpdated, onOptimisticUpdate }) {
+    const queryClient = useQueryClient(); // ← ADICIONAR como primeira linha da função
     const [isUpdating, setIsUpdating] = useState(false);
     const [localStatus, setLocalStatus] = useState(currentStatus);
     const colors = STATUS_SELECT_COLORS[localStatus] ?? STATUS_SELECT_COLORS.pending;
 
-    useEffect(() => { setLocalStatus(currentStatus); }, [currentStatus]);
 
     const handleChange = async (e) => {
         const newStatus = e.target.value;
@@ -123,6 +127,9 @@ function FlagStatusSelect({ clientFlagId, currentStatus, onUpdated, onOptimistic
             await api.patch(`/client-flags/${clientFlagId}/status`, { status: newStatus });
             toast.success('Status da bandeira atualizado.');
             onUpdated();
+            // ADICIONAR as duas linhas abaixo após onUpdated():
+            queryClient.invalidateQueries({ queryKey: ['dashboard-recent-clients'] });
+            queryClient.invalidateQueries({ queryKey: ['clients'] });
         } catch (error) {
             setLocalStatus(prevStatus);
             onOptimisticUpdate(clientFlagId, prevStatus);
@@ -157,43 +164,37 @@ export default function ClientDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { isAdmin, isPartner, isUser, user } = useAuth();
+    const queryClient = useQueryClient();
 
-    const [client, setClient] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const { data: client, isLoading } = useQuery({
+        queryKey: ['client', id],
+        queryFn: async () => {
+            const { data } = await api.get(`/clients/${id}`);
+            return data.data;
+        },
+        onError: () => {
+            toast.error('Erro ao carregar dados.');
+            navigate('/clientes', { replace: true });
+        },
+    });
+
     const [downloading, setDownloading] = useState(null);
 
-    const fetchClient = useCallback(async () => {
-
-        try {
-            const { data } = await api.get(`/clients/${id}`);
-            setClient(data.data);
-        } catch (error) {
-            toast.error(getApiErrorMessage(error, 'Erro ao carregar dados.'));
-            navigate('/clientes', { replace: true });
-        } finally {
-            setIsLoading(false);
-        }
-    }, [id, navigate]);
-
-    useEffect(() => { fetchClient(); }, [fetchClient]);
-
     const handleOptimisticFlagUpdate = useCallback((flagId, newStatus) => {
-        setClient((prev) => {
+        queryClient.setQueryData(['client', id], (prev) => {
             if (!prev) return prev;
             return {
                 ...prev,
-                clientFlags: prev.clientFlags.map((cf) => cf.id === flagId ? { ...cf, status: newStatus } : cf),
+                clientFlags: prev.clientFlags.map((cf) =>
+                    cf.id === flagId ? { ...cf, status: newStatus } : cf
+                ),
             };
         });
-    }, []);
+    }, [queryClient, id]);
 
-    const refetchAfterFlagUpdate = useCallback(async () => {
-        try {
-            const { data } = await api.get(`/clients/${id}`);
-
-            setClient(data.data);
-        } catch { /* silencioso */ }
-    }, [id]);
+    const refetchAfterFlagUpdate = useCallback(() => {
+        queryClient.invalidateQueries({ queryKey: ['client', id] });
+    }, [queryClient, id]);
 
     const handleDownload = async (doc) => {
         setDownloading(doc.id);
@@ -356,7 +357,7 @@ export default function ClientDetailPage() {
                                             <InfoValue>
                                                 {bank.agency}
                                                 {bank.agency_digit ? `-${bank.agency_digit}` : ''}
-                                                {" / "}
+                                                {' / '}
                                                 {bank.account}
                                                 {bank.account_digit ? `-${bank.account_digit}` : ''}
                                             </InfoValue>
@@ -376,14 +377,12 @@ export default function ClientDetailPage() {
                             <InfoGrid $cols={1}>
                                 <InfoGroup>
                                     <InfoLabel>Nome do Plano</InfoLabel>
-                                    {/* Acessando através de sales[0] */}
                                     <InfoValue>{client.sales[0]?.plan_name || '—'}</InfoValue>
                                 </InfoGroup>
                                 <InfoGroup>
                                     <InfoLabel>Valor</InfoLabel>
                                     <InfoValue>{formatCurrency(client.sales[0]?.total_value)}</InfoValue>
                                 </InfoGroup>
-
                                 <InfoGroup>
                                     <InfoLabel>Data da Venda</InfoLabel>
                                     <InfoValue>{formatDate(client.sales[0].createdAt)}</InfoValue>

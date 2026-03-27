@@ -47,66 +47,6 @@ export const WelcomeDate = styled.p`
   text-transform: capitalize;
 `;
 
-export const MetricsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 32px;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-export const MetricCard = styled.div`
-  background: ${({ theme }) => theme.surface?.card || '#ffffff'};
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: ${({ theme }) => theme.shadows?.sm || '0 1px 2px rgba(0,0,0,0.05)'};
-  border: 1px solid ${({ theme }) => theme.border?.default || '#e4d9cf'};
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.shadows?.md || '0 4px 6px rgba(0,0,0,0.1)'};
-  }
-`;
-
-export const MetricIcon = styled.div`
-  width: 52px;
-  height: 52px;
-  background: ${({ $color }) => `${$color}15`};
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ $color }) => $color};
-`;
-
-export const MetricInfo = styled.div`
-  flex: 1;
-`;
-
-export const MetricValue = styled.div`
-  font-size: 28px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text?.primary || '#231b15'};
-  line-height: 1.2;
-  margin-bottom: 4px;
-`;
-
-export const MetricLabel = styled.div`
-  font-size: 13px;
-  color: ${({ theme }) => theme.text?.secondary || '#5e4d42'};
-`;
-
 export const TwoColumnGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 360px;
@@ -230,56 +170,6 @@ export const StatusBadge = styled.span`
   }};
   white-space: nowrap;
   flex-shrink: 0;
-`;
-
-export const ProgressSection = styled.div`
-  margin-top: 8px;
-`;
-
-export const ProgressTitle = styled.div`
-  font-size: 12px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.text?.secondary || '#5e4d42'};
-  margin-bottom: 12px;
-`;
-
-export const ProgressBarWrapper = styled.div`
-  background: ${({ theme }) => theme.colors?.neutral?.[100] || '#f2ece6'};
-  border-radius: 8px;
-  overflow: hidden;
-`;
-
-export const ProgressBar = styled.div`
-  height: 8px;
-  width: ${({ $percentage }) => $percentage}%;
-  background: ${({ $color }) => $color};
-  border-radius: 8px;
-  transition: width 0.3s ease;
-`;
-
-export const ProgressStats = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid ${({ theme }) => theme.border?.default || '#e4d9cf'};
-`;
-
-export const ProgressStat = styled.div`
-  text-align: center;
-  flex: 1;
-`;
-
-export const ProgressStatValue = styled.div`
-  font-size: 20px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text?.primary || '#231b15'};
-`;
-
-export const ProgressStatLabel = styled.div`
-  font-size: 11px;
-  color: ${({ theme }) => theme.text?.muted || '#96806e'};
-  margin-top: 4px;
 `;
 
 export const QuickActions = styled.div`
