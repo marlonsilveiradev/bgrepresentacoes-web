@@ -42,7 +42,8 @@ export default function DashboardPage() {
       const { data } = await api.get('/clients', { params: { limit: '5' } });
       return data.data ?? [];
     },
-    staleTime: 1000 * 60 * 2, // 2 minutos de cache
+    staleTime: 1000 * 30, // 30 segundos de cache
+    refetchOnWindowFocus: true,
   });
 
   // Vendas recentes

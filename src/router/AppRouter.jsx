@@ -29,6 +29,8 @@ const ClientsPage = lazy(() => import('../features/clients/pages/ClientsPage'));
 // Users
 const UsersPage = lazy(() => import('../features/users/pages/UsersPage'));
 
+const ReportsPage = lazy(() => import('../features/reports/pages/ReportPage'));
+
 // Placeholder
 const Placeholder = ({ title }) => (
   <div style={{
@@ -81,14 +83,14 @@ export default function AppRouter() {
                 {/* 🔓 Acesso geral */}
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/clientes" element={<ClientsPage />} />
-                <Route path="/clientes/:id" element={<ClientDetailPage />} />
-                <Route path="/clientes/:id/editar" element={<ClientEditPage />} />
+                <Route path="/clientes/:id" element={<ClientDetailPage />} />                
                 <Route path="/vendas" element={<Placeholder title="Vendas" />} />
                 <Route path="/perfil" element={<Placeholder title="Meu Perfil" />} />
 
                 {/* 🔒 Admin + User */}
                 <Route element={<ProtectedRoute allowedRoles={['admin', 'user']} />}>
                   <Route path="/onboarding" element={<ClientCreatePage />} />
+                  <Route path="/clientes/:id/editar" element={<ClientEditPage />} />
                 </Route>
 
                 {/* 🔒 Apenas Admin */}
@@ -96,7 +98,7 @@ export default function AppRouter() {
                   <Route path="/usuarios" element={<UsersPage />} />
                   <Route path="/bandeiras" element={<Placeholder title="Bandeiras" />} />
                   <Route path="/planos" element={<Placeholder title="Planos" />} />
-                  <Route path="/relatorios" element={<Placeholder title="Relatórios" />} />
+                  <Route path="/relatorios" element={<ReportsPage />} />
                 </Route>
 
                 {/* Fallback */}

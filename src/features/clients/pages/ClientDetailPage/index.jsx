@@ -219,7 +219,7 @@ export default function ClientDetailPage() {
     if (!client) return null;
 
     const {
-        corporate_name, trade_name, cnpj, state_registration,
+        corporate_name, trade_name, cnpj, state_registration, responsible_name,
         phone, email, protocol, benefit_type, overall_status,
         notes, createdAt, address_street, address_number, address_complement,
         address_neighborhood, address_city, address_state, address_zip,
@@ -277,11 +277,12 @@ export default function ClientDetailPage() {
                             {!isPartner && <InfoGroup><InfoLabel>Nome Fantasia</InfoLabel><InfoValue>{trade_name || '—'}</InfoValue></InfoGroup>}
                             <InfoGroup><InfoLabel>CNPJ</InfoLabel><InfoValue>{formatCNPJ(cnpj)}</InfoValue></InfoGroup>
                             {!isPartner && <InfoGroup><InfoLabel>Inscrição Estadual</InfoLabel><InfoValue>{state_registration || '—'}</InfoValue></InfoGroup>}
+                            <InfoGroup><InfoLabel>Responsável</InfoLabel><InfoValue>{responsible_name || '—'}</InfoValue></InfoGroup>
                             <InfoGroup><InfoLabel>Telefone</InfoLabel><InfoValue>{formatPhone(phone)}</InfoValue></InfoGroup>
                             {!isPartner && <InfoGroup><InfoLabel>E-mail</InfoLabel><InfoValue>{email || '—'}</InfoValue></InfoGroup>}
                             <InfoGroup><InfoLabel>Tipo de Benefício</InfoLabel><InfoValue>{BENEFIT_LABELS[benefit_type] ?? benefit_type ?? '—'}</InfoValue></InfoGroup>
                             <InfoGroup><InfoLabel>Cadastrado em</InfoLabel><InfoValue>{formatDate(createdAt)}</InfoValue></InfoGroup>
-                            {!isPartner && notes && (
+                            {notes && (
                                 <InfoGroup $span>
                                     <InfoLabel>Observações Internas</InfoLabel>
                                     <InfoValueMuted>{notes}</InfoValueMuted>
@@ -368,7 +369,7 @@ export default function ClientDetailPage() {
                         </Card>
                     )}
 
-                    {client.sales && client.sales.length > 0 && (
+                    {client && (client.plan_name || (client.sales && client.sales.length > 0)) && (
                         <Card>
                             <CardHeader>
                                 <CardIconWrapper><CreditCard size={18} /></CardIconWrapper>
@@ -377,15 +378,29 @@ export default function ClientDetailPage() {
                             <InfoGrid $cols={1}>
                                 <InfoGroup>
                                     <InfoLabel>Nome do Plano</InfoLabel>
-                                    <InfoValue>{client.sales[0]?.plan_name || '—'}</InfoValue>
+                                    <InfoValue>
+                                        {/* O ?. garante que se sales não existir, ele pula para o próximo */}
+                                        {client.sales?.[0]?.plan_name || client.plan_name || '—'}
+                                    </InfoValue>
                                 </InfoGroup>
+                                {!isPartner && client.sales?.[0]?.total_value && (
                                 <InfoGroup>
                                     <InfoLabel>Valor</InfoLabel>
-                                    <InfoValue>{formatCurrency(client.sales[0]?.total_value)}</InfoValue>
+                                    <InfoValue>
+                                        {/* Só chama a função formatCurrency se o valor existir */}
+                                        {client.sales?.[0]?.total_value
+                                            ? formatCurrency(client.sales[0].total_value)
+                                            : '—'}
+                                    </InfoValue>
                                 </InfoGroup>
+                                )}
                                 <InfoGroup>
                                     <InfoLabel>Data da Venda</InfoLabel>
-                                    <InfoValue>{formatDate(client.sales[0].createdAt)}</InfoValue>
+                                    <InfoValue>                                        
+                                        {client.sales?.[0]?.createdAt
+                                            ? formatDate(client.sales[0].createdAt)
+                                            : (client.createdAt ? formatDate(client.createdAt) : '—')}
+                                    </InfoValue>
                                 </InfoGroup>
                             </InfoGrid>
                         </Card>

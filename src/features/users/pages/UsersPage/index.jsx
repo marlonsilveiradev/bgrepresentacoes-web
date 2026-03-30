@@ -7,6 +7,7 @@ import {
   X, AlertCircle, Eye, EyeOff, Edit,
 } from 'lucide-react';
 
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api, { getApiErrorMessage } from '../../../../lib/api';
 import { useAuth } from '../../../../contexts/AuthContext';
 
@@ -20,7 +21,6 @@ import {
   EmptyState, EmptyIcon, EmptyTitle, EmptySubtitle,
   SkeletonRow, SkeletonCell, SkeletonBar,
   Pagination, PaginationInfo, PaginationButtons, PageButton,
-  // Modal
   Overlay, ModalBox, ModalHeader, ModalTitle, ModalCloseButton,
   ModalBody, ModalFooter, CancelButton, SubmitButton, Spinner,
   Field, Label, Input, Select, FieldError, PasswordWrapper, TogglePasswordButton,
@@ -53,19 +53,19 @@ const formatDate = (iso) => {
 };
 
 const ROLE_ICONS = {
-  admin:   <ShieldCheck size={12} />,
-  user:    <User size={12} />,
+  admin: <ShieldCheck size={12} />,
+  user: <User size={12} />,
   partner: <Handshake size={12} />,
 };
 
-// ── Modal de criação de usuário (não alterado) ───────────────────────────────
+// ── Modal de criação de usuário ──────────────────────────────────────────────
 function CreateUserModal({ onClose, onCreated }) {
-  const [form, setForm]           = useState({ name: '', email: '', role: 'user' });
-  const [errors, setErrors]       = useState({});
+  const [form, setForm] = useState({ name: '', email: '', role: 'user' });
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [tempPassword, setTempPassword] = useState(null);
-  const [copied, setCopied]       = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -80,13 +80,10 @@ function CreateUserModal({ onClose, onCreated }) {
 
   const validate = () => {
     const errs = {};
-    if (!form.name.trim())                    errs.name  = 'Nome é obrigatório.';
-    else if (form.name.trim().length > 150)   errs.name  = 'Nome deve ter no máximo 150 caracteres.';
-    if (!form.email.trim())                   errs.email = 'E-mail é obrigatório.';
+    if (!form.name.trim()) errs.name = 'Nome é obrigatório.';
+    if (!form.email.trim()) errs.email = 'E-mail é obrigatório.';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-                                              errs.email = 'Informe um e-mail válido.';
-    if (!['admin', 'user', 'partner'].includes(form.role))
-                                              errs.role  = 'Selecione um papel válido.';
+      errs.email = 'Informe um e-mail válido.';
     return errs;
   };
 
@@ -103,9 +100,9 @@ function CreateUserModal({ onClose, onCreated }) {
     setIsSubmitting(true);
     try {
       const { data } = await api.post('/users', {
-        name:  form.name.trim(),
+        name: form.name.trim(),
         email: form.email.toLowerCase().trim(),
-        role:  form.role,
+        role: form.role,
       });
       setTempPassword(data.data?.temporaryPassword ?? null);
       toast.success('Usuário criado com sucesso!');
@@ -117,107 +114,59 @@ function CreateUserModal({ onClose, onCreated }) {
     }
   };
 
-  const handleCopy = () => {
-    if (!tempPassword) return;
-    navigator.clipboard.writeText(tempPassword).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
   return (
     <Overlay onClick={onClose}>
-      <ModalBox onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <ModalBox onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
-          <ModalTitle id="modal-title">Novo Usuário</ModalTitle>
-          <ModalCloseButton type="button" onClick={onClose} aria-label="Fechar">
-            <X size={18} />
-          </ModalCloseButton>
+          <ModalTitle>Novo Usuário</ModalTitle>
+          <ModalCloseButton onClick={onClose}><X size={18} /></ModalCloseButton>
         </ModalHeader>
-
         <ModalBody>
-          {tempPassword && (
+          {tempPassword ? (
             <TempPasswordBox>
-              <TempPasswordLabel>
-                ⚠️ Senha temporária gerada — anote e repasse ao usuário. Ela não será exibida novamente.
-              </TempPasswordLabel>
+              <TempPasswordLabel>⚠️ Senha temporária (copie agora):</TempPasswordLabel>
               <PasswordWrapper>
                 <TempPasswordValue type={showPassword ? 'text' : 'password'} value={tempPassword} readOnly />
-                <TogglePasswordButton
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-label={showPassword ? 'Ocultar' : 'Mostrar'}
-                >
+                <TogglePasswordButton onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                 </TogglePasswordButton>
               </PasswordWrapper>
-              <CopyButton type="button" onClick={handleCopy}>
+              <CopyButton onClick={() => {
+                navigator.clipboard.writeText(tempPassword);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}>
                 {copied ? '✓ Copiado!' : 'Copiar senha'}
               </CopyButton>
             </TempPasswordBox>
-          )}
-
-          {!tempPassword && (
+          ) : (
             <>
               <Field>
-                <Label htmlFor="user-name">Nome *</Label>
-                <Input
-                  id="user-name"
-                  name="name"
-                  type="text"
-                  placeholder="Nome completo"
-                  value={form.name}
-                  onChange={handleChange}
-                  $hasError={!!errors.name}
-                  disabled={isSubmitting}
-                  autoFocus
-                />
-                {errors.name && <FieldError><AlertCircle size={11} />{errors.name}</FieldError>}
+                <Label>Nome *</Label>
+                <Input name="name" value={form.name} onChange={handleChange} $hasError={!!errors.name} />
+                {errors.name && <FieldError>{errors.name}</FieldError>}
               </Field>
-
               <Field>
-                <Label htmlFor="user-email">E-mail *</Label>
-                <Input
-                  id="user-email"
-                  name="email"
-                  type="email"
-                  placeholder="usuario@empresa.com"
-                  value={form.email}
-                  onChange={handleChange}
-                  $hasError={!!errors.email}
-                  disabled={isSubmitting}
-                />
-                {errors.email && <FieldError><AlertCircle size={11} />{errors.email}</FieldError>}
+                <Label>E-mail *</Label>
+                <Input name="email" value={form.email} onChange={handleChange} $hasError={!!errors.email} />
+                {errors.email && <FieldError>{errors.email}</FieldError>}
               </Field>
-
               <Field>
-                <Label htmlFor="user-role">Papel *</Label>
-                <Select
-                  id="user-role"
-                  name="role"
-                  value={form.role}
-                  onChange={handleChange}
-                  $hasError={!!errors.role}
-                  disabled={isSubmitting}
-                >
+                <Label>Papel *</Label>
+                <Select name="role" value={form.role} onChange={handleChange}>
                   <option value="user">Usuário</option>
                   <option value="admin">Administrador</option>
                   <option value="partner">Parceiro</option>
                 </Select>
-                {errors.role && <FieldError><AlertCircle size={11} />{errors.role}</FieldError>}
               </Field>
             </>
           )}
         </ModalBody>
-
         <ModalFooter>
-          <CancelButton type="button" onClick={onClose} disabled={isSubmitting}>
-            {tempPassword ? 'Fechar' : 'Cancelar'}
-          </CancelButton>
-
+          <CancelButton onClick={onClose}>{tempPassword ? 'Fechar' : 'Cancelar'}</CancelButton>
           {!tempPassword && (
-            <SubmitButton type="button" onClick={handleSubmit} disabled={isSubmitting}>
-              {isSubmitting ? <><Spinner />Criando…</> : <><UserPlus size={15} />Criar Usuário</>}
+            <SubmitButton onClick={handleSubmit} disabled={isSubmitting}>
+              {isSubmitting ? <Spinner /> : 'Criar Usuário'}
             </SubmitButton>
           )}
         </ModalFooter>
@@ -226,12 +175,12 @@ function CreateUserModal({ onClose, onCreated }) {
   );
 }
 
-// ── Modal de edição de usuário (novo) ─────────────────────────────────────────
+// ── Modal de edição de usuário ──────────────────────────────────────────────
 function EditUserModal({ user, onClose, onUpdated }) {
   const [form, setForm] = useState({
-    name:  user.name,
+    name: user.name,
     email: user.email,
-    role:  user.role,
+    role: user.role,
     is_active: user.is_active,
   });
   const [newPassword, setNewPassword] = useState('');
@@ -239,64 +188,28 @@ function EditUserModal({ user, onClose, onUpdated }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Impede scroll do body
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
   }, []);
 
-  // Fecha ao pressionar Escape
-  useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
-
-  const validate = () => {
-    const errs = {};
-    if (!form.name.trim())                    errs.name  = 'Nome é obrigatório.';
-    else if (form.name.trim().length > 150)   errs.name  = 'Nome deve ter no máximo 150 caracteres.';
-    if (!form.email.trim())                   errs.email = 'E-mail é obrigatório.';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-                                              errs.email = 'Informe um e-mail válido.';
-    if (!['admin', 'user', 'partner'].includes(form.role))
-                                              errs.role  = 'Selecione um papel válido.';
-    if (newPassword && newPassword.length < 8) {
-      errs.newPassword = 'A senha deve ter pelo menos 8 caracteres.';
-    }
-    return errs;
-  };
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const val = type === 'checkbox' ? checked : value;
-    setForm((prev) => ({ ...prev, [name]: val }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
+    setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleSubmit = async () => {
-    const errs = validate();
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
-
     setIsSubmitting(true);
     try {
-      // Monta payload com todos os campos, incluindo a senha se fornecida
-      const payload = {
-        name: form.name.trim(),
-        email: form.email.toLowerCase().trim(),
-        role: form.role,
-        is_active: form.is_active,
-      };
-      if (newPassword) {
-        payload.password = newPassword; // backend fará o hash automaticamente
-      }
+      const payload = { ...form, name: form.name.trim() };
+      if (newPassword) payload.password = newPassword;
 
       await api.patch(`/users/${user.id}`, payload);
-      toast.success('Usuário atualizado com sucesso!');
-      onUpdated(); // recarrega a lista
+      toast.success('Usuário atualizado!');
+      onUpdated();
       onClose();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Erro ao atualizar usuário.'));
+      toast.error(getApiErrorMessage(error, 'Erro ao atualizar.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -304,112 +217,46 @@ function EditUserModal({ user, onClose, onUpdated }) {
 
   return (
     <Overlay onClick={onClose}>
-      <ModalBox onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+      <ModalBox onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
-          <ModalTitle id="edit-modal-title">Editar Usuário</ModalTitle>
-          <ModalCloseButton type="button" onClick={onClose} aria-label="Fechar">
-            <X size={18} />
-          </ModalCloseButton>
+          <ModalTitle>Editar Usuário</ModalTitle>
+          <ModalCloseButton onClick={onClose}><X size={18} /></ModalCloseButton>
         </ModalHeader>
-
         <ModalBody>
           <Field>
-            <Label htmlFor="edit-name">Nome *</Label>
-            <Input
-              id="edit-name"
-              name="name"
-              type="text"
-              placeholder="Nome completo"
-              value={form.name}
-              onChange={handleChange}
-              $hasError={!!errors.name}
-              disabled={isSubmitting}
-              autoFocus
-            />
-            {errors.name && <FieldError><AlertCircle size={11} />{errors.name}</FieldError>}
+            <Label>Nome *</Label>
+            <Input name="name" value={form.name} onChange={handleChange} />
           </Field>
-
           <Field>
-            <Label htmlFor="edit-email">E-mail *</Label>
-            <Input
-              id="edit-email"
-              name="email"
-              type="email"
-              placeholder="usuario@empresa.com"
-              value={form.email}
-              onChange={handleChange}
-              disabled={true} // E-mail não pode ser editado
-              $hasError={!!errors.email}
-            />
-            {errors.email && <FieldError><AlertCircle size={11} />{errors.email}</FieldError>}
+            <Label>E-mail (Não editável)</Label>
+            <Input value={form.email} disabled />
           </Field>
-
           <Field>
-            <Label htmlFor="edit-role">Papel *</Label>
-            <Select
-              id="edit-role"
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              $hasError={!!errors.role}
-              disabled={isSubmitting}
-            >
+            <Label>Papel</Label>
+            <Select name="role" value={form.role} onChange={handleChange}>
               <option value="user">Usuário</option>
               <option value="admin">Administrador</option>
               <option value="partner">Parceiro</option>
             </Select>
-            {errors.role && <FieldError><AlertCircle size={11} />{errors.role}</FieldError>}
           </Field>
-
           <Field>
-            <Label htmlFor="edit-is_active">
-              <input
-                type="checkbox"
-                id="edit-is_active"
-                name="is_active"
-                checked={form.is_active}
-                onChange={handleChange}
-                disabled={isSubmitting}
-                style={{ marginRight: '8px' }}
-              />
-              Usuário ativo
+            <Label>
+              <input type="checkbox" name="is_active" checked={form.is_active} onChange={handleChange} /> Ativo
             </Label>
           </Field>
-
-          <hr style={{ margin: '16px 0', borderColor: '#e4d9cf' }} />
-
           <Field>
-            <Label htmlFor="edit-password">Nova senha (opcional)</Label>
+            <Label>Nova senha (opcional)</Label>
             <PasswordWrapper>
-              <Input
-                id="edit-password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Deixe em branco para manter a atual"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                $hasError={!!errors.newPassword}
-                disabled={isSubmitting}
-                style={{ paddingRight: '40px' }}
-              />
-              <TogglePasswordButton
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? 'Ocultar' : 'Mostrar'}
-              >
+              <Input type={showPassword ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+              <TogglePasswordButton onClick={() => setShowPassword(!showPassword)}>
                 {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
               </TogglePasswordButton>
             </PasswordWrapper>
-            {errors.newPassword && <FieldError><AlertCircle size={11} />{errors.newPassword}</FieldError>}
           </Field>
         </ModalBody>
-
         <ModalFooter>
-          <CancelButton type="button" onClick={onClose} disabled={isSubmitting}>
-            Cancelar
-          </CancelButton>
-          <SubmitButton type="button" onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? <><Spinner />Salvando…</> : <>Salvar alterações</>}
-          </SubmitButton>
+          <CancelButton onClick={onClose}>Cancelar</CancelButton>
+          <SubmitButton onClick={handleSubmit} disabled={isSubmitting}>Salvar</SubmitButton>
         </ModalFooter>
       </ModalBox>
     </Overlay>
@@ -418,65 +265,33 @@ function EditUserModal({ user, onClose, onUpdated }) {
 
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function UsersPage() {
-  const navigate     = useNavigate();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user: currentUser, isAdmin } = useAuth();
 
-  // Redireciona imediatamente se não for admin
+  const [page, setPage] = useState(1);
+  const [role, setRole] = useState('');
+  const [isActive, setIsActive] = useState('');
+  const [search, setSearch] = useState('');
+  const [apiSearch, setApiSearch] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+
+  const debounceRef = useRef(null);
+
   useEffect(() => {
     if (!isAdmin) navigate('/clientes', { replace: true });
   }, [isAdmin, navigate]);
 
-  // ── Estado ────────────────────────────────────────────────
-  const [users,      setUsers]      = useState([]);
-  const [pagination, setPagination] = useState({ total: 0, totalPages: 1, currentPage: 1 });
-  const [isLoading,  setIsLoading]  = useState(true);
-  const [page,       setPage]       = useState(1);
-  const [role,       setRole]       = useState('');
-  const [isActive,   setIsActive]   = useState('');
-  const [search,     setSearch]     = useState('');
-  const [apiSearch,  setApiSearch]  = useState('');
-  const [showModal,  setShowModal]  = useState(false);
-  const [editingUser, setEditingUser] = useState(null); // armazena o usuário sendo editado
-
-  const debounceRef = useRef(null);
-
-  // ── Busca na API ──────────────────────────────────────────
-  const fetchUsers = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const params = new URLSearchParams({ page, limit: PER_PAGE });
-      if (apiSearch) params.set('search',    apiSearch);
-      if (role)      params.set('role',      role);
-      if (isActive !== '') params.set('is_active', isActive === 'true' ? 1 : 0);
-
-      
-      const { data } = await api.get(`/users?${params.toString()}`);
-
-      setUsers(data.data ?? []);
-      setPagination({
-        total:       data.pagination?.total       ?? 0,
-        totalPages:  data.pagination?.totalPages  ?? 1,
-        currentPage: data.pagination?.currentPage ?? 1,
-      });
-    } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Erro ao carregar usuários.'));
-      setUsers([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [page, apiSearch, role, isActive]);
-
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
-
-  // ── Handlers de filtro ────────────────────────────────────
+  // Handlers de Filtro
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearch(value);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      setApiSearch(value.trim());
+      setApiSearch(value);
       setPage(1);
-    }, 400);
+    }, 500);
   };
 
   const handleRoleFilter = (e) => {
@@ -484,80 +299,72 @@ export default function UsersPage() {
     setPage(1);
   };
 
-  const handleStatusFilter = (e) => {        
+  const handleStatusFilter = (e) => {
     setIsActive(e.target.value);
     setPage(1);
   };
 
-  // ── Ações ─────────────────────────────────────────────────
-  const handleDeactivate = async (targetUser) => {
-    // Impede autodesativação
-    if (targetUser.id === currentUser?.id) {
-      toast.warning('Você não pode desativar a própria conta.');
-      return;
-    }
-    if (!window.confirm(`Desativar o usuário "${targetUser.name}"?`)) return;
-    try {
-      await api.patch(`/users/${targetUser.id}/deactivate`);
-      toast.success(`Usuário "${targetUser.name}" desativado.`);
-      fetchUsers();
-    } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Erro ao desativar usuário.'));
-    }
+  // Fetch de dados
+  const { data, isLoading } = useQuery({
+    queryKey: ['users', page, apiSearch, role, isActive],
+    queryFn: async () => {
+      const params = new URLSearchParams({ page, limit: PER_PAGE });
+      if (apiSearch) params.set('search', apiSearch);
+      if (role) params.set('role', role);
+      if (isActive !== '') params.set('is_active', isActive === 'true' ? 1 : 0);
+      const { data } = await api.get(`/users?${params.toString()}`);
+      return data;
+    },
+    keepPreviousData: true,
+  });
+
+  const users = data?.data ?? [];
+  const pagination = data?.pagination ?? { total: 0, totalPages: 1, currentPage: 1 };
+
+  // Mutation para Status
+  const { mutate: mutateStatus } = useMutation({
+    mutationFn: ({ id, action }) => api.patch(`/users/${id}/${action}`),
+    onSuccess: (_, vars) => {
+      toast.success(`Usuário ${vars.action === 'deactivate' ? 'desativado' : 'reativado'}.`);
+      queryClient.invalidateQueries(['users']);
+    },
+    onError: (err) => toast.error(getApiErrorMessage(err))
+  });
+
+  const handleDeactivate = (u) => {
+    if (u.id === currentUser?.id) return toast.warning('Não pode desativar a si mesmo.');
+    if (window.confirm(`Desativar ${u.name}?`)) mutateStatus({ id: u.id, action: 'deactivate' });
   };
 
-  const handleReactivate = async (targetUser) => {
-    if (!window.confirm(`Reativar o usuário "${targetUser.name}"?`)) return;
-    try {
-      await api.patch(`/users/${targetUser.id}/reactivate`);
-      toast.success(`Usuário "${targetUser.name}" reativado.`);
-      fetchUsers();
-    } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Erro ao reativar usuário.'));
-    }
+  const handleReactivate = (u) => {
+    if (window.confirm(`Reativar ${u.name}?`)) mutateStatus({ id: u.id, action: 'reactivate' });
   };
 
-  // ── Renderização ──────────────────────────────────────────
   if (!isAdmin) return null;
 
   return (
     <>
-      {/* Cabeçalho */}
       <PageHeader>
         <PageTitleGroup>
           <PageTitle>Usuários</PageTitle>
-          <PageSubtitle>
-            {pagination.total > 0
-              ? `${pagination.total} usuário${pagination.total !== 1 ? 's' : ''} cadastrado${pagination.total !== 1 ? 's' : ''}`
-              : 'Nenhum usuário cadastrado ainda'}
-          </PageSubtitle>
+          <PageSubtitle>{pagination.total} usuários cadastrados</PageSubtitle>
         </PageTitleGroup>
-
-        <PrimaryButton type="button" onClick={() => setShowModal(true)}>
-          <UserPlus size={16} />
-          Novo Usuário
+        <PrimaryButton onClick={() => setShowModal(true)}>
+          <UserPlus size={16} /> Novo Usuário
         </PrimaryButton>
       </PageHeader>
 
-      {/* Filtros */}
       <FilterBar>
         <SearchWrapper>
           <SearchIcon><Search size={15} /></SearchIcon>
-          <SearchInput
-            type="text"
-            placeholder="Buscar por nome ou e-mail…"
-            value={search}
-            onChange={handleSearch}
-          />
+          <SearchInput placeholder="Buscar..." value={search} onChange={handleSearch} />
         </SearchWrapper>
-
         <FilterSelect value={role} onChange={handleRoleFilter}>
           <option value="">Todos os papéis</option>
           <option value="admin">Administrador</option>
           <option value="user">Usuário</option>
           <option value="partner">Parceiro</option>
         </FilterSelect>
-
         <FilterSelect value={isActive} onChange={handleStatusFilter}>
           <option value="">Todos os status</option>
           <option value="true">Ativos</option>
@@ -565,170 +372,55 @@ export default function UsersPage() {
         </FilterSelect>
       </FilterBar>
 
-      {/* Tabela */}
       <TableWrapper>
         <Table>
           <Thead>
             <tr>
-              <Th>Nome</Th>
-              <Th>E-mail</Th>
-              <Th>Papel</Th>
-              <Th>Status</Th>
-              <Th>Último acesso</Th>
-              <Th>Ações</Th>
+              <Th>Nome</Th><Th>E-mail</Th><Th>Papel</Th><Th>Status</Th><Th>Acesso</Th><Th>Ações</Th>
             </tr>
           </Thead>
-
           <Tbody>
-            {isLoading && <TableSkeleton />}
-
-            {!isLoading && users.map((u) => (
+            {isLoading ? <TableSkeleton /> : users.map((u) => (
               <Tr key={u.id}>
                 <Td>{u.name}</Td>
                 <TdMuted>{u.email}</TdMuted>
                 <Td>
-                  <RoleBadge $role={u.role}>
-                    {ROLE_ICONS[u.role]}
-                    {ROLE_LABELS[u.role] ?? u.role}
-                  </RoleBadge>
+                  <RoleBadge $role={u.role}>{ROLE_ICONS[u.role]} {ROLE_LABELS[u.role]}</RoleBadge>
                 </Td>
                 <Td>
                   <StatusDot $active={u.is_active}>
-                    {u.is_active
-                      ? <><CheckCircle2 size={13} />Ativo</>
-                      : <><XCircle      size={13} />Inativo</>}
+                    {u.is_active ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
+                    {u.is_active ? 'Ativo' : 'Inativo'}
                   </StatusDot>
                 </Td>
-                <TdMuted>
-                  {u.last_login_at ? formatDate(u.last_login_at) : 'Nunca acessou'}
-                </TdMuted>
-
+                <TdMuted>{u.last_login_at ? formatDate(u.last_login_at) : '—'}</TdMuted>
                 <TdActions>
-                  {/* Botão Editar */}
-                  <ActionButton
-                    type="button"
-                    $variant="edit"
-                    onClick={() => setEditingUser(u)}
-                    title="Editar usuário"
-                    style={{ marginRight: '8px' }}
+                  <ActionButton $variant="edit" onClick={() => setEditingUser(u)}><Edit size={14} /></ActionButton>
+                  <ActionButton 
+                    $variant={u.is_active ? "danger" : "success"} 
+                    onClick={() => u.is_active ? handleDeactivate(u) : handleReactivate(u)}
                   >
-                    <Edit size={14} /> Editar
+                    {u.is_active ? 'Desativar' : 'Reativar'}
                   </ActionButton>
-
-                  {u.is_active ? (
-                    <ActionButton
-                      type="button"
-                      $variant="danger"
-                      onClick={() => handleDeactivate(u)}
-                      title="Desativar usuário"
-                    >
-                      Desativar
-                    </ActionButton>
-                  ) : (
-                    <ActionButton
-                      type="button"
-                      $variant="success"
-                      onClick={() => handleReactivate(u)}
-                      title="Reativar usuário"
-                    >
-                      Reativar
-                    </ActionButton>
-                  )}
                 </TdActions>
               </Tr>
             ))}
-
-            {!isLoading && users.length === 0 && (
-              <tr>
-                <td colSpan={6}>
-                  <EmptyState>
-                    <EmptyIcon><Users size={40} /></EmptyIcon>
-                    <EmptyTitle>Nenhum usuário encontrado</EmptyTitle>
-                    <EmptySubtitle>
-                      {search || role || isActive
-                        ? 'Tente ajustar os filtros para ver mais resultados.'
-                        : 'Clique em "Novo Usuário" para criar o primeiro.'}
-                    </EmptySubtitle>
-                  </EmptyState>
-                </td>
-              </tr>
-            )}
           </Tbody>
         </Table>
 
-        {/* Paginação */}
-        {!isLoading && pagination.totalPages > 1 && (
+        {pagination.totalPages > 1 && (
           <Pagination>
-            <PaginationInfo>
-              Página {pagination.currentPage} de {pagination.totalPages}
-              {' '}· {pagination.total} registros
-            </PaginationInfo>
-
+            <PaginationInfo>Página {page} de {pagination.totalPages}</PaginationInfo>
             <PaginationButtons>
-              <PageButton
-                type="button"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                aria-label="Página anterior"
-              >
-                <ChevronLeft size={15} />
-              </PageButton>
-
-              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-                .filter((p) =>
-                  p === 1 ||
-                  p === pagination.totalPages ||
-                  Math.abs(p - page) <= 2
-                )
-                .reduce((acc, p, idx, arr) => {
-                  if (idx > 0 && p - arr[idx - 1] > 1) acc.push('…');
-                  acc.push(p);
-                  return acc;
-                }, [])
-                .map((p, i) =>
-                  p === '…' ? (
-                    <PageButton key={`ellipsis-${i}`} disabled as="span">…</PageButton>
-                  ) : (
-                    <PageButton
-                      key={p}
-                      type="button"
-                      $active={p === page}
-                      onClick={() => setPage(p)}
-                    >
-                      {p}
-                    </PageButton>
-                  )
-                )}
-
-              <PageButton
-                type="button"
-                onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
-                disabled={page >= pagination.totalPages}
-                aria-label="Próxima página"
-              >
-                <ChevronRight size={15} />
-              </PageButton>
+              <PageButton disabled={page === 1} onClick={() => setPage(page - 1)}><ChevronLeft size={15} /></PageButton>
+              <PageButton disabled={page === pagination.totalPages} onClick={() => setPage(page + 1)}><ChevronRight size={15} /></PageButton>
             </PaginationButtons>
           </Pagination>
         )}
       </TableWrapper>
 
-      {/* Modal de criação */}
-      {showModal && (
-        <CreateUserModal
-          onClose={() => setShowModal(false)}
-          onCreated={() => fetchUsers()}
-        />
-      )}
-
-      {/* Modal de edição */}
-      {editingUser && (
-        <EditUserModal
-          user={editingUser}
-          onClose={() => setEditingUser(null)}
-          onUpdated={() => fetchUsers()}
-        />
-      )}
+      {showModal && <CreateUserModal onClose={() => setShowModal(false)} onCreated={() => queryClient.invalidateQueries(['users'])} />}
+      {editingUser && <EditUserModal user={editingUser} onClose={() => setEditingUser(null)} onUpdated={() => queryClient.invalidateQueries(['users'])} />}
     </>
   );
 }

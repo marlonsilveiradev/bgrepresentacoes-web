@@ -2,6 +2,7 @@ import {
   createContext, useCallback, useContext,
   useEffect, useMemo, useReducer, useRef,
 } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { flushSync } from 'react-dom';
 import { toast } from 'react-toastify';
 import api, {
@@ -90,6 +91,7 @@ export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, INITIAL);
   const initialized = useRef(false);
+  const queryClient = useQueryClient();
 
   // ── INIT (RESTAURA SESSÃO) ───────────────────────────────
   useEffect(() => {
@@ -188,7 +190,7 @@ export function AuthProvider({ children }) {
         });
       });
 
-      toast.success('Login efetuado com sucesso!', { toastId: 'login-ok' });
+      toast.success('Login efetuado com sucesso!', {autoClose: 2000, toastId: 'login-ok' });
       return { mustChangePassword };
 
     } catch (error) {
@@ -222,9 +224,10 @@ export function AuthProvider({ children }) {
       console.warn('[LOGOUT API ERROR] Sessão encerrada apenas localmente');
     } finally {
       // Limpa os dados locais independente do sucesso da API
+      queryClient.clear();
       clearTokens();
       dispatch({ type: A.LOGOUT });
-      toast.success('Sessão encerrada.');
+      toast.success('Sessão encerrada.', {autoClose: 1000});
     }
   }, []);
 

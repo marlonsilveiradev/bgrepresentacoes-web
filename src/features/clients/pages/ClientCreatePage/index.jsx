@@ -110,11 +110,20 @@ const createSchema = yup.object({
     .transform((v) => v || null)
     .max(200, 'Nome fantasia deve ter no máximo 200 caracteres.'),
 
+  responsible_name: yup
+    .string()
+    .required('O nome do responsável é obrigatório.')
+    .max(100, 'Nome do responsável deve ter no máximo 100 caracteres.')
+    .matches(/^[a-zA-ZÀ-ÿ\s]+$/, 'Nome do responsável deve conter apenas letras e espaços.'),
+    
   phone: yup
     .string()
     .nullable()
-    .transform((v) => v || null)
-    .max(20, 'Telefone deve ter no máximo 20 caracteres.'),
+    .transform((v) => (v ? v.replace(/\D/g, '') : null))
+    .test('phone-length', 'Telefone deve ter 10 ou 11 dígitos.', (v) => {
+    if (!v) return true; // Se for null (já que é nullable), passa na validação
+    return v.length === 10 || v.length === 11;
+  }),
 
   benefit_type: yup
     .string()
@@ -165,30 +174,26 @@ const createSchema = yup.object({
     }),
 
   bank_bank_name: yup
-    .string().nullable().transform((v) => v || null)
+    .string()
+    .required('O nome do banco é obrigatório.')
+    .transform((v) => v || null)
     .max(100, 'Nome do banco deve ter no máximo 100 caracteres.'),
 
   bank_agency: yup
     .string()
     .max(10, 'Agência deve ter no máximo 10 caracteres.')
-    .when('bank_bank_name', {
-      is: (v) => !!v,
-      then: (s) => s.required('Agência é obrigatória quando o banco é informado.'),
-      otherwise: (s) => s.nullable().transform((v) => v || null),
-    }),
+    .required('A agência é obrigatória.'),
 
   bank_agency_digit: yup
-    .string().nullable().transform((v) => v || null)
+    .string()
+    .nullable()
+    .transform((v) => v || null)
     .max(2, 'Dígito deve ter no máximo 2 caracteres.'),
 
   bank_account: yup
     .string()
     .max(20, 'Conta deve ter no máximo 20 caracteres.')
-    .when('bank_bank_name', {
-      is: (v) => !!v,
-      then: (s) => s.required('Conta é obrigatória quando o banco é informado.'),
-      otherwise: (s) => s.nullable().transform((v) => v || null),
-    }),
+    .required('A conta é obrigatória.'),
 
   bank_account_digit: yup
     .string().nullable().transform((v) => v || null)
@@ -196,11 +201,7 @@ const createSchema = yup.object({
 
   bank_account_type: yup
     .string()
-    .when('bank_bank_name', {
-      is: (v) => !!v,
-      then: (s) => s.required('Tipo é obrigatório.').oneOf(['checking', 'savings'], 'Tipo inválido.'),
-      otherwise: (s) => s.nullable().transform((v) => v || null),
-    }),
+    .nullable(),
 });
 
 // ── Constantes ────────────────────────────────────────────────────────────────
@@ -369,7 +370,7 @@ export default function ClientCreatePage() {
       const res = await api.get('/plans?limit=100');
       return normalizeList(res.data);
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 3,
     refetchOnWindowFocus: false,
   });
 
@@ -379,21 +380,19 @@ export default function ClientCreatePage() {
       const res = await api.get('/flags?limit=100');
       return normalizeList(res.data);
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 3,
     refetchOnWindowFocus: false,
   });
 
   const { data: partners = [], isLoading: loadingPartners } = useQuery({
-    queryKey: ['partners'],
+    queryKey: ['partners', 'list-for-onboarding'],
     queryFn: async () => {
       const res = await api.get('/users?role=partner&limit=100');
-
+      console.log("Resposta dos Parceiros:", res.data);
       const list = normalizeList(res.data);
-
       return list;
     },
-    enabled: isAdmin,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 3,
     refetchOnWindowFocus: false,
   });
 
@@ -422,6 +421,7 @@ export default function ClientCreatePage() {
       email: '',
       state_registration: '',
       trade_name: '',
+      responsible_name: '',
       phone: '',
       benefit_type: 'food',
       notes: '',
@@ -505,6 +505,7 @@ export default function ClientCreatePage() {
         trade_name: formData.trade_name || undefined,
         email: formData.email || undefined,
         state_registration: formData.state_registration || undefined,
+        responsible_name: formData.responsible_name || undefined,
         phone: onlyDigits(formData.phone) || undefined,
         notes: formData.notes || undefined,
         partner_id: formData.partner_id || undefined,
@@ -557,7 +558,11 @@ export default function ClientCreatePage() {
       setUploadProgress(100);
 
       // 🔥 INVALIDA CACHE      
-      await queryClient.invalidateQueries({ queryKey: ['clients'] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['clients'] }),
+        queryClient.invalidateQueries({ queryKey: ['dashboard-recent-clients'] }),
+        queryClient.invalidateQueries({ queryKey: ['dashboard-recent-sales'] })
+      ]);
 
       toast.success(
         `Cliente cadastrado com sucesso!`,
@@ -653,6 +658,14 @@ export default function ClientCreatePage() {
                 {err('state_registration') && <FieldError><AlertCircle size={11} />{err('state_registration')}</FieldError>}
               </Field>
 
+              <Field> 
+                <Label htmlFor="responsible_name">Nome do Responsável *</Label>
+                <Input id="responsible_name" type="text" placeholder="Nome completo do responsável"
+                  $hasError={!!err('responsible_name')} disabled={isSubmitting}
+                  {...register('responsible_name')} />
+                {err('responsible_name') && <FieldError><AlertCircle size={11} />{err('responsible_name')}</FieldError>}
+              </Field>
+
               <Field>
                 <Label htmlFor="phone">Telefone</Label>
                 <Input id="phone" type="tel" placeholder="(00) 00000-0000"
@@ -682,7 +695,7 @@ export default function ClientCreatePage() {
                 {err('benefit_type') && <FieldError><AlertCircle size={11} />{err('benefit_type')}</FieldError>}
               </Field>
 
-              {isAdmin && (
+              
                 <Field>
                   <Label>Parceiro responsável</Label>
                   <Select {...register('partner_id')} disabled={loadingData}>
@@ -692,8 +705,6 @@ export default function ClientCreatePage() {
                     ))}
                   </Select>
                 </Field>
-              )}
-
               <FullSpan>
                 <Field>
                   <Label htmlFor="notes">Observações</Label>
